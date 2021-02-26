@@ -23,12 +23,13 @@ public class Pacman extends Pane implements Control2D {
         return animation;
     }
 
-    @Override
     public void move(Point2D velocity, int speed) {
         body.setVelocity(velocity);
         body.update(speed);
 
         this.setTranslateX(this.getTranslateX()+velocity.getX()*speed);
+        //System.out.println("X : " + this.getTranslateX());
         this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
+        //System.out.println("Y : " + this.getTranslateY());
     }
 }

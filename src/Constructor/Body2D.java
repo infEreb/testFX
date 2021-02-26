@@ -2,7 +2,6 @@ package Constructor;
 
 import Engine.RigidBody2D;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -50,8 +49,8 @@ public class Body2D {
         this.velocity = velocity;
     }
 
-    public void update(double time) {
-        position = position.add(velocity.getX()*time, velocity.getY()*time);
+    public void update(double speed) {
+        position = position.add(velocity.getX()*speed, velocity.getY()*speed);
         sprite.setPosition(position);
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());
     }

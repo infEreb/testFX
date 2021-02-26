@@ -27,7 +27,7 @@ public class SpriteAnimation extends Transition {
         setCycleCount(INDEFINITE);
     }
 
-    public void interpolate(double k) {
+    public void interpolate(double k) { // 0.0 - 1.0 /s
         System.out.println(k);
     }
 
