@@ -14,7 +14,12 @@ public class Sprite extends Parent {
     private double width;
     private double height;
 
-    public Sprite(){}
+    public Sprite(){
+        width = 0;
+        height = 0;
+        position = null;
+        velocity = null;
+    }
     public Sprite(ImageView texture, Point2D position, Point2D velocity) {
         this.texture = texture;
         this.position = position;
@@ -66,10 +71,4 @@ public class Sprite extends Parent {
         this.width = width;
     }
 
-    public void update(double time) {
-        position = position.add(velocity.getX()*time, velocity.getY()*time);
-    }
-    public void render(GraphicsContext gc) {
-        gc.drawImage(texture.getImage(), position.getX(), position.getY());
-    }
 }

@@ -2,6 +2,7 @@ package sample;
 
 import Constructor.Body2D;
 import Constructor.Sprite;
+import Constructor.SpriteAnimation;
 import Engine.Constants;
 import Engine.RigidBody2D;
 import javafx.animation.AnimationTimer;
@@ -17,6 +18,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.*;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 
 public class Main extends Application {
@@ -50,7 +53,7 @@ public class Main extends Application {
         //gc.fillRect(1280, 0, 1, 720);
         // bottom boundary line
         //gc.fillRect(0,720,1280,1);
-        Body2D top_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1280,1));
+        Body2D top_line = new Body2D(new Sprite(), new RigidBody2D(0,-53,1280,1));
         Body2D left_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1,720));
         Body2D bottom_line = new Body2D(new Sprite(), new RigidBody2D(0,720,1280,1));
         Body2D right_line = new Body2D(new Sprite(), new RigidBody2D(1280,0,1,720));
@@ -66,8 +69,20 @@ public class Main extends Application {
                 new RigidBody2D(png_white_s.getPosition().getX(),
                         png_white_s.getPosition().getY(),png_white_s.getWidth(),png_white_s.getHeight()));
 
+        gc.drawImage(png_white_s.getTexture(), png_white_s.getPosition().getX(), png_white_s.getPosition().getY());
+
 
         final long tempNanoTime = System.nanoTime();
+        new SpriteAnimation(new ArrayList<Sprite>(),2, 2)
+        {
+            double time;
+            @Override
+            public void handle(long currTime)
+            {
+                time = (currTime - tempNanoTime) / 1e9;
+                System.out.println("Hey");
+            }
+        }.start();
         new AnimationTimer()
         {
             double time;
@@ -92,25 +107,25 @@ public class Main extends Application {
                     png_white.setVelocity(new Point2D(0, -1));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc);
+                    png_white.render(gc, png_white.getSprite().getTexture());
 
                 } else if (code.toString().equals("S") && !png_white.intersects(bottom_line)) {
                     png_white.setVelocity(new Point2D(0, 1));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc);
+                    png_white.render(gc, png_white.getSprite().getTexture());
 
                 } else if (code.toString().equals("A") && !png_white.intersects(left_line)) {
                     png_white.setVelocity(new Point2D(-1, 0));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc);
+                    png_white.render(gc, png_white.getSprite().getTexture());
 
                 } else if (code.toString().equals("D") && !png_white.intersects(right_line)) {
                     png_white.setVelocity(new Point2D(1, 0));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc);
+                    png_white.render(gc, png_white.getSprite().getTexture());
                 }
 
 

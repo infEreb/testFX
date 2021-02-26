@@ -4,6 +4,7 @@ import Engine.RigidBody2D;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 public class Body2D {
     private Sprite sprite;
@@ -53,7 +54,8 @@ public class Body2D {
         sprite.setPosition(position);
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());
     }
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, Image texture) {
+        sprite.setTexture(texture);
         gc.drawImage(sprite.getTexture(), position.getX(), position.getY());
     }
 
