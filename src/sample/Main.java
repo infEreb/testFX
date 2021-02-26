@@ -1,25 +1,22 @@
 package sample;
 
-import Constructor.Point2D;
+import Constructor.Body2D;
 import Constructor.Sprite;
-import Constructor.Vector2D;
+import Engine.Constants;
+import Engine.RigidBody2D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.*;
-import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
 
 
 public class Main extends Application {
@@ -27,12 +24,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Group group = new Group();
+        Canvas canvas = new Canvas(1280, 720);
+        Group group = new Group(canvas);
+
         Scene scene = new Scene(group);
         primaryStage.setScene(scene);
-
-        Canvas canvas = new Canvas(1920, 1080);
-        group.getChildren().add(canvas);
 
         StringBuffer code = new StringBuffer();
 
@@ -50,15 +46,25 @@ public class Main extends Application {
         );
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        // right boundary line
+        //gc.fillRect(1280, 0, 1, 720);
+        // bottom boundary line
+        //gc.fillRect(0,720,1280,1);
+        Body2D top_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1280,1));
+        Body2D left_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1,720));
+        Body2D bottom_line = new Body2D(new Sprite(), new RigidBody2D(0,720,1280,1));
+        Body2D right_line = new Body2D(new Sprite(), new RigidBody2D(1280,0,1,720));
 
-        gc.clearRect(0,0,512,512);
 
-        gc.setFill(Color.BLUE);
 
-        Sprite png_white = new Sprite(new Image("/sample/png-white.png"),
-                new Point2D(400,30), new Vector2D(new Point2D(0,0)), 10, 10);
-        Sprite png_black = new Sprite(new Image("/sample/png-black.png"),
-                new Point2D(700,-100), new Vector2D(new Point2D(0,0)), 10, 10);
+
+        Sprite png_white_s = new Sprite(new ImageView("/sample/png-white.png"),
+                new Point2D(400,30), new Point2D(0,0));
+        Sprite png_black = new Sprite(new ImageView("/sample/png-black.png"),
+                new Point2D(700,-100), new Point2D(0,0));
+        Body2D png_white = new Body2D(png_white_s,
+                new RigidBody2D(png_white_s.getPosition().getX(),
+                        png_white_s.getPosition().getY(),png_white_s.getWidth(),png_white_s.getHeight()));
 
 
         final long tempNanoTime = System.nanoTime();
@@ -68,31 +74,43 @@ public class Main extends Application {
             @Override
             public void handle(long presentNanoTime) {
                 time = (presentNanoTime - tempNanoTime) / 1e9;
-                System.out.println(time);
-                gc.drawImage(png_white.getImage(), png_white.getPosition().getX(), png_white.getPosition().getY());
+                double posX = png_white.getPosition().getX();
+                double posY = png_white.getRigidBody().getMinY();
+                double maxX = canvas.getBoundsInLocal().getMaxX();
+                double maxY = canvas.getBoundsInLocal().getMaxY();
 
-                if (code.toString().equals("W")) {
-                    png_white.setVelocity(new Vector2D(new Point2D(0, -1)));
-                    png_white.update(1);
-                    gc.clearRect(0,0,1920,1080);
-                    gc.drawImage(png_white.getImage(), png_white.getPosition().getX(), png_white.getPosition().getY());
-                } else if (code.toString().equals("S")) {
-                    png_white.setVelocity(new Vector2D(new Point2D(0, 1)));
-                    png_white.update(1);
-                    gc.clearRect(0,0,1920,1080);
-                    gc.drawImage(png_white.getImage(), png_white.getPosition().getX(), png_white.getPosition().getY());
+                //gc.drawImage(png_white.getTexture(), posX, posY);
 
-                } else if (code.toString().equals("A")) {
-                    png_white.setVelocity(new Vector2D(new Point2D(-1, 0)));
-                    png_white.update(1);
-                    gc.clearRect(0,0,1920,1080);
-                    gc.drawImage(png_white.getImage(), png_white.getPosition().getX(), png_white.getPosition().getY());
+                //if();
+                //debug info
+                System.out.println("PosX: " + posX + " -- ScrnPosX: " + maxX);
+                System.out.println("PosY: " + posY + " -- ScrnPosY: " + maxY);
+                System.out.println("Height: " + png_white.getRigidBody().getHeight() + " -- Width: " + png_white.getRigidBody().getWidth());
+                System.out.println("Key: " + code.toString());
 
-                } else if (code.toString().equals("D")) {
-                    png_white.setVelocity(new Vector2D(new Point2D(1, 0)));
-                    png_white.update(1);
-                    gc.clearRect(0,0,1920,1080);
-                    gc.drawImage(png_white.getImage(), png_white.getPosition().getX(), png_white.getPosition().getY());
+                if (code.toString().equals("W") && !png_white.intersects(top_line)) {
+                    png_white.setVelocity(new Point2D(0, -1));
+                    gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
+                    png_white.update(3);
+                    png_white.render(gc);
+
+                } else if (code.toString().equals("S") && !png_white.intersects(bottom_line)) {
+                    png_white.setVelocity(new Point2D(0, 1));
+                    gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
+                    png_white.update(3);
+                    png_white.render(gc);
+
+                } else if (code.toString().equals("A") && !png_white.intersects(left_line)) {
+                    png_white.setVelocity(new Point2D(-1, 0));
+                    gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
+                    png_white.update(3);
+                    png_white.render(gc);
+
+                } else if (code.toString().equals("D") && !png_white.intersects(right_line)) {
+                    png_white.setVelocity(new Point2D(1, 0));
+                    gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
+                    png_white.update(3);
+                    png_white.render(gc);
                 }
 
 

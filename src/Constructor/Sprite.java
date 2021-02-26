@@ -1,42 +1,41 @@
 package Constructor;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
 
-public class Sprite extends Node {
-    private Image image;
+public class Sprite extends Parent {
+    private ImageView texture;
     Point2D position;
-    Vector2D velocity;
+    Point2D velocity;
 
-    private int width;
-    private int height;
+    private double width;
+    private double height;
 
     public Sprite(){}
-    public Sprite(Image image, Point2D position, Vector2D velocity, int w, int h) {
-        this.image = image;
+    public Sprite(ImageView texture, Point2D position, Point2D velocity) {
+        this.texture = texture;
         this.position = position;
         this.velocity = velocity;
-        width = w;
-        height = h;
+        width = texture.getImage().getWidth();
+        height = texture.getImage().getHeight();
     }
-    public Sprite(Image image, double posX, double posY, double velX, double velY, int w, int h) {
-        this.image = image;
+    public Sprite(ImageView texture, double posX, double posY, double velX, double velY) {
+        this.texture = texture;
         position = new Point2D(posX, posY);
-        velocity = new Vector2D(new Point2D(velX, velY));
-        width = w;
-        height = h;
+        velocity = new Point2D(velX, velY);
+        width = texture.getImage().getWidth();
+        height = texture.getImage().getHeight();
     }
 
-    // Getters / setters
-    // CHANGE w/h INT TO DOUBLE?? !!!
-    //
-    public Image getImage() {
-        return image;
+
+    public Image getTexture() {
+        return texture.getImage();
     }
-    public void setImage(Image image) {
-        this.image = image;
+    public void setTexture(Image texture) {
+        this.texture.setImage(texture);
     }
 
     public Point2D getPosition() {
@@ -46,21 +45,21 @@ public class Sprite extends Node {
         this.position = position;
     }
 
-    public Vector2D getVelocity() {
+    public Point2D getVelocity() {
         return velocity;
     }
-    public void setVelocity(Vector2D velocity) {
+    public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
     public void setHeight(int height) {
         this.height = height;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
     public void setWidth(int width) {
@@ -68,15 +67,9 @@ public class Sprite extends Node {
     }
 
     public void update(double time) {
-        position.add(velocity.getCoordinates().getX()*time, velocity.getCoordinates().getY()*time);
+        position = position.add(velocity.getX()*time, velocity.getY()*time);
     }
     public void render(GraphicsContext gc) {
-        gc.drawImage(image, position.getX(), position.getY());
-    }
-    public Rectangle2D getBoundary() {
-        return new Rectangle2D(position.getX(), position.getY(), width, height);
-    }
-    public boolean intersects(Sprite sprite) {
-        return sprite.getBoundary().intersects(this.getBoundary());
+        gc.drawImage(texture.getImage(), position.getX(), position.getY());
     }
 }
