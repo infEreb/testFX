@@ -36,11 +36,11 @@ public class Sprite extends Parent {
     }
 
 
-    public Image getTexture() {
-        return texture.getImage();
+    public ImageView getTexture() {
+        return texture;
     }
-    public void setTexture(Image texture) {
-        this.texture.setImage(texture);
+    public void setTexture(ImageView texture) {
+        this.texture = texture;
     }
 
     public Point2D getPosition() {

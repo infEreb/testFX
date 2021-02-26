@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.stage.Stage;
 
@@ -29,8 +30,9 @@ public class Main extends Application {
 
         Canvas canvas = new Canvas(1280, 720);
         Group group = new Group(canvas);
+        Pane root = new Pane();
 
-        Scene scene = new Scene(group);
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
 
         StringBuffer code = new StringBuffer();
@@ -69,22 +71,16 @@ public class Main extends Application {
                 new RigidBody2D(png_white_s.getPosition().getX(),
                         png_white_s.getPosition().getY(),png_white_s.getWidth(),png_white_s.getHeight()));
 
-        gc.drawImage(png_white_s.getTexture(), png_white_s.getPosition().getX(), png_white_s.getPosition().getY());
+        //gc.drawImage(png_white_s.getTexture(), png_white_s.getPosition().getX(), png_white_s.getPosition().getY());
 
 
         final long tempNanoTime = System.nanoTime();
-        new SpriteAnimation(new ArrayList<Sprite>(),2, 2)
-        {
-            double time;
-            @Override
-            public void handle(long currTime)
-            {
-                time = (currTime - tempNanoTime) / 1e9;
-                System.out.println("Hey");
-            }
-        }.start();
+        Pacman pacman = new Pacman(png_white, new SpriteAnimation(new ArrayList<Sprite>(),2,1));
+        root.getChildren().addAll(pacman);
+        pacman.getAnimation().play();
         new AnimationTimer()
         {
+
             double time;
             @Override
             public void handle(long presentNanoTime) {
@@ -94,38 +90,41 @@ public class Main extends Application {
                 double maxX = canvas.getBoundsInLocal().getMaxX();
                 double maxY = canvas.getBoundsInLocal().getMaxY();
 
+                //Pacman pacman = new Pacman(png_white, new SpriteAnimation(new ArrayList<Sprite>(),2,200));
                 //gc.drawImage(png_white.getTexture(), posX, posY);
 
                 //if();
                 //debug info
+                System.out.println(time);
                 System.out.println("PosX: " + posX + " -- ScrnPosX: " + maxX);
                 System.out.println("PosY: " + posY + " -- ScrnPosY: " + maxY);
                 System.out.println("Height: " + png_white.getRigidBody().getHeight() + " -- Width: " + png_white.getRigidBody().getWidth());
                 System.out.println("Key: " + code.toString());
 
-                if (code.toString().equals("W") && !png_white.intersects(top_line)) {
-                    png_white.setVelocity(new Point2D(0, -1));
+                if (code.toString().equals("W") && !pacman.getBody().intersects(top_line)) {
+                    /*png_white.setVelocity(new Point2D(0, -1));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc, png_white.getSprite().getTexture());
+                    png_white.render(gc, png_white.getSprite().getTexture().getImage());*/
+                    pacman.move(new Point2D(0, -1), 3);
 
                 } else if (code.toString().equals("S") && !png_white.intersects(bottom_line)) {
                     png_white.setVelocity(new Point2D(0, 1));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc, png_white.getSprite().getTexture());
+                    png_white.render(gc, png_white.getSprite().getTexture().getImage());
 
                 } else if (code.toString().equals("A") && !png_white.intersects(left_line)) {
                     png_white.setVelocity(new Point2D(-1, 0));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc, png_white.getSprite().getTexture());
+                    png_white.render(gc, png_white.getSprite().getTexture().getImage());
 
                 } else if (code.toString().equals("D") && !png_white.intersects(right_line)) {
                     png_white.setVelocity(new Point2D(1, 0));
                     gc.clearRect(posX, posY, png_white.getSprite().getWidth(), png_white.getSprite().getHeight());
                     png_white.update(3);
-                    png_white.render(gc, png_white.getSprite().getTexture());
+                    png_white.render(gc, png_white.getSprite().getTexture().getImage());
                 }
 
 
@@ -133,6 +132,10 @@ public class Main extends Application {
         }.start();
 
         primaryStage.show();
+    }
+    public void update()
+    {
+
     }
 
 

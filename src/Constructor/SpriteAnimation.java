@@ -1,28 +1,34 @@
 package Constructor;
 
-import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-public abstract class SpriteAnimation extends AnimationTimer {
+public class SpriteAnimation extends Transition {
     private final ArrayList<Sprite> spriteList;
     private Sprite currentSprite;
-    private final int delay;
     private final int count;
+    private final double duration; // millis
 
     private int lastIndex;
 
     public SpriteAnimation(
             ArrayList<Sprite> spriteList,
             int count,
-            int delay) {
+            double duration) {
         this.spriteList = spriteList;
         this.count      = count;
-        this.delay      = delay;
+        this.duration = duration;
+
+        setCycleDuration(Duration.seconds(duration));
+        setInterpolator(Interpolator.LINEAR);
+        setCycleCount(INDEFINITE);
     }
+
+    public void interpolate(double k) {
+        System.out.println(k);
+    }
+
 }

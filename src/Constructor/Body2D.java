@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Body2D {
     private Sprite sprite;
@@ -17,7 +18,7 @@ public class Body2D {
 
         this.sprite = sprite;
         this.rigidBody = rigidBody;
-        setPosition(new Point2D(rigidBody.getMinX(), rigidBody.getMinY()));
+        setPosition(sprite.getPosition());
         setVelocity(sprite.getVelocity());
     }
 
@@ -55,8 +56,8 @@ public class Body2D {
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());
     }
     public void render(GraphicsContext gc, Image texture) {
-        sprite.setTexture(texture);
-        gc.drawImage(sprite.getTexture(), position.getX(), position.getY());
+        sprite.setTexture(new ImageView(texture));
+        gc.drawImage(sprite.getTexture().getImage(), position.getX(), position.getY());
     }
 
     public boolean intersects(Body2D anotherBody) {
