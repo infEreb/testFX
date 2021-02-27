@@ -31,7 +31,10 @@ public class Main extends Application {
 
         Group group = new Group();
         Pane root = new Pane();
+        //root.setBackground(new Ba);
         root.setPrefSize(1280, 720);
+
+        double SPEED = 0.3;
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -57,38 +60,44 @@ public class Main extends Application {
         Body2D right_line = new Body2D(new Sprite(), new RigidBody2D(1280,0,1,720));
 
         // creating sprites and add them to the sprite list
-        Sprite p_stay = new Sprite(new ImageView("/sample/2.png"),
+        Sprite p_up0 = new Sprite(new ImageView("/sample/2.png"),
                 new Point2D(0,0), new Point2D(0,0));
         Sprite p_up1 = new Sprite(new ImageView("/sample/1u.png"),
                 new Point2D(0,0), new Point2D(0,0));
         Sprite p_up2 = new Sprite(new ImageView("/sample/0u.png"),
                 new Point2D(0,0), new Point2D(0,0));
         ArrayList<Sprite> up = new ArrayList<Sprite>();
-        up.add(p_stay);
+        up.add(p_up0);
         up.add(p_up1);
         up.add(p_up2);
+        Sprite p_down0 = new Sprite(new ImageView("/sample/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
         Sprite p_down1 = new Sprite(new ImageView("/sample/1d.png"),
                 new Point2D(0,0), new Point2D(0,0));
         Sprite p_down2 = new Sprite(new ImageView("/sample/0d.png"),
                 new Point2D(0,0), new Point2D(0,0));
         ArrayList<Sprite> down = new ArrayList<Sprite>();
-        down.add(p_stay);
+        down.add(p_down0);
         down.add(p_down1);
         down.add(p_down2);
+        Sprite p_left0 = new Sprite(new ImageView("/sample/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
         Sprite p_left1 = new Sprite(new ImageView("/sample/1l.png"),
                 new Point2D(0,0), new Point2D(0,0));
         Sprite p_left2 = new Sprite(new ImageView("/sample/0l.png"),
                 new Point2D(0,0), new Point2D(0,0));
         ArrayList<Sprite> left = new ArrayList<Sprite>();
-        left.add(p_stay);
+        left.add(p_left0);
         left.add(p_left1);
         left.add(p_left2);
+        Sprite p_right0 = new Sprite(new ImageView("/sample/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
         Sprite p_right1 = new Sprite(new ImageView("/sample/1r.png"),
                 new Point2D(0,0), new Point2D(0,0));
         Sprite p_right2 = new Sprite(new ImageView("/sample/0r.png"),
                 new Point2D(0,0), new Point2D(0,0));
         ArrayList<Sprite> right = new ArrayList<Sprite>();
-        right.add(p_stay);
+        right.add(p_right0);
         right.add(p_right1);
         right.add(p_right2);
 
@@ -99,13 +108,13 @@ public class Main extends Application {
         pacmanSprites.put(Constants.LEFT, left);
         pacmanSprites.put(Constants.RIGHT, right);
 
-        Body2D png_white = new Body2D(p_stay,
-                new RigidBody2D(p_stay.getPosition().getX(),
-                        p_stay.getPosition().getY(), p_stay.getWidth(), p_stay.getHeight()));
+        Body2D png_white = new Body2D(p_up0,
+                new RigidBody2D(p_up0.getPosition().getX(),
+                        p_up0.getPosition().getY(), p_up0.getWidth(), p_up0.getHeight()));
 
         final long tempNanoTime = System.nanoTime();
 
-        Pacman pacman = new Pacman(png_white, new SpriteAnimation(pacmanSprites,2,1));
+        Pacman pacman = new Pacman(png_white, new SpriteAnimation(pacmanSprites,2,0.15));
         root.getChildren().addAll(pacman);
         //pacman.getAnimation().play();
 
@@ -119,22 +128,30 @@ public class Main extends Application {
                 if (code.toString().equals("W") && !pacman.getBody().intersects(top_line)) {
                     pacman.getAnimation().setDiraction(Constants.UP);
                     pacman.getAnimation().play();
-                    pacman.move(new Point2D(0, -1), 3);
+                    pacman.render();
+                    pacman.move(new Point2D(0, -1), SPEED);
+                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
                 } else if (code.toString().equals("S") && !pacman.getBody().intersects(bottom_line)) {
                     pacman.getAnimation().setDiraction(Constants.DOWN);
                     pacman.getAnimation().play();
-                    pacman.move(new Point2D(0, 1), 3);
+                    pacman.render();
+                    pacman.move(new Point2D(0, 1), SPEED);
+                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
                 } else if (code.toString().equals("A") && !pacman.getBody().intersects(left_line)) {
                     pacman.getAnimation().setDiraction(Constants.LEFT);
                     pacman.getAnimation().play();
-                    pacman.move(new Point2D(-1, 0), 3);
+                    pacman.render();
+                    pacman.move(new Point2D(-1, 0), SPEED);
+                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
                 } else if (code.toString().equals("D") && !pacman.getBody().intersects(right_line)) {
                     pacman.getAnimation().setDiraction(Constants.RIGHT);
                     pacman.getAnimation().play();
-                    pacman.move(new Point2D(1, 0), 3);
+                    pacman.render();
+                    pacman.move(new Point2D(1, 0), SPEED);
+                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
                 }
 
 
