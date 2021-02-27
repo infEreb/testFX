@@ -25,6 +25,7 @@ public class Pacman extends Pane implements Control2D {
 
     public void move(Point2D velocity, int speed) {
         body.setVelocity(velocity);
+        body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
         body.update(speed);
 
         this.setTranslateX(this.getTranslateX()+velocity.getX()*speed);

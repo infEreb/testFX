@@ -3,16 +3,16 @@ package Engine;
 import java.util.HashMap;
 
 public class Controls {
-    private HashMap<Constants.Directions, String> keyMap;
+    private HashMap<Integer, String> keyMap;
 
-    public Controls(HashMap<Constants.Directions, String> keyMap) {
+    public Controls(HashMap<Integer, String> keyMap) {
         this.keyMap = keyMap;
     }
 
-    public HashMap<Constants.Directions, String> getKeyMap() {
+    public HashMap<Integer, String> getKeyMap() {
         return keyMap;
     }
-    public void setKeyMap(HashMap<Constants.Directions, String> keyMap) {
+    public void setKeyMap(HashMap<Integer, String> keyMap) {
         this.keyMap = keyMap;
     }
 }
