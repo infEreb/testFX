@@ -46,20 +46,20 @@ public class SpriteAnimation extends Transition {
     }
 
     public void interpolate(double k) { // 0.0 - 1.0
-        System.out.println(k);
+        //System.out.println(k);
+        int index = (int)caclcSpriteIndex(k);
+        currentSprite = spriteMap.get(this.getDiraction()).get(index);
+    }
 
-        timer = 1.0 / count;
-        //System.out.println(timer);
-        //System.out.println(count);
-        if(k < timer && true) currentSprite = spriteMap.get(this.getDiraction()).get(0);
-        System.out.println("____ " + (k < timer));
-        System.out.println( "____ " + currentSprite.getTexture().getImage().getUrl());
-        if(k < timer*2 && k > timer) currentSprite = spriteMap.get(this.getDiraction()).get(1);
-        System.out.println( "Curr: " + currentSprite.getTexture().getImage().getUrl());
-        if(k < timer*3 && k > timer*2) currentSprite = spriteMap.get(this.getDiraction()).get(2);
-
-        //System.out.println((int)(timer*count) - 1);
-
+    public double caclcSpriteIndex(double k) {
+        double e1 = 1.0/count; // +epsilon
+        for(double e0 = 0; e0 < 1.0; e0+=1.0/count) { // -epsilon
+            if(k >= e0 && k <= e1) {
+                return e0 * count;
+            }
+            e1 += 1.0/count;
+        }
+        return -1;
     }
 
 }

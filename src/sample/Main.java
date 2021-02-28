@@ -40,7 +40,7 @@ public class Main extends Application {
         //root.setBackground(new Ba);
 //        root.setPrefSize(1280, 720);
 
-        double SPEED = 0.3;
+        double SPEED = 2;
         GridMap gridMap = new GridMap();
         gridMap.loadBlocks();
 
@@ -64,8 +64,8 @@ public class Main extends Application {
 
         Body2D top_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1280,1));
         Body2D left_line = new Body2D(new Sprite(), new RigidBody2D(0,0,1,720));
-        Body2D bottom_line = new Body2D(new Sprite(), new RigidBody2D(0,720,1280,1));
-        Body2D right_line = new Body2D(new Sprite(), new RigidBody2D(1280,0,1,720));
+        Body2D bottom_line = new Body2D(new Sprite(), new RigidBody2D(0,680,1280,1));
+        Body2D right_line = new Body2D(new Sprite(), new RigidBody2D(540,0,1,720));
 
         // creating sprites and add them to the sprite list
         Sprite p_up0 = new Sprite(new ImageView("/sample/2.png"),
