@@ -1,6 +1,7 @@
 package sample;
 
 import Constructor.Body2D;
+import Constructor.GridMap;
 import Constructor.Sprite;
 import Constructor.SpriteAnimation;
 import Engine.Constants;
@@ -8,6 +9,7 @@ import Engine.RigidBody2D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,6 +18,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.stage.Stage;
@@ -26,19 +31,22 @@ import java.util.HashMap;
 
 public class Main extends Application {
 
+    public static Pane root = new Pane();
+
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Group group = new Group();
-        Pane root = new Pane();
+
         //root.setBackground(new Ba);
-        root.setPrefSize(1280, 720);
+//        root.setPrefSize(1280, 720);
 
         double SPEED = 0.3;
+        GridMap gridMap = new GridMap();
+        gridMap.loadBlocks();
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 540, 680);
         primaryStage.setScene(scene);
-
+        root.setStyle("-fx-background-color: #000000;");
         StringBuffer code = new StringBuffer();
 
         scene.setOnKeyPressed(
@@ -117,7 +125,6 @@ public class Main extends Application {
         Pacman pacman = new Pacman(png_white, new SpriteAnimation(pacmanSprites,2,0.15));
         root.getChildren().addAll(pacman);
         //pacman.getAnimation().play();
-
         new AnimationTimer()
         {
 
