@@ -27,6 +27,13 @@ public class Sprite extends Parent {
         width = texture.getImage().getWidth();
         height = texture.getImage().getHeight();
     }
+    public Sprite(ImageView texture, Point2D position) {
+        this.texture = texture;
+        this.position = position;
+        this.velocity = new Point2D(0,0);
+        width = texture.getImage().getWidth();
+        height = texture.getImage().getHeight();
+    }
     public Sprite(ImageView texture, double posX, double posY, double velX, double velY) {
         this.texture = texture;
         position = new Point2D(posX, posY);

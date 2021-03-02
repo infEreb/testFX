@@ -28,11 +28,14 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static Engine.Constants.SPEED;
+
 
 public class Main extends Application {
 
     public static Pane root = new Pane();
-
+    public static GridMap gridMap = new GridMap();
+    private String lastMovement = "PACMAN";
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -40,11 +43,9 @@ public class Main extends Application {
         //root.setBackground(new Ba);
 //        root.setPrefSize(1280, 720);
 
-        double SPEED = 2;
-        GridMap gridMap = new GridMap();
         gridMap.loadBlocks();
 
-        Scene scene = new Scene(root, 540, 680);
+        Scene scene = new Scene(root, 800, 800);
         primaryStage.setScene(scene);
         root.setStyle("-fx-background-color: #000000;");
         StringBuffer code = new StringBuffer();
@@ -117,49 +118,108 @@ public class Main extends Application {
         pacmanSprites.put(Constants.RIGHT, right);
 
         Body2D png_white = new Body2D(p_up0,
-                new RigidBody2D(p_up0.getPosition().getX(),
-                        p_up0.getPosition().getY(), p_up0.getWidth(), p_up0.getHeight()));
+                new RigidBody2D(800,
+                        800, p_up0.getWidth(), p_up0.getHeight()));
 
         final long tempNanoTime = System.nanoTime();
 
         Pacman pacman = new Pacman(png_white, new SpriteAnimation(pacmanSprites,2,0.15));
+        pacman.setTranslateX(9*28);
+        pacman.setTranslateY(14*28);
+        pacman.getBody().setPosition(new Point2D(9*28, 14*28));
         root.getChildren().addAll(pacman);
         //pacman.getAnimation().play();
+
         new AnimationTimer()
         {
 
             double time;
             @Override
             public void handle(long presentNanoTime) {
+                if (code.length() == 0){
+                    return;
+                }
+                pacman.restrictedMoveUpdate();
+                pacman.moveable(code.toString());
+                boolean [] temp = pacman.getRestrictedMove();
+               /* if (lastMovement.equals("PACMAN")) {
+                    switch (code.toString()){
+                        case "W":
+                            if(!pacman.getRestrictedMove()[Constants.UP]) return;
+                            lastMovement = "W";
+                            break;
+                        case "S":
+                            if(!pacman.getRestrictedMove()[Constants.DOWN]) return;
+                            lastMovement = "S";
+                            break;
+                        case "D":
+                            if(!pacman.getRestrictedMove()[Constants.RIGHT]) return;
+                            lastMovement = "D";
+                            break;
+                        case "A":
+                            if(!pacman.getRestrictedMove()[Constants.LEFT]) return;
+                            lastMovement = "A";
+                            break;
+                    }
+                }*/
 
-                if (code.toString().equals("W") && !pacman.getBody().intersects(top_line)) {
+
+                /*if (code.toString().equals("W") && !pacman.getRestrictedMove()[Constants.UP]){
+                    code.delete(0, code.length());
+                    code.append(lastMovement);
+                }
+                else if (code.toString().equals("S") && !pacman.getRestrictedMove()[Constants.DOWN]){
+                    code.delete(0, code.length());
+                    code.append(lastMovement);
+                }
+                else if (code.toString().equals("D") && !pacman.getRestrictedMove()[Constants.RIGHT]){
+                    code.delete(0, code.length());
+                    code.append(lastMovement);
+                }
+                else if (code.toString().equals("A") && !pacman.getRestrictedMove()[Constants.LEFT]){
+                    code.delete(0, code.length());
+                    code.append(lastMovement);
+                }*/
+
+
+
+                System.out.println(pacman.getBody().getPosition());
+                System.out.println("----------------------------");
+
+                if (code.toString().equals("W") && pacman.getRestrictedMove()[Constants.UP]) {
+                    pacman.restrictedMoveUpdate();
                     pacman.getAnimation().setDiraction(Constants.UP);
                     pacman.getAnimation().play();
                     pacman.render();
                     pacman.move(new Point2D(0, -1), SPEED);
-                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
+//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
-                } else if (code.toString().equals("S") && !pacman.getBody().intersects(bottom_line)) {
+                } else if (code.toString().equals("S") && pacman.getRestrictedMove()[Constants.DOWN]) {
+                    pacman.restrictedMoveUpdate();
                     pacman.getAnimation().setDiraction(Constants.DOWN);
                     pacman.getAnimation().play();
                     pacman.render();
                     pacman.move(new Point2D(0, 1), SPEED);
-                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
+//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
-                } else if (code.toString().equals("A") && !pacman.getBody().intersects(left_line)) {
+                } else if (code.toString().equals("A") && pacman.getRestrictedMove()[Constants.LEFT]) {
+                    pacman.restrictedMoveUpdate();
                     pacman.getAnimation().setDiraction(Constants.LEFT);
                     pacman.getAnimation().play();
                     pacman.render();
                     pacman.move(new Point2D(-1, 0), SPEED);
-                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
+//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
 
-                } else if (code.toString().equals("D") && !pacman.getBody().intersects(right_line)) {
+                } else if (code.toString().equals("D") && pacman.getRestrictedMove()[Constants.RIGHT]) {
+                    pacman.restrictedMoveUpdate();
                     pacman.getAnimation().setDiraction(Constants.RIGHT);
                     pacman.getAnimation().play();
                     pacman.render();
                     pacman.move(new Point2D(1, 0), SPEED);
-                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
+//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
                 }
+
+                lastMovement = code.toString();
 
 
             }

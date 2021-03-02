@@ -31,4 +31,5 @@ public class GridMap extends Pane {
         }
 
     }
+    public ArrayList<Block> getListOfBlocks() { return listOfBlocks;}
 }
