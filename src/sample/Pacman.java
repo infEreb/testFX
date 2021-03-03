@@ -6,28 +6,25 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static Engine.Constants.SPEED;
 
 public class Pacman extends Pane implements Control2D, Animation {
     private final Body2D body;
     private final SpriteAnimation animation;
-    private boolean [] restrictedMove;
+    private Map<String, Boolean> restrictedMove = new HashMap<>(4);;
+    private final String [] listButton = new String[]{"W", "S", "A", "D"};
     public Pacman(Body2D body, SpriteAnimation animation) {
         this.body = body;
         this.animation = animation;
         getChildren().add(0, body.getSprite().getTexture());
-        createRestrictedMove();
+        updateRestrictedMove();
     }
-    void createRestrictedMove(){
-        restrictedMove = new boolean[4];
-        for (int i = 0; i < 4; i++){
-            restrictedMove[i] = true;
-        }
-    }
-    public void restrictedMoveUpdate(){
-        for(int i = 0; i < 4; i++){
-            restrictedMove[i] = true;
+    void updateRestrictedMove(){
+        for (String key: listButton){
+            restrictedMove.put(key, true);
         }
     }
     public Body2D getBody() {
@@ -47,7 +44,7 @@ public class Pacman extends Pane implements Control2D, Animation {
         //System.out.println("Y : " + this.getTranslateY());
     }
 
-    public boolean[] getRestrictedMove() {
+    public Map<String, Boolean> getRestrictedMove() {
         return restrictedMove;
     }
 
@@ -90,22 +87,22 @@ public class Pacman extends Pane implements Control2D, Animation {
             if(body2D.intersects(block.getBody())){
                 switch (direction){
                     case "W":
-                        restrictedMove[Constants.UP] = false;
+                        restrictedMove.put("W", false);
                         this.move(new Point2D(0, 1), SPEED);
                         System.out.println("Вперед");
                         break;
                     case "S":
-                        restrictedMove[Constants.DOWN] = false;
+                        restrictedMove.put("S", false);
                         this.move(new Point2D(0, -1), SPEED);
                         System.out.println("Вниз");
                         break;
                     case "A":
-                        restrictedMove[Constants.LEFT] = false;
+                        restrictedMove.put("A", false);
                         this.move(new Point2D(1, 0), SPEED);
                         System.out.println("Влево");
                         break;
                     case "D":
-                        restrictedMove[Constants.RIGHT] = false;
+                        restrictedMove.put("D", false);
                         this.move(new Point2D(-1, 0), SPEED);
                         System.out.println("Вправо");
                         break;
