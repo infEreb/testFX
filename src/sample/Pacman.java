@@ -11,8 +11,8 @@ import java.util.Map;
 
 import static Engine.Constants.SPEED;
 
-public class Pacman extends Pane implements Control2D, Animation {
->>>>>>> 20f1cdcbf8f121f5436e2ab738c66d889af77cdf
+public class Pacman extends Pane implements Movable2D, Animation {
+
     private final Body2D body;
     private final SpriteAnimation animation;
     public int mapPositionX;
