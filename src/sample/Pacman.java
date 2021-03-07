@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static Engine.Constants.SPEED;
 
-public class Pacman extends Pane implements Control2D, Animation {
+public class Pacman extends Pane implements Movable2D, Animation {
     private final Body2D body;
     private final SpriteAnimation animation;
     private Map<String, Boolean> restrictedMove = new HashMap<>(4);;
