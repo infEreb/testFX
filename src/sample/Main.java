@@ -25,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,9 @@ public class Main extends Application {
 
     public static Pane root = new Pane();
     public static GridMap gridMap = new GridMap();
-    private String lastMovement = "PACMAN";
+    int activeMove = Constants.NONE;
+    int todoMove = Constants.NONE;
+    boolean isStuck = true;
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -46,20 +49,30 @@ public class Main extends Application {
 
         gridMap.loadBlocks();
 
+
         Scene scene = new Scene(root, 800, 800);
         primaryStage.setScene(scene);
         root.setStyle("-fx-background-color: #000000;");
-        StringBuffer code = new StringBuffer();
 
         scene.setOnKeyPressed(
                 new EventHandler<KeyEvent>() {
                     @Override
                     public void handle(KeyEvent keyEvent) {
-                        String keyCode = keyEvent.getCode().toString();
-                        if(keyCode == "W" || keyCode == "S" || keyCode == "A" || keyCode == "D") {
-                            code.delete(0, code.length());
-                            code.append(keyCode);
+                        switch (keyEvent.getCode().toString()) {
+                            case "W":
+                                todoMove = Constants.UP;
+                                break;
+                            case "S":
+                                todoMove = Constants.DOWN;
+                                break;
+                            case "D":
+                                todoMove = Constants.RIGHT;
+                                break;
+                            case "A":
+                                todoMove = Constants.LEFT;
+                                break;
                         }
+
                     }
                 }
         );
@@ -119,8 +132,8 @@ public class Main extends Application {
         pacmanSprites.put(Constants.RIGHT, right);
 
         Body2D png_white = new Body2D(p_up0,
-                new RigidBody2D(800,
-                        800, p_up0.getWidth(), p_up0.getHeight()));
+                new RigidBody2D(9*28,
+                        14*28, p_up0.getWidth(), p_up0.getHeight()));
 
         final long tempNanoTime = System.nanoTime();
 
@@ -128,6 +141,8 @@ public class Main extends Application {
         pacman.setTranslateX(9*28);
         pacman.setTranslateY(14*28);
         pacman.getBody().setPosition(new Point2D(9*28, 14*28));
+        pacman.setMapPositionX(pacman.getBody().getPosition().getX());
+        pacman.setMapPositionY(pacman.getBody().getPosition().getY());
         root.getChildren().addAll(pacman);
         //pacman.getAnimation().play();
 
@@ -137,94 +152,38 @@ public class Main extends Application {
             double time;
             @Override
             public void handle(long presentNanoTime) {
-                if (code.length() == 0){
-                    return;
-                }
-                pacman.updateRestrictedMove();
-                pacman.moveable(code.toString());
-                Map<String, Boolean> temp = pacman.getRestrictedMove();
-                if (lastMovement.equals("PACMAN")) {
-                    switch (code.toString()){
-                        case "W":
-                            if(!pacman.getRestrictedMove().get("W")) return;
-                            lastMovement = "W";
-                            break;
-                        case "S":
-                            if(!pacman.getRestrictedMove().get("S")) return;
-                            lastMovement = "S";
-                            break;
-                        case "D":
-                            if(!pacman.getRestrictedMove().get("D")) return;
-                            lastMovement = "D";
-                            break;
-                        case "A":
-                            if(!pacman.getRestrictedMove().get("A")) return;
-                            lastMovement = "A";
-                            break;
+
+                if((pacman.getBody().getPosition().getX() % 28 == 0) && (pacman.getBody().getPosition().getY() % 28 == 0)){
+                    if(!isStuck) {
+                        switch (activeMove) {
+                            case Constants.RIGHT:
+                                pacman.mapPositionX++;
+                                break;
+                            case Constants.LEFT:
+                                pacman.mapPositionX--;
+                                break;
+                            case Constants.UP:
+                                pacman.mapPositionY--;
+                                break;
+                            case Constants.DOWN:
+                                pacman.mapPositionY++;
+                                break;
+                        }
+
                     }
+                    isStuck = true;
+
+
+                    if(todoMove != Constants.NONE && pacman.isPossibleToMove(todoMove)) {
+                        activeMove = todoMove;
+                        todoMove = Constants.NONE;
+                    }
+                }else{
+                    isStuck = false;
+
                 }
 
-
-                if (code.toString().equals("W") && !pacman.getRestrictedMove().get(code.toString())){
-                    code.delete(0, code.length());
-                    if(pacman.getRestrictedMove().get(lastMovement)) code.append(lastMovement);
-                }
-                else if (code.toString().equals("S") && !pacman.getRestrictedMove().get(code.toString())){
-                    code.delete(0, code.length());
-                    if(pacman.getRestrictedMove().get(lastMovement)) code.append(lastMovement);
-                }
-                else if (code.toString().equals("D") && !pacman.getRestrictedMove().get(code.toString())){
-                    code.delete(0, code.length());
-                    if(pacman.getRestrictedMove().get(lastMovement)) code.append(lastMovement);
-                }
-                else if (code.toString().equals("A") && !pacman.getRestrictedMove().get(code.toString())){
-                    code.delete(0, code.length());
-                    if(pacman.getRestrictedMove().get(lastMovement)) code.append(lastMovement);
-                }
-
-
-
-                System.out.println(pacman.getBody().getPosition());
-                System.out.println("----------------------------");
-
-                if (code.toString().equals("W") && pacman.getRestrictedMove().get(code.toString())) {
-                    pacman.updateRestrictedMove();
-                    pacman.getAnimation().setDiraction(Constants.UP);
-                    pacman.getAnimation().play();
-                    pacman.render();
-                    pacman.move(new Point2D(0, -1), SPEED);
-                    lastMovement = code.toString();
-//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
-
-                } else if (code.toString().equals("S") && pacman.getRestrictedMove().get(code.toString())) {
-                    pacman.updateRestrictedMove();
-                    pacman.getAnimation().setDiraction(Constants.DOWN);
-                    pacman.getAnimation().play();
-                    pacman.render();
-                    pacman.move(new Point2D(0, 1), SPEED);
-                    lastMovement = code.toString();
-//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
-
-                } else if (code.toString().equals("A") && pacman.getRestrictedMove().get(code.toString())) {
-                    pacman.updateRestrictedMove();
-                    pacman.getAnimation().setDiraction(Constants.LEFT);
-                    pacman.getAnimation().play();
-                    pacman.render();
-                    pacman.move(new Point2D(-1, 0), SPEED);
-                    lastMovement = code.toString();
-//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
-
-                } else if (code.toString().equals("D") && pacman.getRestrictedMove().get(code.toString())) {
-                    pacman.updateRestrictedMove();
-                    pacman.getAnimation().setDiraction(Constants.RIGHT);
-                    pacman.getAnimation().play();
-                    pacman.render();
-                    pacman.move(new Point2D(1, 0), SPEED);
-                    lastMovement = code.toString();
-//                    System.out.println(pacman.getBody().getSprite().getTexture().getImage().getUrl());
-                }
-
-
+                pacman.activeMoving(activeMove);
 
             }
         }.start();
