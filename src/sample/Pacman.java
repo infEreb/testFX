@@ -71,9 +71,6 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
                     return;
                 }
-                        /*if((logicalPosition.x+1 < parentBoard.m_x) && (parentBoard.map[logicalPosition.x+1][logicalPosition.y]>0)){
-                            return;
-                        }*/
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if (mapLevelData[mapPositionY][mapPositionX + 1] > 0) {
                         return;
@@ -88,9 +85,6 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getX() <= 0)){
                     return;
                 }
-                        /*if((logicalPosition.x-1 >= 0) && (parentBoard.map[logicalPosition.x-1][logicalPosition.y]>0)){
-                            return;
-                        }*/
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if (mapLevelData[mapPositionY][mapPositionX - 1] > 0) {
                         return;
@@ -105,9 +99,6 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getY() <= 0)){
                     return;
                 }
-                        /*if((logicalPosition.y-1 >= 0) && (parentBoard.map[logicalPosition.x][logicalPosition.y-1]>0)){
-                            return;
-                        }*/
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if(mapLevelData[mapPositionY - 1][mapPositionX] > 0){
                         return;
@@ -123,9 +114,6 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
-                        /*if((logicalPosition.y+1 < parentBoard.m_y) && (parentBoard.map[logicalPosition.x][logicalPosition.y+1]>0)){
-                            return;
-                        }*/
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if(mapLevelData[mapPositionY + 1][mapPositionX] > 0){
                         return;
@@ -137,79 +125,23 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 this.move(new Point2D(0, 1), SPEED);
                 break;
         }
+        if(mapLevelData[mapPositionY][mapPositionX] == -1){
+            this.eat();
+        }
 
 
     }
-
-    /*public void moveable(String direction){
-
-        Body2D body2D = new Body2D(this.getBody().getSprite(), this.getBody().getRigidBody());
-        double bodyX = this.getBody().getPosition().getX();
-        double bodyY = this.getBody().getPosition().getY();
-        switch (direction){
-            case "W":
-                bodyY -= 2;
-                break;
-            case "S":
-                bodyY += 2;
-                break;
-            case "A":
-                bodyX -= 2;
-                break;
-            case "D":
-                bodyX += 2;
-                break;
-        }
-        body2D.setPosition(new Point2D(bodyX, bodyY));
-        int bodyIntX = (int)(bodyX / 28);
-        int bodyIntY = (int)(bodyY / 28);
-        System.out.println("X: " + bodyIntX);
-        System.out.println("Y: " + bodyIntY);
-        for(Block block: Main.gridMap.getListOfBlocks()){
-                if (LevelData.levels[0][bodyIntY][bodyIntX - 1] > 0 || body2D.intersects(block.getBody())) // LEFT
-                {
-                    restrictedMove.put("A", false);
-                }
-                if (LevelData.levels[0][bodyIntY][bodyIntX + 1] > 0 || body2D.intersects(block.getBody())) { // RIGHT
-                    restrictedMove.put("D", false);
-                }
-                if (LevelData.levels[0][bodyIntY + 1][bodyIntX] > 0 || body2D.intersects(block.getBody())) { // DOWN
-                    restrictedMove.put("S", false);
-                }
-                if (LevelData.levels[0][bodyIntY - 1][bodyIntX] > 0 || body2D.intersects(block.getBody())) { // UP
-                    restrictedMove.put("W", false);
-                }
+    private void eat(){
+        Fruit removedPillow = null;
+        for (Fruit pillow: GridMap.listOfPillows) {
+            if(this.getBody().intersects(pillow.getBody())){
+                removedPillow = pillow;
             }
-        }*/
- //       for(Block block: Main.gridMap.getListOfBlocks()){
-            /*if(body2D.intersects(Main.gridMap.getListOfBlocks().get(body2D.getPosition()).getBody())){
-                switch (direction){
-                    case "W":
-                        restrictedMove.put("W", false);
-//                        this.move(new Point2D(0, 1), SPEED);
-                        System.out.println("Вперед");
-                        break;
-                    case "S":
-                        restrictedMove.put("S", false);
-//                        this.move(new Point2D(0, -1), SPEED);
-                        System.out.println("Вниз");
-                        break;
-                    case "A":
-                        restrictedMove.put("A", false);
-//                        this.move(new Point2D(1, 0), SPEED);
-                        System.out.println("Влево");
-                        break;
-                    case "D":
-                        restrictedMove.put("D", false);
-//                        this.move(new Point2D(-1, 0), SPEED);
-                        System.out.println("Вправо");
-                        break;
-                }
-            }*/
-  //      }
-//        return true;
-        //System.out.println("Body2d: " + body2D.getPosition());
-
+        }
+        GridMap.listOfPillows.remove(removedPillow);
+        Main.root.getChildren().remove(removedPillow);
+        mapLevelData[mapPositionY][mapPositionX] = 0;
+    }
     public void render() {
         body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
         getChildren().clear();
