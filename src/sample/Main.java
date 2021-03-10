@@ -148,8 +148,6 @@ public class Main extends Application {
 
         new AnimationTimer()
         {
-
-            double time;
             @Override
             public void handle(long presentNanoTime) {
 
