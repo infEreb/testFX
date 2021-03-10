@@ -103,7 +103,7 @@ public class Ghost extends Character implements Animation, Movable2D {
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
-                
+
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if(mapLevelData[mapPositionY + 1][mapPositionX] > 0){
                         return;
