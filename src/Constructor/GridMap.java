@@ -12,17 +12,18 @@ import java.util.Map;
 
 public class GridMap extends Pane {
     ArrayList<Block> listOfBlocks = new ArrayList<>();
+    public static ArrayList<Fruit> listOfPillows = new ArrayList<>();
     int currentLevel = 1;
     Image imgFile;
+    int [][] map;
     public GridMap(){
-
+        this.map = LevelData.levels[currentLevel-1];
     }
     public void loadBlocks(){
-        int [][] blocks = LevelData.levels[currentLevel-1];
-        for (int ROW = 0; ROW < blocks.length; ROW++){
-            for (int COLUMN = 0; COLUMN < blocks[ROW].length; COLUMN++){
-                if (blocks[ROW][COLUMN] > 0) {
-                    String intToStr = String.valueOf(blocks[ROW][COLUMN]);
+        for (int ROW = 0; ROW < map.length; ROW++){
+            for (int COLUMN = 0; COLUMN < map[ROW].length; COLUMN++){
+                if (map[ROW][COLUMN] > 0) {
+                    String intToStr = String.valueOf(map[ROW][COLUMN]);
                     String filepath = "/res/Map/" + intToStr + ".png";
                     imgFile = new Image(getClass().getResourceAsStream(filepath));
                     Block b = new Block(COLUMN, ROW, imgFile);
@@ -33,6 +34,20 @@ public class GridMap extends Pane {
             }
         }
 
+    }
+
+    public void loadPillows(){
+        for (int ROW = 0; ROW < map.length; ROW++){
+            for (int COLUMN = 0; COLUMN < map[ROW].length; COLUMN++){
+                if (map[ROW][COLUMN] == -1) {
+                    String filepath = "/res/Fruit/pill.png";
+                    imgFile = new Image(getClass().getResourceAsStream(filepath));
+                    Fruit b = new Fruit(COLUMN, ROW, imgFile, 6);
+                    listOfPillows.add(b);
+                    Main.root.getChildren().add(b);
+                }
+            }
+        }
     }
     public ArrayList<Block> getListOfBlocks() { return listOfBlocks;}
 }
