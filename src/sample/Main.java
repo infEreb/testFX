@@ -153,11 +153,11 @@ public class Main extends Application {
         redGhostSprites.put(Constants.LEFT, red_ghost_anim_left);
         redGhostSprites.put(Constants.RIGHT, red_ghost_anim_right);
         Body2D redGhostBody = new Body2D(g_rs,
-                new RigidBody2D(9*28,11*28, g_rs.getWidth(), g_rs.getHeight()));
+                new RigidBody2D(12*28,11*28, g_rs.getWidth(), g_rs.getHeight()));
         Ghost redGhost = new Ghost(redGhostBody, new SpriteAnimation(redGhostSprites, 0.15));
-        redGhost.setTranslateX(9*28);
+        redGhost.setTranslateX(12*28);
         redGhost.setTranslateY(11*28);
-        redGhost.getBody().setPosition(new Point2D(9*28, 11*28));
+        redGhost.getBody().setPosition(new Point2D(12*28, 11*28));
         redGhost.setMapPositionX(redGhost.getBody().getPosition().getX());
         redGhost.setMapPositionY(redGhost.getBody().getPosition().getY());
 
