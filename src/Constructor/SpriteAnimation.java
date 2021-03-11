@@ -6,7 +6,6 @@ import javafx.animation.Transition;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 public class SpriteAnimation extends Transition {
@@ -16,8 +15,6 @@ public class SpriteAnimation extends Transition {
     private double timer;
     private final int count;
     private final double duration; // TODO: millis ??
-
-    private int lastIndex;
 
     public SpriteAnimation(
             HashMap<Integer, ArrayList<Sprite>> spriteMap,

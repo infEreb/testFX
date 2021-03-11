@@ -1,9 +1,6 @@
 package sample;
 
-import Constructor.Body2D;
-import Constructor.GridMap;
-import Constructor.Sprite;
-import Constructor.SpriteAnimation;
+import Constructor.*;
 import Engine.Constants;
 import Engine.RigidBody2D;
 import javafx.animation.AnimationTimer;
@@ -40,7 +37,6 @@ public class Main extends Application {
 
         Scene scene = new Scene(root, 700, 672);
         primaryStage.setScene(scene);
-        //root.setLayoutX(-28*3);
         root.setStyle("-fx-background-color: #000000;");
 
         scene.setOnKeyPressed(
@@ -67,96 +63,24 @@ public class Main extends Application {
         );
 
         Pacman pacman = createPacman();
+        MoveActions pacMove = new MoveActions();
 
         Ghost redGhost = createGhost(Constants.Red);
+        MoveActions redMove = new MoveActions();
         Ghost pinkGhost = createGhost(Constants.Pink);
+        MoveActions pinkMove = new MoveActions();
 
         root.getChildren().addAll(pacman, redGhost, pinkGhost);
-        final Random[] rnd = {new Random()};
-
-        long[] tempNanoTime = {System.nanoTime()};
-        final int[] rg_move = {1};
-        final int[] rg_todo = {1};
+        redMove.setTime(System.nanoTime());
+        pinkMove.setTime(System.nanoTime());
         new AnimationTimer()
         {
 
             @Override
             public void handle(long presentNanoTime) {
-                long time;
-
-                if((pacman.getBody().getPosition().getX() % 28 == 0) && (pacman.getBody().getPosition().getY() % 28 == 0)){
-                    if(!pIsStuck) {
-                        switch (activeMove) {
-                            case Constants.RIGHT:
-                                pacman.mapPositionX++;
-                                break;
-                            case Constants.LEFT:
-                                pacman.mapPositionX--;
-                                break;
-                            case Constants.UP:
-                                pacman.mapPositionY--;
-                                break;
-                            case Constants.DOWN:
-                                pacman.mapPositionY++;
-                                break;
-                        }
-
-                    }
-                    pIsStuck = true;
-
-
-                    if(todoMove != Constants.NONE && pacman.isPossibleToMove(todoMove)) {
-                        activeMove = todoMove;
-                        todoMove = Constants.NONE;
-                    }
-                }else{
-                    pIsStuck = false;
-
-                }
-
-                rnd[0] = new Random();
-
-
-
-                if((redGhost.getBody().getPosition().getX() % 28 == 0) && (redGhost.getBody().getPosition().getY() % 28 == 0)){
-                    if(!rgIsStuck) {
-                        switch (rg_move[0]) {
-                            case Constants.RIGHT:
-                                redGhost.mapPositionX++;
-                                break;
-                            case Constants.LEFT:
-                                redGhost.mapPositionX--;
-                                break;
-                            case Constants.UP:
-                                redGhost.mapPositionY--;
-                                break;
-                            case Constants.DOWN:
-                                redGhost.mapPositionY++;
-                                break;
-                        }
-
-                    }
-                    rgIsStuck = true;
-
-                    if(presentNanoTime - tempNanoTime[0] >= 3000000000L) {
-                        //System.out.println("3 secs");
-                        rg_todo[0] = rnd[0].nextInt(4) + 1;
-                        if(redGhost.isPossibleToMove(rg_todo[0]))
-                            rg_move[0] = rg_todo[0];
-                        tempNanoTime[0] = presentNanoTime;
-                    }
-
-                    while(!redGhost.isPossibleToMove(rg_todo[0])) {
-                        rg_todo[0] = rnd[0].nextInt(4) + 1;
-                        rg_move[0] = rg_todo[0];
-                    }
-                }else{
-                    rgIsStuck = false;
-
-                }
-
-                pacman.activeMoving(activeMove);
-                redGhost.activeMoving(rg_move[0]);
+                pacman.activeMoving(pacMove.move(pacman, todoMove));
+                redGhost.activeMoving(redMove.randomMove(redGhost, presentNanoTime));
+                pinkGhost.activeMoving(pinkMove.randomMove(pinkGhost, presentNanoTime));
 
             }
         }.start();

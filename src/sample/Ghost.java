@@ -49,53 +49,6 @@ public class Ghost extends Character implements Animation, Movable2D {
         }
         return false;
     }
-    @Override
-    public void activeMoving(int activeMove){
-
-        if(!isPossibleToMove(activeMove)) return;
-
-        switch(activeMove){
-            case Constants.RIGHT:
-                if((this.body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
-                    return;
-                }
-
-                this.move(new Point2D(1, 0), SPEED, Constants.RIGHT);
-                break;
-            case Constants.LEFT:
-                if((body.getPosition().getX() <= 0)){
-                    return;
-                }
-                this.move(new Point2D(-1, 0), SPEED, Constants.LEFT);
-                break;
-            case Constants.UP:
-                if((body.getPosition().getY() <= 0)){
-                    return;
-                }
-                this.move(new Point2D(0, -1), SPEED, Constants.UP);
-                break;
-            case Constants.DOWN:
-                if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
-                    return;
-                }
-
-                this.move(new Point2D(0, 1), SPEED, Constants.DOWN);
-                break;
-        }
-
-        //System.out.println("Cur spr: " + animation.getCurrentSprite().getTexture().getImage().getUrl());
-        if(mapPositionX == 1){
-            this.setTranslateX((LevelData.mapXMax-3)*28);
-            this.getBody().setPosition(new Point2D((LevelData.mapXMax-3)*28, this.getBody().getPosition().getY()));
-            mapPositionX = LevelData.mapXMax-3;
-        }
-        else if(mapPositionX == LevelData.mapXMax-2){
-            this.setTranslateX(2*28);
-            this.getBody().setPosition(new Point2D(2*28, this.getBody().getPosition().getY()));
-            mapPositionX = 2;
-        }
-
-    }
 
     public void checkVisiblePlayer(int[] playerPosition) {
         boolean upBlock = false, downBlock = false, leftBlock = false, rightBlock = false;
