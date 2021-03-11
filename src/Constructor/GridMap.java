@@ -13,6 +13,8 @@ import java.util.Map;
 public class GridMap extends Pane {
     ArrayList<Block> listOfBlocks = new ArrayList<>();
     public static ArrayList<Fruit> listOfPillows = new ArrayList<>();
+    public static ArrayList<Fruit> listOfBigPillows = new ArrayList<>();
+
     int currentLevel = 1;
     Image imgFile;
     int [][] map;
@@ -39,11 +41,20 @@ public class GridMap extends Pane {
     public void loadPillows(){
         for (int ROW = 0; ROW < map.length; ROW++){
             for (int COLUMN = 0; COLUMN < map[ROW].length; COLUMN++){
+                //small pillow
                 if (map[ROW][COLUMN] == -1) {
                     String filepath = "/res/Fruit/pill.png";
                     imgFile = new Image(getClass().getResourceAsStream(filepath));
                     Fruit b = new Fruit(COLUMN, ROW, imgFile, 6);
                     listOfPillows.add(b);
+                    Main.root.getChildren().add(b);
+                }
+                //big pillow
+                if (map[ROW][COLUMN] == -2) {
+                    String filepath = "/res/Fruit/big-0.png";
+                    imgFile = new Image(getClass().getResourceAsStream(filepath));
+                    Fruit b = new Fruit(COLUMN, ROW, imgFile, 6);
+                    listOfBigPillows.add(b);
                     Main.root.getChildren().add(b);
                 }
             }

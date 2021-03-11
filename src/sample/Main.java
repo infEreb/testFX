@@ -37,9 +37,10 @@ public class Main extends Application {
         gridMap.loadPillows();
 
 
-        Scene scene = new Scene(root, 800, 800);
+        Scene scene = new Scene(root, 532, 672);
         primaryStage.setScene(scene);
         root.setStyle("-fx-background-color: #000000;");
+        root.setLayoutX(-28*3);
 
         scene.setOnKeyPressed(
                 new EventHandler<KeyEvent>() {
@@ -114,13 +115,13 @@ public class Main extends Application {
         pacmanSprites.put(Constants.RIGHT, right);
 
         Body2D pacmanBody2d = new Body2D(p_up0,
-                new RigidBody2D(9*28,
+                new RigidBody2D(12*28,
                         14*28, p_up0.getWidth(), p_up0.getHeight()));
 
         Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
-        pacman.setTranslateX(9*28);
+        pacman.setTranslateX(12*28);
         pacman.setTranslateY(14*28);
-        pacman.getBody().setPosition(new Point2D(9*28, 14*28));
+        pacman.getBody().setPosition(new Point2D(12*28, 14*28));
         pacman.setMapPositionX(pacman.getBody().getPosition().getX());
         pacman.setMapPositionY(pacman.getBody().getPosition().getY());
 
@@ -169,6 +170,7 @@ public class Main extends Application {
         final int[] rg_todo = {1};
         new AnimationTimer()
         {
+
             @Override
             public void handle(long presentNanoTime) {
                 long time;
