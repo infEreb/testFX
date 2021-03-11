@@ -50,7 +50,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
     }
 
     public boolean isPossibleToMove(int move){
-        if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
+        if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
             switch(move){
                 case Constants.RIGHT:
                     return !(mapLevelData[mapPositionY][mapPositionX + 1] > 0);
@@ -71,7 +71,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
                     return;
                 }
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
+                if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if (mapLevelData[mapPositionY][mapPositionX + 1] > 0) {
                         return;
                     }
@@ -85,7 +85,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getX() <= 0)){
                     return;
                 }
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
+                if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if (mapLevelData[mapPositionY][mapPositionX - 1] > 0) {
                         return;
                     }
@@ -99,7 +99,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getY() <= 0)){
                     return;
                 }
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
+                if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if(mapLevelData[mapPositionY - 1][mapPositionX] > 0){
                         return;
                     }
@@ -114,7 +114,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
+                if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
                     if(mapLevelData[mapPositionY + 1][mapPositionX] > 0){
                         return;
                     }
@@ -126,12 +126,26 @@ public class Pacman extends Pane implements Movable2D, Animation {
                 break;
         }
         if(mapLevelData[mapPositionY][mapPositionX] == -1){
-            this.eat();
+            this.eatSmallPillow();
+        }
+        if(mapLevelData[mapPositionY][mapPositionX] == -2){
+            this.eatBigPillow();
+        }
+        /*System.out.println("X: " + mapPositionX);
+        System.out.println("X pixels: " + this.getBody().getPosition().getX());*/
+        if(mapPositionX == 1){
+            this.setTranslateX((LevelData.mapXMax-3)*28);
+            this.getBody().setPosition(new Point2D((LevelData.mapXMax-3)*28, this.getBody().getPosition().getY()));
+            mapPositionX = LevelData.mapXMax-3;
+        }
+        else if(mapPositionX == LevelData.mapXMax-2){
+            this.setTranslateX(2*28);
+            this.getBody().setPosition(new Point2D(2*28, this.getBody().getPosition().getY()));
+            mapPositionX = 2;
         }
 
-
     }
-    private void eat(){
+    private void eatSmallPillow(){
         Fruit removedPillow = null;
         for (Fruit pillow: GridMap.listOfPillows) {
             if(this.getBody().intersects(pillow.getBody())){
@@ -139,6 +153,17 @@ public class Pacman extends Pane implements Movable2D, Animation {
             }
         }
         GridMap.listOfPillows.remove(removedPillow);
+        Main.root.getChildren().remove(removedPillow);
+        mapLevelData[mapPositionY][mapPositionX] = 0;
+    }
+    private void eatBigPillow(){
+        Fruit removedPillow = null;
+        for (Fruit pillow: GridMap.listOfBigPillows) {
+            if(this.getBody().intersects(pillow.getBody())){
+                removedPillow = pillow;
+            }
+        }
+        GridMap.listOfBigPillows.remove(removedPillow);
         Main.root.getChildren().remove(removedPillow);
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
