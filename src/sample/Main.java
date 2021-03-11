@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 
 public class Main extends Application {
@@ -26,7 +27,8 @@ public class Main extends Application {
     public static GridMap gridMap = new GridMap();
     int activeMove = Constants.NONE;
     int todoMove = Constants.NONE;
-    boolean isStuck = true;
+    boolean pIsStuck = true;
+    boolean rgIsStuck = true;
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -106,7 +108,7 @@ public class Main extends Application {
         right.add(p_right2);
 
         // puts list into hashmap for animation
-        HashMap<Integer, ArrayList<Sprite>> pacmanSprites = new HashMap<Integer, ArrayList<Sprite>>();
+        HashMap<Integer, ArrayList<Sprite>> pacmanSprites = new HashMap<>();
         pacmanSprites.put(Constants.UP, up);
         pacmanSprites.put(Constants.DOWN, down);
         pacmanSprites.put(Constants.LEFT, left);
@@ -116,26 +118,65 @@ public class Main extends Application {
                 new RigidBody2D(12*28,
                         14*28, p_up0.getWidth(), p_up0.getHeight()));
 
-        final long tempNanoTime = System.nanoTime();
-
-        Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,2,0.15));
+        Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
         pacman.setTranslateX(12*28);
         pacman.setTranslateY(14*28);
         pacman.getBody().setPosition(new Point2D(12*28, 14*28));
         pacman.setMapPositionX(pacman.getBody().getPosition().getX());
         pacman.setMapPositionY(pacman.getBody().getPosition().getY());
-        root.getChildren().addAll(pacman);
+
+        Sprite g_rs = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
+        Sprite g_r0u = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
+        Sprite g_r1u = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
+        Sprite g_r0d = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
+        Sprite g_r1d = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
+        Sprite g_r0l = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
+        Sprite g_r1l = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
+        Sprite g_r0r = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
+        Sprite g_r1r = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
+        ArrayList<Sprite> red_ghost_anim_up = new ArrayList<Sprite>();
+        red_ghost_anim_up.add(g_r0u);
+        red_ghost_anim_up.add(g_r1u);
+        ArrayList<Sprite> red_ghost_anim_down = new ArrayList<Sprite>();
+        red_ghost_anim_down.add(g_r0d);
+        red_ghost_anim_down.add(g_r1d);
+        ArrayList<Sprite> red_ghost_anim_left = new ArrayList<Sprite>();
+        red_ghost_anim_left.add(g_r0l);
+        red_ghost_anim_left.add(g_r1l);
+        ArrayList<Sprite> red_ghost_anim_right = new ArrayList<Sprite>();
+        red_ghost_anim_right.add(g_r0r);
+        red_ghost_anim_right.add(g_r1r);
+        ///============
+        HashMap<Integer, ArrayList<Sprite>> redGhostSprites = new HashMap<Integer, ArrayList<Sprite>>();
+        redGhostSprites.put(Constants.UP, red_ghost_anim_up);
+        redGhostSprites.put(Constants.DOWN, red_ghost_anim_down);
+        redGhostSprites.put(Constants.LEFT, red_ghost_anim_left);
+        redGhostSprites.put(Constants.RIGHT, red_ghost_anim_right);
+        Body2D redGhostBody = new Body2D(g_rs,
+                new RigidBody2D(9*28,11*28, g_rs.getWidth(), g_rs.getHeight()));
+        Ghost redGhost = new Ghost(redGhostBody, new SpriteAnimation(redGhostSprites, 0.15));
+        redGhost.setTranslateX(9*28);
+        redGhost.setTranslateY(11*28);
+        redGhost.getBody().setPosition(new Point2D(9*28, 11*28));
+        redGhost.setMapPositionX(redGhost.getBody().getPosition().getX());
+        redGhost.setMapPositionY(redGhost.getBody().getPosition().getY());
+
+        root.getChildren().addAll(pacman, redGhost);
+        final Random[] rnd = {new Random()};
         //pacman.getAnimation().play();
 
+        long[] tempNanoTime = {System.nanoTime()};
+        final int[] rg_move = {1};
+        final int[] rg_todo = {1};
         new AnimationTimer()
         {
 
-            double time;
             @Override
             public void handle(long presentNanoTime) {
+                long time;
 
                 if((pacman.getBody().getPosition().getX() % 28 == 0) && (pacman.getBody().getPosition().getY() % 28 == 0)){
-                    if(!isStuck) {
+                    if(!pIsStuck) {
                         switch (activeMove) {
                             case Constants.RIGHT:
                                 pacman.mapPositionX++;
@@ -152,7 +193,7 @@ public class Main extends Application {
                         }
 
                     }
-                    isStuck = true;
+                    pIsStuck = true;
 
 
                     if(todoMove != Constants.NONE && pacman.isPossibleToMove(todoMove)) {
@@ -160,11 +201,56 @@ public class Main extends Application {
                         todoMove = Constants.NONE;
                     }
                 }else{
-                    isStuck = false;
+                    pIsStuck = false;
+
+                }
+
+                rnd[0] = new Random();
+
+
+
+                if((redGhost.getBody().getPosition().getX() % 28 == 0) && (redGhost.getBody().getPosition().getY() % 28 == 0)){
+                    if(!rgIsStuck) {
+                        switch (rg_move[0]) {
+                            case Constants.RIGHT:
+                                redGhost.mapPositionX++;
+                                break;
+                            case Constants.LEFT:
+                                redGhost.mapPositionX--;
+                                break;
+                            case Constants.UP:
+                                redGhost.mapPositionY--;
+                                break;
+                            case Constants.DOWN:
+                                redGhost.mapPositionY++;
+                                break;
+                        }
+
+                    }
+                    rgIsStuck = true;
+
+                    if(presentNanoTime - tempNanoTime[0] >= 3000000000L) {
+                        //System.out.println("3 secs");
+                        rg_todo[0] = rnd[0].nextInt(4) + 1;
+                        if(redGhost.isPossibleToMove(rg_todo[0]))
+                            rg_move[0] = rg_todo[0];
+                        System.out.println("curr: " + rg_todo[0]);
+                        tempNanoTime[0] = presentNanoTime;
+                    }
+
+                    while(!redGhost.isPossibleToMove(rg_todo[0])) {
+                        rg_todo[0] = rnd[0].nextInt(4) + 1;
+                        System.out.println("Stack " + rg_todo[0]);
+                        rg_move[0] = rg_todo[0];
+                    }
+                }else{
+                    rgIsStuck = false;
 
                 }
 
                 pacman.activeMoving(activeMove);
+                System.out.println(rg_move[0]);
+                redGhost.activeMoving(rg_move[0]);
 
             }
         }.start();
