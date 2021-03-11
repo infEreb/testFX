@@ -26,7 +26,6 @@ public class Ghost extends Character implements Animation, Movable2D {
             body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
             getChildren().clear();
             getChildren().addAll(body.getSprite().getTexture());
-            System.out.println(animation.getCurrentSprite().getTexture().getImage().getUrl());
         //}
         //else {
 

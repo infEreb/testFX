@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 
 
@@ -37,10 +38,10 @@ public class Main extends Application {
         gridMap.loadPillows();
 
 
-        Scene scene = new Scene(root, 532, 672);
+        Scene scene = new Scene(root, 700, 672);
         primaryStage.setScene(scene);
+        //root.setLayoutX(-28*3);
         root.setStyle("-fx-background-color: #000000;");
-        root.setLayoutX(-28*3);
 
         scene.setOnKeyPressed(
                 new EventHandler<KeyEvent>() {
@@ -65,105 +66,13 @@ public class Main extends Application {
                 }
         );
 
-        // creating sprites and add them to the sprite list
-        Sprite p_up0 = new Sprite(new ImageView("/res/Pacman/2.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_up1 = new Sprite(new ImageView("/res/Pacman/1u.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_up2 = new Sprite(new ImageView("/res/Pacman/0u.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        ArrayList<Sprite> up = new ArrayList<Sprite>();
-        up.add(p_up0);
-        up.add(p_up1);
-        up.add(p_up2);
-        Sprite p_down0 = new Sprite(new ImageView("/res/Pacman/2.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_down1 = new Sprite(new ImageView("/res/Pacman/1d.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_down2 = new Sprite(new ImageView("/res/Pacman/0d.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        ArrayList<Sprite> down = new ArrayList<Sprite>();
-        down.add(p_down0);
-        down.add(p_down1);
-        down.add(p_down2);
-        Sprite p_left0 = new Sprite(new ImageView("/res/Pacman/2.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_left1 = new Sprite(new ImageView("/res/Pacman/1l.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_left2 = new Sprite(new ImageView("/res/Pacman/0l.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        ArrayList<Sprite> left = new ArrayList<Sprite>();
-        left.add(p_left0);
-        left.add(p_left1);
-        left.add(p_left2);
-        Sprite p_right0 = new Sprite(new ImageView("/res/Pacman/2.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_right1 = new Sprite(new ImageView("/res/Pacman/1r.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        Sprite p_right2 = new Sprite(new ImageView("/res/Pacman/0r.png"),
-                new Point2D(0,0), new Point2D(0,0));
-        ArrayList<Sprite> right = new ArrayList<Sprite>();
-        right.add(p_right0);
-        right.add(p_right1);
-        right.add(p_right2);
+        Pacman pacman = createPacman();
 
-        // puts list into hashmap for animation
-        HashMap<Integer, ArrayList<Sprite>> pacmanSprites = new HashMap<>();
-        pacmanSprites.put(Constants.UP, up);
-        pacmanSprites.put(Constants.DOWN, down);
-        pacmanSprites.put(Constants.LEFT, left);
-        pacmanSprites.put(Constants.RIGHT, right);
+        Ghost redGhost = createGhost(Constants.Red);
+        Ghost pinkGhost = createGhost(Constants.Pink);
 
-        Body2D pacmanBody2d = new Body2D(p_up0,
-                new RigidBody2D(12*28,
-                        14*28, p_up0.getWidth(), p_up0.getHeight()));
-
-        Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
-        pacman.setTranslateX(12*28);
-        pacman.setTranslateY(14*28);
-        pacman.getBody().setPosition(new Point2D(12*28, 14*28));
-        pacman.setMapPositionX(pacman.getBody().getPosition().getX());
-        pacman.setMapPositionY(pacman.getBody().getPosition().getY());
-
-        Sprite g_rs = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
-        Sprite g_r0u = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
-        Sprite g_r1u = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
-        Sprite g_r0d = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
-        Sprite g_r1d = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
-        Sprite g_r0l = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
-        Sprite g_r1l = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
-        Sprite g_r0r = new Sprite(new ImageView("/res/Ghosts/Red/r-0.png"), new Point2D(0,0));
-        Sprite g_r1r = new Sprite(new ImageView("/res/Ghosts/Red/r-1.png"), new Point2D(0,0));
-        ArrayList<Sprite> red_ghost_anim_up = new ArrayList<Sprite>();
-        red_ghost_anim_up.add(g_r0u);
-        red_ghost_anim_up.add(g_r1u);
-        ArrayList<Sprite> red_ghost_anim_down = new ArrayList<Sprite>();
-        red_ghost_anim_down.add(g_r0d);
-        red_ghost_anim_down.add(g_r1d);
-        ArrayList<Sprite> red_ghost_anim_left = new ArrayList<Sprite>();
-        red_ghost_anim_left.add(g_r0l);
-        red_ghost_anim_left.add(g_r1l);
-        ArrayList<Sprite> red_ghost_anim_right = new ArrayList<Sprite>();
-        red_ghost_anim_right.add(g_r0r);
-        red_ghost_anim_right.add(g_r1r);
-        ///============
-        HashMap<Integer, ArrayList<Sprite>> redGhostSprites = new HashMap<Integer, ArrayList<Sprite>>();
-        redGhostSprites.put(Constants.UP, red_ghost_anim_up);
-        redGhostSprites.put(Constants.DOWN, red_ghost_anim_down);
-        redGhostSprites.put(Constants.LEFT, red_ghost_anim_left);
-        redGhostSprites.put(Constants.RIGHT, red_ghost_anim_right);
-        Body2D redGhostBody = new Body2D(g_rs,
-                new RigidBody2D(12*28,11*28, g_rs.getWidth(), g_rs.getHeight()));
-        Ghost redGhost = new Ghost(redGhostBody, new SpriteAnimation(redGhostSprites, 0.15));
-        redGhost.setTranslateX(12*28);
-        redGhost.setTranslateY(11*28);
-        redGhost.getBody().setPosition(new Point2D(12*28, 11*28));
-        redGhost.setMapPositionX(redGhost.getBody().getPosition().getX());
-        redGhost.setMapPositionY(redGhost.getBody().getPosition().getY());
-
-        root.getChildren().addAll(pacman, redGhost);
+        root.getChildren().addAll(pacman, redGhost, pinkGhost);
         final Random[] rnd = {new Random()};
-        //pacman.getAnimation().play();
 
         long[] tempNanoTime = {System.nanoTime()};
         final int[] rg_move = {1};
@@ -234,13 +143,11 @@ public class Main extends Application {
                         rg_todo[0] = rnd[0].nextInt(4) + 1;
                         if(redGhost.isPossibleToMove(rg_todo[0]))
                             rg_move[0] = rg_todo[0];
-                        System.out.println("curr: " + rg_todo[0]);
                         tempNanoTime[0] = presentNanoTime;
                     }
 
                     while(!redGhost.isPossibleToMove(rg_todo[0])) {
                         rg_todo[0] = rnd[0].nextInt(4) + 1;
-                        System.out.println("Stack " + rg_todo[0]);
                         rg_move[0] = rg_todo[0];
                     }
                 }else{
@@ -249,13 +156,127 @@ public class Main extends Application {
                 }
 
                 pacman.activeMoving(activeMove);
-                System.out.println(rg_move[0]);
                 redGhost.activeMoving(rg_move[0]);
 
             }
         }.start();
 
         primaryStage.show();
+    }
+
+    private Ghost createGhost(String color) {
+
+        Sprite g_s = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+                new Point2D(0, 0));
+        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+                new Point2D(0, 0));
+
+        //============ SPRITE LIST ANIMATION ============
+        ArrayList<Sprite> ghost_anim_up = new ArrayList<Sprite>();
+        ghost_anim_up.add(g_0u);
+        ghost_anim_up.add(g_1u);
+        ArrayList<Sprite> ghost_anim_down = new ArrayList<Sprite>();
+        ghost_anim_down.add(g_0d);
+        ghost_anim_down.add(g_1d);
+        ArrayList<Sprite> ghost_anim_left = new ArrayList<Sprite>();
+        ghost_anim_left.add(g_0l);
+        ghost_anim_left.add(g_1l);
+        ArrayList<Sprite> ghost_anim_right = new ArrayList<Sprite>();
+        ghost_anim_right.add(g_0r);
+        ghost_anim_right.add(g_1r);
+
+        ///============ SPRITE DIRECTION HASHMAP ANIMATION ============
+        HashMap<Integer, ArrayList<Sprite>> ghostSprites = new HashMap<Integer, ArrayList<Sprite>>();
+        ghostSprites.put(Constants.UP, ghost_anim_up);
+        ghostSprites.put(Constants.DOWN, ghost_anim_down);
+        ghostSprites.put(Constants.LEFT, ghost_anim_left);
+        ghostSprites.put(Constants.RIGHT, ghost_anim_right);
+        Body2D ghostBody = new Body2D(g_s,
+                new RigidBody2D(12 * 28, 11 * 28, g_s.getWidth(), g_s.getHeight()));
+        Ghost ghost = new Ghost(ghostBody, new SpriteAnimation(ghostSprites, 0.15));
+        ghost.setTranslateX(12*28);
+        ghost.setTranslateY(11*28);
+        ghost.getBody().setPosition(new Point2D(12*28, 11*28));
+        ghost.setMapPositionX(ghost.getBody().getPosition().getX());
+        ghost.setMapPositionY(ghost.getBody().getPosition().getY());
+
+        return ghost;
+    }
+    private Pacman createPacman() {
+        Sprite p_up0 = new Sprite(new ImageView("/res/Pacman/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_up1 = new Sprite(new ImageView("/res/Pacman/1u.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_up2 = new Sprite(new ImageView("/res/Pacman/0u.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        ArrayList<Sprite> up = new ArrayList<Sprite>();
+        up.add(p_up0);
+        up.add(p_up1);
+        up.add(p_up2);
+        Sprite p_down0 = new Sprite(new ImageView("/res/Pacman/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_down1 = new Sprite(new ImageView("/res/Pacman/1d.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_down2 = new Sprite(new ImageView("/res/Pacman/0d.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        ArrayList<Sprite> down = new ArrayList<Sprite>();
+        down.add(p_down0);
+        down.add(p_down1);
+        down.add(p_down2);
+        Sprite p_left0 = new Sprite(new ImageView("/res/Pacman/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_left1 = new Sprite(new ImageView("/res/Pacman/1l.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_left2 = new Sprite(new ImageView("/res/Pacman/0l.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        ArrayList<Sprite> left = new ArrayList<Sprite>();
+        left.add(p_left0);
+        left.add(p_left1);
+        left.add(p_left2);
+        Sprite p_right0 = new Sprite(new ImageView("/res/Pacman/2.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_right1 = new Sprite(new ImageView("/res/Pacman/1r.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        Sprite p_right2 = new Sprite(new ImageView("/res/Pacman/0r.png"),
+                new Point2D(0,0), new Point2D(0,0));
+        ArrayList<Sprite> right = new ArrayList<Sprite>();
+        right.add(p_right0);
+        right.add(p_right1);
+        right.add(p_right2);
+
+        // puts list into hashmap for animation
+        HashMap<Integer, ArrayList<Sprite>> pacmanSprites = new HashMap<>();
+        pacmanSprites.put(Constants.UP, up);
+        pacmanSprites.put(Constants.DOWN, down);
+        pacmanSprites.put(Constants.LEFT, left);
+        pacmanSprites.put(Constants.RIGHT, right);
+
+        Body2D pacmanBody2d = new Body2D(p_up0,
+                new RigidBody2D(12*28,
+                        14*28, p_up0.getWidth(), p_up0.getHeight()));
+
+        Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
+        pacman.setTranslateX(12*28);
+        pacman.setTranslateY(14*28);
+        pacman.getBody().setPosition(new Point2D(12*28, 14*28));
+        pacman.setMapPositionX(pacman.getBody().getPosition().getX());
+        pacman.setMapPositionY(pacman.getBody().getPosition().getY());
+
+        return pacman;
     }
 
     public static void main(String[] args) {
