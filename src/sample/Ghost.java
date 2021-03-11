@@ -12,35 +12,28 @@ public class Ghost extends Character implements Animation, Movable2D {
 
     private boolean playerIsVisible;
     private boolean dead;
-    private int[][] mapLevelData;
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
         this.animation.setDiraction(Constants.UP);
-        mapLevelData = LevelData.levels[0];
         dead = false;
     }
 
-    public void render() {
+    /*public void render() {
         //if(!dead) {
             body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
             getChildren().clear();
             getChildren().addAll(body.getSprite().getTexture());
+            //System.out.println(animation.getCurrentSprite().getTexture().getImage().getUrl());
         //}
         //else {
 
         //}
 
 
-    }
-    public void move(Point2D velocity, double speed) {
-        body.setVelocity(velocity);
-        body.update(speed);
+    }*/
 
-        this.setTranslateX(this.getTranslateX()+velocity.getX()*speed);
-        this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
-    }
-
+    @Override
     public boolean isPossibleToMove(int move){
         if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
             switch(move){
@@ -56,7 +49,10 @@ public class Ghost extends Character implements Animation, Movable2D {
         }
         return false;
     }
+    @Override
     public void activeMoving(int activeMove){
+
+        if(!isPossibleToMove(activeMove)) return;
 
         switch(activeMove){
             case Constants.RIGHT:
@@ -64,62 +60,26 @@ public class Ghost extends Character implements Animation, Movable2D {
                     return;
                 }
 
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
-                    if (mapLevelData[mapPositionY][mapPositionX + 1] > 0) {
-                        return;
-                    }
-                }
-                this.getAnimation().setDiraction(Constants.RIGHT);
-                this.getAnimation().play();
-                this.render();
-                this.move(new Point2D(1, 0), SPEED);
+                this.move(new Point2D(1, 0), SPEED, Constants.RIGHT);
                 break;
             case Constants.LEFT:
                 if((body.getPosition().getX() <= 0)){
                     return;
                 }
-
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
-                    if (mapLevelData[mapPositionY][mapPositionX - 1] > 0) {
-                        return;
-                    }
-                }
-                this.getAnimation().setDiraction(Constants.LEFT);
-                this.getAnimation().play();
-                this.render();
-                this.move(new Point2D(-1, 0), SPEED);
+                this.move(new Point2D(-1, 0), SPEED, Constants.LEFT);
                 break;
             case Constants.UP:
                 if((body.getPosition().getY() <= 0)){
                     return;
                 }
-
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
-
-                    if(mapLevelData[mapPositionY - 1][mapPositionX] > 0 && mapLevelData[mapPositionY - 1][mapPositionX] != 26){
-                        return;
-                    }
-                }
-
-                this.getAnimation().setDiraction(Constants.UP);
-                this.getAnimation().play();
-                this.render();
-                this.move(new Point2D(0, -1), SPEED);
+                this.move(new Point2D(0, -1), SPEED, Constants.UP);
                 break;
             case Constants.DOWN:
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
 
-                if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
-                    if(mapLevelData[mapPositionY + 1][mapPositionX] > 0){
-                        return;
-                    }
-                }
-                this.getAnimation().setDiraction(Constants.DOWN);
-                this.getAnimation().play();
-                this.render();
-                this.move(new Point2D(0, 1), SPEED);
+                this.move(new Point2D(0, 1), SPEED, Constants.DOWN);
                 break;
         }
 

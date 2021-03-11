@@ -15,7 +15,7 @@ public class SpriteAnimation extends Transition {
     private int diraction;
     private double timer;
     private final int count;
-    private final double duration;
+    private final double duration; // TODO: millis ??
 
     private int lastIndex;
 
@@ -45,7 +45,10 @@ public class SpriteAnimation extends Transition {
     }
 
     public void interpolate(double k) { // 0.0 - 1.0
+        //System.out.println(k);
         int index = (int)caclcSpriteIndex(k);
+        //System.out.println("Ingex: " + index);
+        //System.out.println("Diraction: " + diraction);
         currentSprite = spriteMap.get(this.getDiraction()).get(index);
     }
 
@@ -53,6 +56,7 @@ public class SpriteAnimation extends Transition {
         double e1 = 1.0/count; // +epsilon
         for(double e0 = 0; e0 < 1.0; e0+=1.0/count) { // -epsilon
             if(k >= e0 && k <= e1) {
+                //System.out.println("("+e0+", "+e1+") :: index= "+ e0*count);
                 return e0 * count;
             }
             e1 += 1.0/count;
