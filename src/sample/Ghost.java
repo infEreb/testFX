@@ -124,8 +124,17 @@ public class Ghost extends Character implements Animation, Movable2D {
                 break;
         }
 
-        System.out.println("Cur spr: " + animation.getCurrentSprite().getTexture().getImage().getUrl());
-
+        //System.out.println("Cur spr: " + animation.getCurrentSprite().getTexture().getImage().getUrl());
+        if(mapPositionX == 1){
+            this.setTranslateX((LevelData.mapXMax-3)*28);
+            this.getBody().setPosition(new Point2D((LevelData.mapXMax-3)*28, this.getBody().getPosition().getY()));
+            mapPositionX = LevelData.mapXMax-3;
+        }
+        else if(mapPositionX == LevelData.mapXMax-2){
+            this.setTranslateX(2*28);
+            this.getBody().setPosition(new Point2D(2*28, this.getBody().getPosition().getY()));
+            mapPositionX = 2;
+        }
 
     }
 
