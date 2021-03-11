@@ -69,10 +69,16 @@ public class Main extends Application {
         MoveActions redMove = new MoveActions();
         Ghost pinkGhost = createGhost(Constants.Pink);
         MoveActions pinkMove = new MoveActions();
+        Ghost yellowGhost = createGhost(Constants.Yellow);
+        MoveActions yellowMove = new MoveActions();
+        Ghost blueGhost = createGhost(Constants.Blue);
+        MoveActions blueMove = new MoveActions();
 
-        root.getChildren().addAll(pacman, redGhost, pinkGhost);
+        root.getChildren().addAll(pacman, redGhost, pinkGhost, blueGhost, yellowGhost);
         redMove.setTime(System.nanoTime());
         pinkMove.setTime(System.nanoTime());
+        yellowMove.setTime(System.nanoTime());
+        blueMove.setTime(System.nanoTime());
         new AnimationTimer()
         {
 
@@ -81,6 +87,8 @@ public class Main extends Application {
                 pacman.activeMoving(pacMove.move(pacman, todoMove));
                 redGhost.activeMoving(redMove.randomMove(redGhost, presentNanoTime));
                 pinkGhost.activeMoving(pinkMove.randomMove(pinkGhost, presentNanoTime));
+                yellowGhost.activeMoving(yellowMove.randomMove(yellowGhost, presentNanoTime));
+                blueGhost.activeMoving(blueMove.randomMove(blueGhost, presentNanoTime));
 
             }
         }.start();

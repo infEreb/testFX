@@ -72,7 +72,7 @@ public class MoveActions {
             }
             isStuck = true;
 
-            if(presentNanoTime - time >= 6000000000L) {
+            if(presentNanoTime - time >= 3000000000L) {
                 todoMove = random.nextInt(4) + 1;
                 if(character.isPossibleToMove(todoMove))
                     activeMove = todoMove;
