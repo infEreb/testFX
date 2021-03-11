@@ -8,6 +8,6 @@ public class Constants {
     public static final int RIGHT = 4;
     public static final double ANIM_DELTA = 0.0005;
 
-    public static final double SPEED = 0.5;
+    public static final double SPEED = 2;
 
 }

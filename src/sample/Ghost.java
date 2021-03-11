@@ -16,23 +16,30 @@ public class Ghost extends Character implements Animation, Movable2D {
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
+        this.animation.setDiraction(Constants.UP);
+        mapLevelData = LevelData.levels[0];
         dead = false;
     }
 
     public void render() {
-        if(!dead) {
+        //if(!dead) {
             body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
             getChildren().clear();
             getChildren().addAll(body.getSprite().getTexture());
-        }
-        else {
+            System.out.println(animation.getCurrentSprite().getTexture().getImage().getUrl());
+        //}
+        //else {
 
-        }
+        //}
 
 
     }
     public void move(Point2D velocity, double speed) {
+        body.setVelocity(velocity);
+        body.update(speed);
 
+        this.setTranslateX(this.getTranslateX()+velocity.getX()*speed);
+        this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
     }
 
     public boolean isPossibleToMove(int move){
@@ -43,7 +50,7 @@ public class Ghost extends Character implements Animation, Movable2D {
                 case Constants.LEFT:
                     return !(mapLevelData[mapPositionY][mapPositionX - 1] > 0);
                 case Constants.UP:
-                    return !(mapLevelData[mapPositionY - 1][mapPositionX] > 0);
+                    return (!(mapLevelData[mapPositionY - 1][mapPositionX] > 0) || mapLevelData[mapPositionY - 1][mapPositionX] == 26);
                 case Constants.DOWN:
                     return !(mapLevelData[mapPositionY + 1][mapPositionX] > 0);
             }
@@ -54,7 +61,7 @@ public class Ghost extends Character implements Animation, Movable2D {
 
         switch(activeMove){
             case Constants.RIGHT:
-                if((body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
+                if((this.body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
                     return;
                 }
 
@@ -89,7 +96,8 @@ public class Ghost extends Character implements Animation, Movable2D {
                 }
 
                 if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1) {
-                    if(mapLevelData[mapPositionY - 1][mapPositionX] > 0){
+
+                    if(mapLevelData[mapPositionY - 1][mapPositionX] > 0 && mapLevelData[mapPositionY - 1][mapPositionX] != 26){
                         return;
                     }
                 }
@@ -116,10 +124,12 @@ public class Ghost extends Character implements Animation, Movable2D {
                 break;
         }
 
+        System.out.println("Cur spr: " + animation.getCurrentSprite().getTexture().getImage().getUrl());
+
 
     }
 
-    public boolean checkVisiblePlayer(int[] playerPosition) {
+    public void checkVisiblePlayer(int[] playerPosition) {
         boolean upBlock = false, downBlock = false, leftBlock = false, rightBlock = false;
         int[] up = {mapPositionX, mapPositionY - 1};
         int[] down = {mapPositionX, mapPositionY + 1};
@@ -133,27 +143,27 @@ public class Ghost extends Character implements Animation, Movable2D {
 
             if(!upBlock) {
                 if(up[0] == playerPosition[0] && up[1] == playerPosition[1])
-                    return true;
+                    playerIsVisible = true;
                 up = new int[] {up[0], up[1]--};
             }
             if(!downBlock) {
                 if(down[0] == playerPosition[0] && down[1] == playerPosition[1])
-                    return true;
+                    playerIsVisible = true;
                 down = new int[] {down[0], down[1]++};
             }
             if(!leftBlock) {
                 if(left[0] == playerPosition[0] && left[1] == playerPosition[1])
-                    return true;
+                    playerIsVisible = true;
                 left = new int[] {left[0]--, left[1]};
             }
             if(!rightBlock) {
                 if(right[0] == playerPosition[0] && right[1] == playerPosition[1])
-                    return true;
+                    playerIsVisible = true;
                 right = new int[] {right[0]++, right[1]};
             }
         }
 
-        return false;
+        playerIsVisible = false;
     }
 
 }
