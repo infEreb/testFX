@@ -1,5 +1,7 @@
 package Constructor;
 
+import javafx.geometry.Point2D;
+
 public class LevelData {
     static int [][] LEVEL1 = {
          //X  0   1   2    3   4   5   6   7   8   9  10   11   12  13  14  15  16  17  18  19  20  21 22  23  24//Y
@@ -36,4 +38,8 @@ public class LevelData {
     public static int[][][] levels = new int[][][]{
         LEVEL1
     };
+
+    public static int[] pixelPosToLogicPos(Point2D pixPos) {
+        return new int[]{(int) pixPos.getX() / 28, (int) pixPos.getY() / 28};
+    }
 }

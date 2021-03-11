@@ -21,7 +21,6 @@ public class SpriteAnimation extends Transition {
 
     public SpriteAnimation(
             HashMap<Integer, ArrayList<Sprite>> spriteMap,
-            int count,
             double duration) {
         this.spriteMap  = spriteMap;
         this.count      = spriteMap.get(Constants.UP).size();
@@ -29,7 +28,7 @@ public class SpriteAnimation extends Transition {
         currentSprite = spriteMap.get(Constants.UP).get(0);
         timer = 0;
 
-        setCycleDuration(Duration.seconds(duration));
+        setCycleDuration(Duration.seconds(this.duration));
         setInterpolator(Interpolator.LINEAR);
         setCycleCount(INDEFINITE);
     }
@@ -48,6 +47,8 @@ public class SpriteAnimation extends Transition {
     public void interpolate(double k) { // 0.0 - 1.0
         //System.out.println(k);
         int index = (int)caclcSpriteIndex(k);
+        System.out.println("Ingex: " + index);
+        System.out.println("Diraction: " + diraction);
         currentSprite = spriteMap.get(this.getDiraction()).get(index);
     }
 
@@ -55,9 +56,11 @@ public class SpriteAnimation extends Transition {
         double e1 = 1.0/count; // +epsilon
         for(double e0 = 0; e0 < 1.0; e0+=1.0/count) { // -epsilon
             if(k >= e0 && k <= e1) {
+                System.out.println("("+e0+", "+e1+") :: index= "+ e0*count);
                 return e0 * count;
             }
             e1 += 1.0/count;
+
         }
         return -1;
     }

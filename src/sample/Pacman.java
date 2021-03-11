@@ -1,6 +1,7 @@
 package sample;
 
 import Constructor.*;
+import Constructor.Character;
 import Engine.Constants;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -11,19 +12,12 @@ import java.util.Map;
 
 import static Engine.Constants.SPEED;
 
-public class Pacman extends Pane implements Movable2D, Animation {
+public class Pacman extends Character implements Movable2D, Animation {
 
-    private final Body2D body;
-    private final SpriteAnimation animation;
-    public int mapPositionX;
-    public int mapPositionY;
     int [][] mapLevelData;
     public Pacman(Body2D body, SpriteAnimation animation) {
-        this.body = body;
+        super(body, animation);
         mapLevelData = LevelData.levels[0];
-        this.animation = animation;
-        getChildren().add(0, body.getSprite().getTexture());
-
     }
 
     public Body2D getBody() {
@@ -42,6 +36,7 @@ public class Pacman extends Pane implements Movable2D, Animation {
         this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
         //System.out.println("Y : " + this.getTranslateY());
     }
+
     public void setMapPositionX(double pixelPositionX){
         this.mapPositionX = (int) pixelPositionX / 28;
     }
