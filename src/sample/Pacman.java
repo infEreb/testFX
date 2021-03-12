@@ -6,9 +6,20 @@ import Constructor.Character;
 
 public class Pacman extends Character implements Movable2D, Animation {
 
+    public boolean isDead = false;
+    private SpriteAnimation deathAnimation;
+
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
     }
+
+    public SpriteAnimation getDeathAnimation() {
+        return deathAnimation;
+    }
+    public void setDeathAnimation(SpriteAnimation deathAnimation) {
+        this.deathAnimation = deathAnimation;
+    }
+
     @Override
     public void activeMoving(int activeMove){
         super.activeMoving(activeMove);

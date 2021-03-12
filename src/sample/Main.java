@@ -2,6 +2,7 @@ package sample;
 
 import Constructor.*;
 import Engine.Constants;
+import Engine.Graph;
 import Engine.RigidBody2D;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -11,22 +12,19 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Random;
 
 
 public class Main extends Application {
 
     public static Pane root = new Pane();
     public static GridMap gridMap = new GridMap();
-    int activeMove = Constants.NONE;
     int todoMove = Constants.NONE;
-    boolean pIsStuck = true;
-    boolean rgIsStuck = true;
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -34,10 +32,13 @@ public class Main extends Application {
         gridMap.loadBlocks();
         gridMap.loadPillows();
 
+        Graph<Point2D> graphMap = LevelData.createGraphMap(1);
 
-        Scene scene = new Scene(root, 700, 672);
+        root.setLayoutX(-28*3);
+        Scene scene = new Scene(root, 19*28, 24*28);
+        scene.setFill(Color.BLACK);
+
         primaryStage.setScene(scene);
-        root.setStyle("-fx-background-color: #000000;");
 
         scene.setOnKeyPressed(
                 new EventHandler<KeyEvent>() {

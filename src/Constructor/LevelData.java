@@ -1,5 +1,7 @@
 package Constructor;
 
+import Engine.Graph;
+import Engine.Node;
 import javafx.geometry.Point2D;
 
 public class LevelData {
@@ -38,6 +40,29 @@ public class LevelData {
     public static int[][][] levels = new int[][][]{
         LEVEL1
     };
+
+    public static Graph createGraphMap(int levelNum) {
+        if(levelNum <= 0 || levelNum > levels.length)
+            return null;
+
+        Graph graph = new Graph();
+        int[][] map = levels[levelNum-1];
+        for(int y = 0; y < mapYMax; y++) {
+            for(int x = 0; x < mapXMax; x++) {
+                graph.addNode(new Point2D(x, y));
+                if(x != mapXMax-1) {
+                    graph.addEdge(new Point2D(x, y), new Point2D(x+1, y));
+                    if(y != mapYMax-1)
+                        graph.addEdge(new Point2D(x, y), new Point2D(x, y+1));
+                }
+                else {
+                    if(y != mapYMax-1)
+                        graph.addEdge(new Point2D(x, y), new Point2D(x, y+1));
+                }
+            }
+        }
+        return graph;
+    }
 
     public static int[] pixelPosToLogicPos(Point2D pixPos) {
         return new int[]{(int) pixPos.getX() / 28, (int) pixPos.getY() / 28};

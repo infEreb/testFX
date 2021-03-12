@@ -8,14 +8,14 @@ import static Engine.Constants.SPEED;
 
 public class Character extends Pane {
     protected final Body2D body;
-    protected final SpriteAnimation animation;
+    protected final SpriteAnimation moveAnimation;
     protected int [][] mapLevelData;
     public int mapPositionX;
     public int mapPositionY;
 
     public Character(Body2D body, SpriteAnimation animation) {
         this.body = body;
-        this.animation = animation;
+        this.moveAnimation = animation;
         mapLevelData = LevelData.levels[0];
         getChildren().add(0, body.getSprite().getTexture());
     }
@@ -24,7 +24,7 @@ public class Character extends Pane {
         return body;
     }
     public SpriteAnimation getAnimation() {
-        return animation;
+        return moveAnimation;
     }
     public void move(Point2D velocity, double speed, int direction) {
         this.getAnimation().setDiraction(direction);
@@ -35,9 +35,7 @@ public class Character extends Pane {
         body.update(speed);
 
         this.setTranslateX(this.getTranslateX()+velocity.getX()*speed);
-        //System.out.println("X : " + this.getTranslateX());
         this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
-        //System.out.println("Y : " + this.getTranslateY());
     }
 
     public void setMapPositionX(double pixelPositionX){
@@ -106,7 +104,7 @@ public class Character extends Pane {
 
     }
     public void render() {
-        body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
+        body.getSprite().setTexture(moveAnimation.getCurrentSprite().getTexture());
         getChildren().clear();
         getChildren().addAll(body.getSprite().getTexture());
     }

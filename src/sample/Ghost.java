@@ -11,27 +11,27 @@ import static Engine.Constants.SPEED;
 public class Ghost extends Character implements Animation, Movable2D {
 
     private boolean playerIsVisible;
-    private boolean dead;
+    private boolean isDead;
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
-        this.animation.setDiraction(Constants.UP);
-        dead = false;
+        this.moveAnimation.setDiraction(Constants.UP);
+        isDead = false;
     }
 
-    /*public void render() {
-        //if(!dead) {
-            body.getSprite().setTexture(animation.getCurrentSprite().getTexture());
-            getChildren().clear();
-            getChildren().addAll(body.getSprite().getTexture());
-            //System.out.println(animation.getCurrentSprite().getTexture().getImage().getUrl());
-        //}
-        //else {
+    public boolean getPlayerIsVisible() {
+        return playerIsVisible;
+    }
+    public void setPlayerIsVisible(boolean playerIsVisible) {
+        this.playerIsVisible = playerIsVisible;
+    }
 
-        //}
-
-
-    }*/
+    public boolean getIsDead() {
+        return isDead;
+    }
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
+    }
 
     @Override
     public boolean isPossibleToMove(int move){
