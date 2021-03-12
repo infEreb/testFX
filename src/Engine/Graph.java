@@ -22,6 +22,11 @@ public class Graph<T> {
     public HashMap<Node<T>, ArrayList<Node<T>>> getGraph() {
         return graph;
     }
+    private ArrayList<Node<T>> getSortedKeys() {
+        ArrayList<Node<T>> sortedKeys = new ArrayList<>(graph.keySet());
+        Collections.sort(sortedKeys, comparator);
+        return sortedKeys;
+    }
 
     public void addNode(T nodeValue) {
         graph.putIfAbsent(new Node<>(nodeValue), new ArrayList<>());
@@ -62,6 +67,16 @@ public class Graph<T> {
         return Collections.binarySearch(edges, node2, comparator) != -1;
     }
 
-
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        getSortedKeys().forEach(k -> {
+            sb.append(k.getValue().toString() + " --> ");
+            graph.get(k).forEach(lv -> {
+                sb.append(lv.getValue().toString() + ", ");
+            });
+            sb.append("\n");
+        });
+        return sb.toString();
+    }
 
 }

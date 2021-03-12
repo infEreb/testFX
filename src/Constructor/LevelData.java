@@ -1,7 +1,6 @@
 package Constructor;
 
 import Engine.Graph;
-import Engine.Node;
 import javafx.geometry.Point2D;
 
 public class LevelData {

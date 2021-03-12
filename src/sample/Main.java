@@ -33,6 +33,7 @@ public class Main extends Application {
         gridMap.loadPillows();
 
         Graph<Point2D> graphMap = LevelData.createGraphMap(1);
+        System.out.println(graphMap.toString());
 
         root.setLayoutX(-28*3);
         Scene scene = new Scene(root, 19*28, 24*28);
