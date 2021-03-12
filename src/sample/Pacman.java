@@ -2,12 +2,14 @@ package sample;
 
 import Constructor.*;
 import Constructor.Character;
+import Engine.Constants;
 
 
 public class Pacman extends Character implements Movable2D, Animation {
 
     public boolean isDead = false;
     private SpriteAnimation deathAnimation;
+
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
@@ -35,10 +37,12 @@ public class Pacman extends Character implements Movable2D, Animation {
         for (Fruit pillow: GridMap.listOfPillows) {
             if(this.getBody().intersects(pillow.getBody())){
                 removedPillow = pillow;
+                Game.currentScore += Constants.SCORE_FOR_PILLOW;
+                Game.currentScoreLabel.setText(Game.currentScore.toString());
             }
         }
         GridMap.listOfPillows.remove(removedPillow);
-        Main.root.getChildren().remove(removedPillow);
+        Game.root.getChildren().remove(removedPillow);
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
     private void eatBigPillow(){
@@ -49,7 +53,7 @@ public class Pacman extends Character implements Movable2D, Animation {
             }
         }
         GridMap.listOfBigPillows.remove(removedPillow);
-        Main.root.getChildren().remove(removedPillow);
+        Game.root.getChildren().remove(removedPillow);
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
 
