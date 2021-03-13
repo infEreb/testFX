@@ -3,6 +3,7 @@ package Constructor;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import sample.Game;
 import sample.Main;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class GridMap extends Pane {
                     imgFile = new Image(getClass().getResourceAsStream(filepath));
                     Block b = new Block(COLUMN, ROW, imgFile);
                     listOfBlocks.add(b);
-                    Main.root.getChildren().add(b);
+                    Game.root.getChildren().add(b);
                 }
 
             }
@@ -47,7 +48,7 @@ public class GridMap extends Pane {
                     imgFile = new Image(getClass().getResourceAsStream(filepath));
                     Fruit b = new Fruit(COLUMN, ROW, imgFile, 6);
                     listOfPillows.add(b);
-                    Main.root.getChildren().add(b);
+                    Game.root.getChildren().add(b);
                 }
                 //big pillow
                 if (map[ROW][COLUMN] == -2) {
@@ -55,7 +56,7 @@ public class GridMap extends Pane {
                     imgFile = new Image(getClass().getResourceAsStream(filepath));
                     Fruit b = new Fruit(COLUMN, ROW, imgFile, 6);
                     listOfBigPillows.add(b);
-                    Main.root.getChildren().add(b);
+                    Game.root.getChildren().add(b);
                 }
             }
         }
