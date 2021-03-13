@@ -1,9 +1,5 @@
 package Engine;
 
-import java.lang.String;
-import java.util.Collection;
-import java.util.Comparator;
-
 public class Node<T> {
     private int priority;
     private T value;

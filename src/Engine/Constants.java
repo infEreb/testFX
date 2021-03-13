@@ -13,7 +13,7 @@ public class Constants {
     public static final String Blue = "Blue";
     public static final String Pink = "Pink";
 
-    public static final double SPEED = 1;
+    public static final double SPEED = 2;
 
     public static final int SCORE_FOR_PILLOW = 20;
 

@@ -1,8 +1,6 @@
 package Engine;
 
 
-import javafx.geometry.Point2D;
-
 import java.util.*;
 
 public class Graph<T> {

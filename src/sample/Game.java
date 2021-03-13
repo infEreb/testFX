@@ -74,6 +74,7 @@ public class Game {
 
         String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
         scene.getStylesheets().add(stylesheet);
+        scene.setFill(Color.BLACK);
 
         primaryStage.setScene(scene);
         scene.setOnKeyPressed(
