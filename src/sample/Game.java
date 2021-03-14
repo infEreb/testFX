@@ -67,7 +67,7 @@ public class Game {
 
         loadInfoLabels();
         Graph<Point2D> graphMap = LevelData.createGraphMap(1);
-        //System.out.println(graphMap.toString());
+        System.out.println(graphMap.toString());
 
         BorderPane mainPane = this.createInfoBars();
         Scene scene = new Scene(mainPane, 21*28, 29*28);
@@ -133,6 +133,8 @@ public class Game {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
+
 
     private Ghost createGhost(String color) {
 
