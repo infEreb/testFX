@@ -8,6 +8,11 @@ public class Node<T> {
 
     public Node(T value) {
         this.value = value;
+        this.priority = 0;
+    }
+    public Node(T value, int priority) {
+        this.value = value;
+        this.priority = priority;
     }
 
     public int getPriority() {

@@ -3,10 +3,6 @@ package sample;
 import Constructor.*;
 import Constructor.Character;
 import Engine.Constants;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-
-import static Engine.Constants.SPEED;
 
 public class Ghost extends Character implements Animation, Movable2D {
 
@@ -19,19 +15,19 @@ public class Ghost extends Character implements Animation, Movable2D {
         isDead = false;
     }
 
-    public boolean getPlayerIsVisible() {
+    public boolean playerIsVisible() {
         return playerIsVisible;
     }
-    public void setPlayerIsVisible(boolean playerIsVisible) {
-        this.playerIsVisible = playerIsVisible;
-    }
+//    public void setPlayerIsVisible(boolean playerIsVisible) {
+//        this.playerIsVisible = playerIsVisible;
+//    }
 
-    public boolean getIsDead() {
+    public boolean isDead() {
         return isDead;
     }
-    public void setIsDead(boolean isDead) {
-        this.isDead = isDead;
-    }
+//    public void setIsDead(boolean isDead) {
+//        this.isDead = isDead;
+//    }
 
     @Override
     public boolean isPossibleToMove(int move){

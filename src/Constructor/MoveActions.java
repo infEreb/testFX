@@ -1,12 +1,9 @@
 package Constructor;
 
 import Engine.Constants;
-import Engine.Node;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 public class MoveActions {
@@ -93,19 +90,5 @@ public class MoveActions {
         }
         return activeMove;
     }
-    /*public Tree wayFinding(Point2D chaserLogicalPos, Point2D pacmanLogicalPos) {
-//        direction vector calculating
-//        Point2D direction = pacmanLogicalPos.subtract(chaserLogicalPos);
-//        direction = direction.getX() < 0 ? new Point2D(-1, direction.getY()) : new Point2D(1, direction.getY());
-//        direction = direction.getY() < 0 ? new Point2D(direction.getX(), -1) : new Point2D(direction.getX(), 1);
-//        int[] pos = {(int)direction.getX(), (int)direction.getY()};
-//
-//        Tree way = new Tree(new Node<Point2D>(null, chaserLogicalPos));
-//        Node<Point2D> currNode = way.getRoot();
-//        while(!(currNode.getValue().equals(pacmanLogicalPos))) {
-//
-//        }
-//        PriorityQueue<Integer> frontier = new PriorityQueue<>(Comparator.comparing());
-    }*/
 }
 
