@@ -13,8 +13,25 @@ public class Constants {
     public static final String Blue = "Blue";
     public static final String Pink = "Pink";
 
-    public static final double SPEED = 0.5;
+    public static final double SPEED = 1;
 
     public static final int SCORE_FOR_PILLOW = 20;
+
+    public static String stringDirection(int direct) {
+        switch (direct) {
+            case 0:
+                return "NONE";
+            case 1:
+                return "UP";
+            case 2:
+                return "DOWN";
+            case 3:
+                return "LEFT";
+            case 4:
+                return "RIGHT";
+            default:
+                return null;
+        }
+    }
 
 }

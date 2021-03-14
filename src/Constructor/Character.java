@@ -38,10 +38,13 @@ public class Character extends Pane {
         this.setTranslateY(this.getTranslateY()+velocity.getY()*speed);
     }
 
+    public void setMapPosition(Point2D pixelPosition) {
+        mapPositionX = (int)pixelPosition.getX() / 28;
+        mapPositionY = (int)pixelPosition.getY() / 28;
+    }
     public void setMapPositionX(double pixelPositionX){
         this.mapPositionX = (int) pixelPositionX / 28;
     }
-
     public void setMapPositionY(double pixelPositionY){
         this.mapPositionY = (int) pixelPositionY / 28;
     }
@@ -60,6 +63,26 @@ public class Character extends Pane {
             }
         }
         return false;
+    }
+    public boolean smartIsPossibleToMove(int goingTo, int needTo) {
+        if(goingTo == Constants.LEFT && needTo == Constants.DOWN && isPossibleToMove(Constants.LEFT))
+            return !(mapLevelData[mapPositionY + 1][mapPositionX + 1] > 0);
+        else if(goingTo == Constants.LEFT && needTo == Constants.UP && isPossibleToMove(Constants.LEFT))
+            return !(mapLevelData[mapPositionY - 1][mapPositionX + 1] > 0);
+        else if(goingTo == Constants.RIGHT && needTo == Constants.DOWN && isPossibleToMove(Constants.RIGHT))
+            return !(mapLevelData[mapPositionY + 1][mapPositionX - 1] > 0);
+        else if(goingTo == Constants.RIGHT && needTo == Constants.UP && isPossibleToMove(Constants.RIGHT))
+            return !(mapLevelData[mapPositionY - 1][mapPositionX - 1] > 0);
+        else if(goingTo == Constants.UP && needTo == Constants.LEFT && isPossibleToMove(Constants.UP))
+            return !(mapLevelData[mapPositionY + 1][mapPositionX - 1] > 0);
+        else if(goingTo == Constants.UP && needTo == Constants.RIGHT && isPossibleToMove(Constants.UP))
+            return !(mapLevelData[mapPositionY + 1][mapPositionX + 1] > 0);
+        else if(goingTo == Constants.DOWN && needTo == Constants.LEFT && isPossibleToMove(Constants.DOWN))
+            return !(mapLevelData[mapPositionY - 1][mapPositionX - 1] > 0);
+        else if(goingTo == Constants.DOWN && needTo == Constants.RIGHT && isPossibleToMove(Constants.DOWN))
+            return !(mapLevelData[mapPositionY - 1][mapPositionX + 1] > 0);
+        else
+            return isPossibleToMove(needTo);
     }
     public void activeMoving(int activeMove){
 

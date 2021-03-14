@@ -50,4 +50,12 @@ public class Node<T> {
     public int hashCode() {
         return value.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "priority=" + priority +
+                ", value=" + value.toString() +
+                '}';
+    }
 }

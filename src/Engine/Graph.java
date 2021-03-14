@@ -101,15 +101,24 @@ public class Graph<T> {
         return Math.abs((int)point1.getX() - (int)point2.getX()) + Math.abs((int)point1.getY() - (int)point2.getY());
     }
 
+    public ArrayList<T> nodeListToValueList(ArrayList<Node<T>> nodes) {
+        ArrayList<T> values = new ArrayList<>();
+        nodes.forEach(n -> {
+            values.add(n.getValue());
+        });
+        return values;
+    }
+
     //ALGORITHMS
     public ArrayList<Node<T>> breadthFirstSearching(Node<T> start, Node<T> destination) { //return path for destination
-        Queue<Node<T>> frontier = new ArrayDeque<>();
+        ArrayDeque<Node<T>> frontier = new ArrayDeque<>();
         frontier.add(start);
         HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
         came_from.put(start, null);
 
+
         while(!frontier.isEmpty()) {
-            Node<T> current = frontier.peek();
+            Node<T> current = frontier.poll();
 
             if(current == destination) {
                 break;
@@ -127,6 +136,9 @@ public class Graph<T> {
         ArrayList<Node<T>> reverse_path = new ArrayList<>();
 
         while (current != start) {
+            if(current == null)
+                break;
+            //System.out.println("Current: " + current.toString() + "CameFrom " + came_from.get(current).toString());
             reverse_path.add(current);
             current = came_from.get(current);
         }
@@ -135,6 +147,7 @@ public class Graph<T> {
         for(int i = reverse_path.size()-1; i >= 0; i--) {
             path.add(reverse_path.get(i));
         }
+        //System.out.println(pathToString(path));
         return path;
     }
     public ArrayList<Node<T>> DijkstraSearching(Node<T> start, Node<T> destination) {
@@ -216,6 +229,15 @@ public class Graph<T> {
         return path;
     }
 
+    public String pathToString(ArrayList<Node<T>> path) {
+        StringBuffer sb = new StringBuffer();
+        path.forEach(e -> {
+            sb.append("(" + e.getValue().toString() + ") - ");
+        });
+        return sb.toString();
+    }
+
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         getSortedKeys().forEach(k -> {
