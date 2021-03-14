@@ -4,6 +4,8 @@ import Constructor.*;
 import Constructor.Character;
 import Engine.Constants;
 
+import java.util.ArrayList;
+
 
 public class Pacman extends Character implements Movable2D, Animation {
 
@@ -55,6 +57,17 @@ public class Pacman extends Character implements Movable2D, Animation {
         GridMap.listOfBigPillows.remove(removedPillow);
         Game.root.getChildren().remove(removedPillow);
         mapLevelData[mapPositionY][mapPositionX] = 0;
+    }
+
+    void isDead(ArrayList<Ghost> listGhost){
+        for(Ghost ghost: listGhost){
+            if(this.getBody().intersects(ghost.getBody())){
+                
+            }
+        }
+    }
+    void die(){
+
     }
 
 }
