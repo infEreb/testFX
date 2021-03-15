@@ -30,7 +30,7 @@ public class Ghost extends Character implements Animation, Movable2D {
 //    }
 
     @Override
-    public boolean isPossibleToMove(int move){
+    public boolean logicalIsPossibleToMove(int move){
         if(mapPositionX >= 0 && mapPositionX < LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
             switch(move){
                 case Constants.RIGHT:

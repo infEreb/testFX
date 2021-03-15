@@ -49,7 +49,7 @@ public class Character extends Pane {
         this.mapPositionY = (int) pixelPositionY / 28;
     }
 
-    public boolean isPossibleToMove(int move){
+    public boolean logicalIsPossibleToMove(int move){
         if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
             switch(move){
                 case Constants.RIGHT:
@@ -64,29 +64,34 @@ public class Character extends Pane {
         }
         return false;
     }
-    public boolean smartIsPossibleToMove(int goingTo, int needTo) {
-        if(goingTo == Constants.LEFT && needTo == Constants.DOWN && isPossibleToMove(Constants.LEFT))
-            return !(mapLevelData[mapPositionY + 1][mapPositionX + 1] > 0);
-        else if(goingTo == Constants.LEFT && needTo == Constants.UP && isPossibleToMove(Constants.LEFT))
-            return !(mapLevelData[mapPositionY - 1][mapPositionX + 1] > 0);
-        else if(goingTo == Constants.RIGHT && needTo == Constants.DOWN && isPossibleToMove(Constants.RIGHT))
-            return !(mapLevelData[mapPositionY + 1][mapPositionX - 1] > 0);
-        else if(goingTo == Constants.RIGHT && needTo == Constants.UP && isPossibleToMove(Constants.RIGHT))
-            return !(mapLevelData[mapPositionY - 1][mapPositionX - 1] > 0);
-        else if(goingTo == Constants.UP && needTo == Constants.LEFT && isPossibleToMove(Constants.UP))
-            return !(mapLevelData[mapPositionY + 1][mapPositionX - 1] > 0);
-        else if(goingTo == Constants.UP && needTo == Constants.RIGHT && isPossibleToMove(Constants.UP))
-            return !(mapLevelData[mapPositionY + 1][mapPositionX + 1] > 0);
-        else if(goingTo == Constants.DOWN && needTo == Constants.LEFT && isPossibleToMove(Constants.DOWN))
-            return !(mapLevelData[mapPositionY - 1][mapPositionX - 1] > 0);
-        else if(goingTo == Constants.DOWN && needTo == Constants.RIGHT && isPossibleToMove(Constants.DOWN))
-            return !(mapLevelData[mapPositionY - 1][mapPositionX + 1] > 0);
-        else
-            return isPossibleToMove(needTo);
-    }
+    /*public boolean pixelIsPossibleToMove(int move) {
+        Point2D playerPos = pixelPosToLogicalPos(body.getPosition());
+        Point2D vec = MoveActions.directionToVec(move);
+        Block block = null;
+        Point2D blockPos = playerPos.add(vec);
+        System.out.println("Dir- " +Constants.stringDirection(move)+ " plrPos- " +playerPos+ " vecPos- " +vec+ " blockPos- " +blockPos);
+        if(vec != null) {
+            System.out.println("vecPos != null");
+            block = GridMap.getBlockByPoint(blockPos);
+            if(block == null)
+                block = GridMap.getPillowByPoint(blockPos);
+            if(block == null)
+                block = GridMap.getBigPillowByPoint(blockPos);
+        }
+        if(block != null) {
+            System.out.println("\nBlockLogicalPos: "+block.getLogicalPosition()+ " BlockPixPos: " + block.getBody().getPosition() +"\n");
+            if (!body.intersects(block.getBody()))
+                return true;
+        }
+        else{
+            if(body.getPosition().getX() % 28 == 0 && body.getPosition().getY() % 28 == 0 && logicalIsPossibleToMove(move))
+                return true;
+        }
+        return false;
+    }*/
     public void activeMoving(int activeMove){
 
-        if(!isPossibleToMove(activeMove)) return;
+        if(!logicalIsPossibleToMove(activeMove)) return;
 
         switch(activeMove){
             case Constants.RIGHT:

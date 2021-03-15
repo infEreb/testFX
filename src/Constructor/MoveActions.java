@@ -12,6 +12,8 @@ public class MoveActions {
     private Random random = new Random();
     private long time;
     private boolean isStuck = true;
+    private boolean firstIter = true;
+    private boolean isNotStuck = false;
     private int todoMove = Constants.UP;
     private int activeMove = Constants.UP;
 
@@ -43,10 +45,10 @@ public class MoveActions {
             }
             isStuck = true;
 
-            System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
-            if(todoMove != Constants.NONE && character.isPossibleToMove(todoMove)) {
+            //System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
+            if(todoMove != Constants.NONE && character.logicalIsPossibleToMove(todoMove)) {
                 activeMove = todoMove;
-                System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
+                //System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
                 todoMove = Constants.NONE;
             }
         }else{
@@ -77,12 +79,12 @@ public class MoveActions {
 
             if(presentNanoTime - time >= 3000000000L) {
                 todoMove = random.nextInt(4) + 1;
-                if(character.isPossibleToMove(todoMove))
+                if(character.logicalIsPossibleToMove(todoMove))
                     activeMove = todoMove;
                 time = presentNanoTime;
             }
 
-            while(!character.isPossibleToMove(todoMove)) {
+            while(!character.logicalIsPossibleToMove(todoMove)) {
                 todoMove = random.nextInt(4) + 1;
                 activeMove = todoMove;
             }
@@ -93,38 +95,10 @@ public class MoveActions {
         return activeMove;
     }
     public int aiMove(Character character, int todoMove) {
-        /*if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
-            if(!isStuck) {
-                switch (activeMove) {
-                    case Constants.RIGHT:
-                        character.mapPositionX++;
-                        break;
-                    case Constants.LEFT:
-                        character.mapPositionX--;
-                        break;
-                    case Constants.UP:
-                        character.mapPositionY--;
-                        break;
-                    case Constants.DOWN:
-                        character.mapPositionY++;
-                        break;
-                }
+        //logical positions
 
-            }
-            isStuck = true;
-
-            System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
-            if(todoMove != Constants.NONE && character.isPossibleToMove(todoMove)) {
-                activeMove = todoMove;
-                System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
-                todoMove = Constants.NONE;
-            }
-        }else{
-            isStuck = false;
-        }*/
         if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
-
-            if(!isStuck) {
+            if(!isStuck && !firstIter) {
                 switch (activeMove) {
                     case Constants.RIGHT:
                         character.mapPositionX++;
@@ -141,16 +115,18 @@ public class MoveActions {
                 }
 
             }
+            firstIter = false;
             isStuck = true;
 
-            //System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove) + " from " + Constants.stringDirection(goingTo));
-            if(todoMove != Constants.NONE && character.isPossibleToMove(todoMove)) {
+            //System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
+            if(todoMove != Constants.NONE && character.logicalIsPossibleToMove(todoMove)) {
                 activeMove = todoMove;
-                System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
+                //System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
                 todoMove = Constants.NONE;
             }
         }else{
             isStuck = false;
+
         }
         return activeMove;
     }
@@ -167,6 +143,20 @@ public class MoveActions {
             return Constants.DOWN;
         else
             return null;
+    }
+    public static Point2D directionToVec(int direction) {
+        switch (direction) {
+            case Constants.UP:
+                return new Point2D(0, -1);
+            case Constants.DOWN:
+                return new Point2D(0, 1);
+            case Constants.RIGHT:
+                return new Point2D(1, 0);
+            case Constants.LEFT:
+                return new Point2D(-1, 0);
+            default:
+                return null;
+        }
     }
 
 }

@@ -7,11 +7,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 public class Block extends Pane {
-
     final int BLOCK_SIZE = 28;
     Body2D body;
     Point2D pointBlock;
     int mapX, mapY;
+
     public Block(float x, float y, Image imageBlock){
         pointBlock = new Point2D(x*BLOCK_SIZE, y*BLOCK_SIZE);
         body = new Body2D(new Sprite(new ImageView(imageBlock), pointBlock),
@@ -22,5 +22,22 @@ public class Block extends Pane {
         body.getSprite().getTexture().setTranslateY(BLOCK_SIZE*y);
 
         getChildren().add(body.getSprite().getTexture());
+    }
+
+    public Body2D getBody() {
+        return body;
+    }
+    public Point2D getLogicalPosition() {
+        return new Point2D(mapX, mapY);
+    }
+    public int getMapX(){
+        return mapX;
+    }
+    public int getMapY(){
+        return mapY;
+    }
+
+    public int getBLOCK_SIZE(){
+        return BLOCK_SIZE;
     }
 }

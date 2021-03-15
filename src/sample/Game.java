@@ -62,12 +62,12 @@ public class Game {
     }
     public void startGame(Stage primaryStage){
 
-        gridMap.loadBlocks();
-        gridMap.loadPillows();
+        gridMap.loadBlocks(root);
+        gridMap.loadPillows(root);
 
         loadInfoLabels();
         Graph<Point2D> graphMap = LevelData.createGraphMap(1);
-        System.out.println(graphMap.toString());
+        //System.out.println(graphMap.toString());
 
         BorderPane mainPane = this.createInfoBars();
         Scene scene = new Scene(mainPane, 21*28, 29*28);
@@ -118,10 +118,6 @@ public class Game {
         yellowMove.setTime(System.nanoTime());
         blueMove.setTime(System.nanoTime());
 
-        long[] temp_time = {System.nanoTime()};
-        int[] redDir = {Constants.UP, Constants.UP};
-        boolean[] first = {true};
-        int[] size = {0};
         new AnimationTimer()
         {
 
@@ -129,53 +125,26 @@ public class Game {
             public void handle(long presentNanoTime) {
                 pacman.activeMoving(pacMove.move(pacman, todoMove));
 
-                //logical positions
-                Point2D redPos = new Point2D(
-                        redGhost.mapPositionX,
-                        redGhost.mapPositionY
-                ), pacPos = new Point2D(
-                        pacman.mapPositionX,
-                        pacman.mapPositionY
-                );
+                Point2D redPos = redGhost.getBody().getLogicalPosFromPixelPos();
+                Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
+
+                System.out.println(redPos);
+                System.out.println(pacPos);
+
                 ArrayList<Point2D> points = null;
-
-                //if(presentNanoTime - temp_time[0] <= 4000000000L) {
-                    points = graphMap.nodeListToValueList(
-                            graphMap.breadthFirstSearching(
-                                    graphMap.getNode(redPos),
-                                    graphMap.getNode(pacPos)
-                            )
-                    );
-
-                    temp_time[0] = presentNanoTime;
-                //}
+                points = graphMap.nodeListToValueList(
+                        graphMap.DijkstraSearching(
+                                graphMap.getNode(redPos),
+                                graphMap.getNode(pacPos)
+                        )
+                );
                 Point2D vecPoint = points.get(0).subtract(redPos);
                 int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
-                //System.out.println("Vec: " + vecPoint.toString());
-                //System.out.println(Constants.stringDirection(direction));
-                if(first[0]) {
-                    first[0] = false;
-                    redDir[1] = direction;
-                    size[0] = points.size();
-                }
-                System.out.println("Direct: " + Constants.stringDirection(direction));
-                System.out.println("GhostPos: [x = " + redGhost.mapPositionX + ", y = " + redGhost.mapPositionY + "]");
-                System.out.println("PacmanPos: [x = " + pacman.mapPositionX + ", y = " + pacman.mapPositionY + "]");
 
-                if(direction != Constants.NONE) {
-                    redGhost.activeMoving(redMove.aiMove(redGhost, direction));
-                }
-                if(size[0] != points.size()) {
-                    redDir[0] = redDir[1];
-                    redDir[1] = direction;
-                    size[0] = points.size();
-                }
-//                System.out.println(graphMap.pathToString(
-//                        graphMap.breadthFirstSearching(
-//                                graphMap.getNode(redPos),
-//                                graphMap.getNode(pacPos)
-//                        ))
-//                );
+                System.out.println("Direct: " + Constants.stringDirection(direction));
+
+
+                redGhost.activeMoving(redMove.aiMove(redGhost, direction));
 
 
                 pinkGhost.activeMoving(pinkMove.randomMove(pinkGhost, presentNanoTime));
@@ -305,6 +274,8 @@ public class Game {
         return pacman;
     }
     public BorderPane createInfoBars(){
+
+        String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
 
         //Score and level-----
         currentLevelLabel = new Label(this.currentLevel + " LEVEL");

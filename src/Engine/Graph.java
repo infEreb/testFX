@@ -108,6 +108,36 @@ public class Graph<T> {
         });
         return values;
     }
+    public boolean setNodesPriority(T startNodeValue) { // false if has error
+        ArrayDeque<Node<T>> frontier = new ArrayDeque<>();
+
+        Node<T> startNode = getNode(startNodeValue);
+        if(startNode == null)
+            return false;
+
+        int priority = 0;
+
+        frontier.add(startNode);
+        ArrayList<Node<T>> hasPriority = new ArrayList<>();
+        startNode.setPriority(priority);
+        priority++;
+        hasPriority.add(startNode);
+
+
+        while(!frontier.isEmpty()) {
+            Node<T> current = frontier.poll();
+
+            for (Node<T> next: graph.get(current)) {
+                if(!hasPriority.contains(next)) {
+                    frontier.add(next);
+                    next.setPriority(priority);
+                    hasPriority.add(next);
+                }
+            }
+            priority++;
+        }
+        return true;
+    }
 
     //ALGORITHMS
     public ArrayList<Node<T>> breadthFirstSearching(Node<T> start, Node<T> destination) { //return path for destination
@@ -120,7 +150,7 @@ public class Graph<T> {
         while(!frontier.isEmpty()) {
             Node<T> current = frontier.poll();
 
-            if(current == destination) {
+            if(current == destination) { //early exit
                 break;
             }
 
@@ -151,8 +181,11 @@ public class Graph<T> {
         return path;
     }
     public ArrayList<Node<T>> DijkstraSearching(Node<T> start, Node<T> destination) {
+        if(!setNodesPriority(start.getValue())) // optional in this func
+            return null;
+
         PriorityQueue<Node<T>> frontier = new PriorityQueue<>(priorityComparator);
-        start.setPriority(0);
+        //start.setPriority(0);
         frontier.add(start);
         HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
         HashMap<Node<T>, Integer> cost_so_far = new HashMap<>();
@@ -160,7 +193,7 @@ public class Graph<T> {
         cost_so_far.put(start, 0);
 
         while(!frontier.isEmpty()) {
-            Node<T> current = frontier.peek();
+            Node<T> current = frontier.poll();
 
             if(current == destination) {
                 break;
@@ -198,7 +231,7 @@ public class Graph<T> {
         came_from.put(start, null);
 
         while(!frontier.isEmpty()) {
-            Node<T> current = frontier.peek();
+            Node<T> current = frontier.poll();
 
             if(current == destination) {
                 break;

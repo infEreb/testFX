@@ -15,6 +15,7 @@ public class Pacman extends Character implements Movable2D, Animation {
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
+        System.out.println(body.mapX + " " + body.mapY);
     }
 
     public SpriteAnimation getDeathAnimation() {

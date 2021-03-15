@@ -12,6 +12,7 @@ public class Body2D {
 
     Point2D position;
     Point2D velocity;
+    public int mapX, mapY;
 
     public Body2D(Sprite sprite, RigidBody2D rigidBody) {
 
@@ -19,6 +20,9 @@ public class Body2D {
         this.rigidBody = rigidBody;
         setPosition(sprite.getPosition());
         setVelocity(sprite.getVelocity());
+        //mapX = (int)position.getX()/28;
+        //mapY = (int)position.getY()/28;
+
     }
 
     public Sprite getSprite() {
@@ -40,6 +44,12 @@ public class Body2D {
     }
     public void setPosition(Point2D position) {
         this.position = position;
+    }
+    public Point2D getLogicalPosition() {
+        return new Point2D(mapX, mapY);
+    }
+    public Point2D getLogicalPosFromPixelPos(){
+        return new Point2D((int)position.getX()/28, (int)position.getY()/28);
     }
 
     public Point2D getVelocity() {

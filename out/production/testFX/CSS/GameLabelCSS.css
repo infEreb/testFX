@@ -20,6 +20,7 @@
     -fx-border-color: aliceblue;
     -fx-text-fill: aliceblue;
 }
-@font-face {
+.font-face {
+    -fx-font-family: 'PacmanFonts';
     src: url('/res/PacmanFonts.ttf');
 }
