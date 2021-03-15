@@ -10,8 +10,10 @@ import java.util.HashMap;
 
 public class SpriteAnimation extends Transition {
     private final HashMap<Integer, ArrayList<Sprite>> spriteMap; // <Direction, Sprites>
+    private final ArrayList<Sprite> sprites;
     private Sprite currentSprite;
-    private int diraction;
+    private int currentSpriteIndex;
+    private int direction;
     private double timer;
     private final int count;
     private final double duration;
@@ -22,31 +24,77 @@ public class SpriteAnimation extends Transition {
         this.spriteMap  = spriteMap;
         this.count      = spriteMap.get(Constants.UP).size();
         this.duration   = duration;
-        currentSprite = spriteMap.get(Constants.UP).get(0);
+        this.currentSpriteIndex = 0;
+        try {
+            currentSprite = spriteMap.get(Constants.UP).get(currentSpriteIndex).clone();
+        }catch (Exception ex){
+            currentSprite = null;
+        }
         timer = 0;
+        sprites = null;
+        setCycleDuration(Duration.seconds(this.duration));
+        setInterpolator(Interpolator.LINEAR);
+        setCycleCount(INDEFINITE);
+    }
+    public SpriteAnimation(
+            ArrayList<Sprite> sprites,
+            double duration) {
+        this.sprites  = sprites;
+        this.count      = sprites.size();
+        this.duration   = duration;
+        this.currentSpriteIndex = 0;
+        try {
+            currentSprite = sprites.get(currentSpriteIndex).clone();
+        }catch (Exception ex){
+            currentSprite = null;
+        }
 
+        timer = 0;
+        spriteMap = null;
         setCycleDuration(Duration.seconds(this.duration));
         setInterpolator(Interpolator.LINEAR);
         setCycleCount(INDEFINITE);
     }
 
-    public int getDiraction() {
-        return diraction;
+    public int getDirection() {
+        return direction;
     }
-    public void setDiraction(int diraction) {
-        this.diraction = diraction;
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
     public Sprite getCurrentSprite() {
         return currentSprite;
     }
 
-    public void interpolate(double k) { // 0.0 - 1.0
-        int index = (int)caclcSpriteIndex(k);
-        currentSprite = spriteMap.get(this.getDiraction()).get(index);
+    public ArrayList<Sprite> getSprites() {
+        return sprites;
     }
 
-    public double caclcSpriteIndex(double k) {
+    public void interpolate(double k) { // 0.0 - 1.0
+        int index = (int)calcSpriteIndex(k);
+        if(sprites == null) {
+            currentSprite = spriteMap.get(this.getDirection()).get(index);
+        }else{
+            try {
+                currentSprite = sprites.get(index).clone();
+            }catch (Exception ex){
+                currentSprite = null;
+            }
+        }
+        this.currentSpriteIndex = index;
+    }
+    public int getCurrentSpriteIndex(){
+        return this.currentSpriteIndex;
+    }
+    public int getCount(){
+        return count;
+    }
+    /*public void printSpriteMap(){
+        for(ArrayList<Sprite>sprites: sprites)
+        System.out.println(spriteMap);
+    }*/
+    public double calcSpriteIndex(double k) {
         double e1 = 1.0/count; // +epsilon
         for(double e0 = 0; e0 < 1.0; e0+=1.0/count) { // -epsilon
             if(k >= e0 && k <= e1) {

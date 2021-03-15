@@ -1,6 +1,7 @@
 package Constructor;
 
 import Engine.Constants;
+import Engine.RigidBody2D;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 
@@ -12,9 +13,17 @@ public class Character extends Pane {
     protected int [][] mapLevelData;
     public int mapPositionX;
     public int mapPositionY;
+    private final Sprite initialSprite;
 
     public Character(Body2D body, SpriteAnimation animation) {
+        Sprite initialSprite1;
         this.body = body;
+        try {
+            initialSprite1 = body.getSprite().clone();
+        }catch (CloneNotSupportedException ex){
+            initialSprite1 = null;
+        }
+        this.initialSprite = initialSprite1;
         this.moveAnimation = animation;
         mapLevelData = LevelData.levels[0];
         getChildren().add(0, body.getSprite().getTexture());
@@ -27,7 +36,7 @@ public class Character extends Pane {
         return moveAnimation;
     }
     public void move(Point2D velocity, double speed, int direction) {
-        this.getAnimation().setDiraction(direction);
+        this.getAnimation().setDirection(direction);
         this.getAnimation().play();
         this.render();
 
@@ -48,7 +57,23 @@ public class Character extends Pane {
     public void setMapPositionY(double pixelPositionY){
         this.mapPositionY = (int) pixelPositionY / 28;
     }
-
+    public void setStartedPosition(int x, int y){
+        this.setTranslateX(x);
+        this.setTranslateY(y);
+        body.setPosition(new Point2D(x, y));
+        this.setMapPositionX(x);
+        this.setMapPositionY(y);
+    }
+    public void setStartedPositionAfterPacmanDeath(int x, int y){
+        this.setStartedPosition(x, y);
+        body.setRigidBody(new RigidBody2D(x, y,
+                body.getRigidBody().getWidth(), body.getRigidBody().getHeight()));
+        body.setSprite(initialSprite);
+//        body.getSprite().setPosition(new Point2D(0, 0));
+        body.setVelocity(new Point2D(0, 0));
+        getChildren().clear();
+        getChildren().add(body.getSprite().getTexture());
+    }
     public boolean logicalIsPossibleToMove(int move){
         if(mapPositionX >= 0 && mapPositionX <= LevelData.mapXMax-1 && mapPositionY >= 0 && mapPositionY < LevelData.mapYMax-1 ) {
             switch(move){

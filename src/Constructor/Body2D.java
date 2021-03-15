@@ -29,7 +29,10 @@ public class Body2D {
         return sprite;
     }
     public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
+        try {
+            this.sprite = sprite.clone();
+        }catch (Exception ex){
+        }
     }
 
     public RigidBody2D getRigidBody() {

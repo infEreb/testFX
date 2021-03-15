@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
 
-public class Sprite extends Parent {
+public class Sprite extends Parent implements Cloneable{
     private ImageView texture;
     Point2D position;
     Point2D velocity;
@@ -40,8 +40,13 @@ public class Sprite extends Parent {
         velocity = new Point2D(velX, velY);
         width = texture.getImage().getWidth();
         height = texture.getImage().getHeight();
+
     }
 
+    public Sprite clone() throws CloneNotSupportedException{
+
+        return (Sprite) super.clone();
+    }
 
     public ImageView getTexture() {
         return texture;

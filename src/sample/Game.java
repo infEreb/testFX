@@ -29,6 +29,8 @@ public class Game {
     private int maxLives;
     public static int currentLives;
     private Integer countFruit;
+    ArrayList<Ghost> ghosts;
+    ArrayList<MoveActions> pacmanAndGhostMovements;
 
 
     public static Pane root;
@@ -49,8 +51,8 @@ public class Game {
         root = new Pane();
         activeMove = Constants.NONE;
         todoMove = Constants.NONE;
-        pIsStuck = true;
-        rgIsStuck = true;
+        ghosts = new ArrayList<>();
+        pacmanAndGhostMovements = new ArrayList<>();
     }
     private void loadInfoLabels(){
         currentLevel = 1;
@@ -78,51 +80,67 @@ public class Game {
 
         primaryStage.setScene(scene);
         scene.setOnKeyPressed(
-                new EventHandler<KeyEvent>() {
-                    @Override
-                    public void handle(KeyEvent keyEvent) {
-                        switch (keyEvent.getCode().toString()) {
-                            case "W":
-                                todoMove = Constants.UP;
-                                break;
-                            case "S":
-                                todoMove = Constants.DOWN;
-                                break;
-                            case "D":
-                                todoMove = Constants.RIGHT;
-                                break;
-                            case "A":
-                                todoMove = Constants.LEFT;
-                                break;
-                        }
+                keyEvent -> {
+                    switch (keyEvent.getCode().toString()) {
+                        case "W":
+                            todoMove = Constants.UP;
+                            break;
+                        case "S":
+                            todoMove = Constants.DOWN;
+                            break;
+                        case "D":
+                            todoMove = Constants.RIGHT;
+                            break;
+                        case "A":
+                            todoMove = Constants.LEFT;
+                            break;
+                    }
 
                     }
-                }
+
         );
 
         Pacman pacman = createPacman();
         MoveActions pacMove = new MoveActions();
+        pacmanAndGhostMovements.add(pacMove);
 
         Ghost redGhost = createGhost(Constants.Red);
         MoveActions redMove = new MoveActions();
+        ghosts.add(redGhost);
+        pacmanAndGhostMovements.add(redMove);
+
         Ghost pinkGhost = createGhost(Constants.Pink);
         MoveActions pinkMove = new MoveActions();
+        ghosts.add(pinkGhost);
+        pacmanAndGhostMovements.add(pinkMove);
+
         Ghost yellowGhost = createGhost(Constants.Yellow);
         MoveActions yellowMove = new MoveActions();
+        ghosts.add(yellowGhost);
+        pacmanAndGhostMovements.add(yellowMove);
+
         Ghost blueGhost = createGhost(Constants.Blue);
         MoveActions blueMove = new MoveActions();
+        ghosts.add(blueGhost);
+        pacmanAndGhostMovements.add(blueMove);
 
         root.getChildren().addAll(pacman, redGhost, pinkGhost, blueGhost, yellowGhost);
-        redMove.setTime(System.nanoTime());
-        pinkMove.setTime(System.nanoTime());
-        yellowMove.setTime(System.nanoTime());
-        blueMove.setTime(System.nanoTime());
+
+        //setting nanoTime for each moveActions
+        for(int i = 0; i < pacmanAndGhostMovements.size(); i++){
+            pacmanAndGhostMovements.get(i).setTime(System.nanoTime());
+        }
 
         new AnimationTimer()
         {
 
             @Override
             public void handle(long presentNanoTime) {
+            if(!pacman.isDead) {
+                if (pacman.isKilled(ghosts)) {
+                    pacman.pacmanDeadAnimation(pacMove.getActiveMove());
+                    return;
+                }
                 pacman.activeMoving(pacMove.move(pacman, todoMove));
 
                 Point2D redPos = redGhost.getBody().getLogicalPosFromPixelPos();
@@ -152,6 +170,22 @@ public class Game {
                 blueGhost.activeMoving(blueMove.randomMove(blueGhost, presentNanoTime));
 
             }
+            else{
+                for(int i = 0; i < pacmanAndGhostMovements.size(); i++){
+                    pacmanAndGhostMovements.get(i).startedMovementCondition();
+                }
+                pacman.setAnimationDeathStarted(false);
+                pacman.setStartedPositionAfterPacmanDeath(12*28, 14*28);
+                redGhost.setStartedPositionAfterPacmanDeath(12*28, 11*28);
+                pinkGhost.setStartedPositionAfterPacmanDeath(12*28, 11*28);
+                yellowGhost.setStartedPositionAfterPacmanDeath(12*28, 11*28);
+                blueGhost.setStartedPositionAfterPacmanDeath(12*28, 11*28);
+
+                pacman.isDead = false;
+                todoMove = Constants.NONE;
+
+            }
+            }
         }.start();
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -163,21 +197,21 @@ public class Game {
 
         Sprite g_s = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
                 new Point2D(0, 0));
-        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0u.png"),
                 new Point2D(0, 0));
-        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1u.png"),
                 new Point2D(0, 0));
-        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0d.png"),
                 new Point2D(0, 0));
-        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1d.png"),
                 new Point2D(0, 0));
-        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0l.png"),
                 new Point2D(0, 0));
-        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1l.png"),
                 new Point2D(0, 0));
-        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
+        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0r.png"),
                 new Point2D(0, 0));
-        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1.png"),
+        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-1r.png"),
                 new Point2D(0, 0));
 
         //============ SPRITE LIST ANIMATION ============
@@ -203,11 +237,8 @@ public class Game {
         Body2D ghostBody = new Body2D(g_s,
                 new RigidBody2D(12 * 28, 11 * 28, g_s.getWidth(), g_s.getHeight()));
         Ghost ghost = new Ghost(ghostBody, new SpriteAnimation(ghostSprites, 0.15));
-        ghost.setTranslateX(12*28);
-        ghost.setTranslateY(11*28);
-        ghost.getBody().setPosition(new Point2D(12*28, 11*28));
-        ghost.setMapPositionX(ghost.getBody().getPosition().getX());
-        ghost.setMapPositionY(ghost.getBody().getPosition().getY());
+
+        ghost.setStartedPosition(12*28, 11*28);
 
         return ghost;
     }
@@ -260,17 +291,20 @@ public class Game {
         pacmanSprites.put(Constants.LEFT, left);
         pacmanSprites.put(Constants.RIGHT, right);
 
+        //death sprites
+        ArrayList<Sprite> spritesDeath = new ArrayList<>();
+        for(int i = 0; i < 11; i++){
+            spritesDeath.add(new Sprite(new ImageView("/res/Pacman/Death/d-"+ i +".png"), new Point2D(0, 0)));
+        }
+        SpriteAnimation deathAnimation = new SpriteAnimation(spritesDeath, 4);
         Body2D pacmanBody2d = new Body2D(p_up0,
                 new RigidBody2D(12*28,
                         14*28, p_up0.getWidth(), p_up0.getHeight()));
 
         Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
-        pacman.setTranslateX(12*28);
-        pacman.setTranslateY(14*28);
-        pacman.getBody().setPosition(new Point2D(12*28, 14*28));
-        pacman.setMapPositionX(pacman.getBody().getPosition().getX());
-        pacman.setMapPositionY(pacman.getBody().getPosition().getY());
+        pacman.setDeathAnimation(deathAnimation);
 
+        pacman.setStartedPosition(12*28, 14*28);
         return pacman;
     }
     public BorderPane createInfoBars(){

@@ -3,12 +3,16 @@ package sample;
 import Constructor.*;
 import Constructor.Character;
 import Engine.Constants;
+import javafx.animation.RotateTransition;
+import javafx.geometry.Point2D;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 
 
 public class Pacman extends Character implements Movable2D, Animation {
-
+    private boolean animationDeathStarted = false;
     public boolean isDead = false;
     private SpriteAnimation deathAnimation;
 
@@ -35,6 +39,18 @@ public class Pacman extends Character implements Movable2D, Animation {
             this.eatBigPillow();
         }
     }
+
+    public void setAnimationDeathStarted(boolean animationDeathStarted) {
+        this.animationDeathStarted = animationDeathStarted;
+    }
+
+    public void renderDeath(){
+//        body.getSprite().setTexture(deathAnimation.getCurrentSprite().getTexture());
+
+        getChildren().clear();
+        getChildren().addAll(deathAnimation.getCurrentSprite().getTexture());
+
+    }
     private void eatSmallPillow(){
         Fruit removedPillow = null;
         for (Fruit pillow: GridMap.listOfPillows) {
@@ -60,15 +76,33 @@ public class Pacman extends Character implements Movable2D, Animation {
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
 
-    void isDead(ArrayList<Ghost> listGhost){
-        for(Ghost ghost: listGhost){
-            if(this.getBody().intersects(ghost.getBody())){
-                
+    public boolean isKilled(ArrayList<Ghost> ghosts){
+        for(Ghost ghost: ghosts){
+            if(ghost.getBody().intersects(this.getBody())){
+                return true;
             }
         }
+        return false;
     }
-    void die(){
+    private void setProperAngelAnimation(int activeMove){
+        deathAnimation.getSprites().forEach(sprite -> {
+            sprite.getTexture().setRotate(90*(activeMove-1));
+        });
+    }
+    public void pacmanDeadAnimation(int activeMove){
+        if(!animationDeathStarted)
+        {
+            setProperAngelAnimation(activeMove);
+            animationDeathStarted = true;
+        }
+        this.deathAnimation.play();
+        this.renderDeath();
+        if(this.deathAnimation.getCurrentSpriteIndex() == this.deathAnimation.getCount()-1) {
+            this.isDead = true;
+        }
 
     }
+
+
 
 }

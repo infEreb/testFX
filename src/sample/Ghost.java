@@ -11,7 +11,7 @@ public class Ghost extends Character implements Animation, Movable2D {
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
-        this.moveAnimation.setDiraction(Constants.UP);
+        this.moveAnimation.setDirection(Constants.UP);
         isDead = false;
     }
 

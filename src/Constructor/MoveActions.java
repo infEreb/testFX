@@ -24,6 +24,13 @@ public class MoveActions {
         this.time = time;
     }
 
+    public int getActiveMove() {
+        return this.activeMove;
+    }
+    public void startedMovementCondition(){
+        this.activeMove = Constants.NONE;
+        this.isStuck = false;
+    }
     public int move(Character character, int todoMove) {
         if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
             if(!isStuck) {
