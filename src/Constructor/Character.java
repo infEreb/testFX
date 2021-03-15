@@ -157,8 +157,8 @@ public class Character extends Pane {
 
     }
     public void render() {
-        body.getSprite().setTexture(moveAnimation.getCurrentSprite().getTexture());
+//        body.getSprite().setTexture(moveAnimation.getCurrentSprite().getTexture());
         getChildren().clear();
-        getChildren().addAll(body.getSprite().getTexture());
+        getChildren().addAll(moveAnimation.getCurrentSprite().getTexture());
     }
 }
