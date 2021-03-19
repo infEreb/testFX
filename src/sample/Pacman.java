@@ -95,6 +95,7 @@ public class Pacman extends Character implements Movable2D, Animation {
 //            setProperAngelAnimation(activeMove);
 //            animationDeathStarted = true;
 //        }
+        if(activeMove == Constants.NONE) activeMove = Constants.UP;
         this.deathAnimation.setDirection(activeMove);
         this.deathAnimation.play();
         this.renderDeath();
