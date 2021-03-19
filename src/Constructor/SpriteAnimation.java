@@ -17,6 +17,7 @@ public class SpriteAnimation extends Transition {
     private double timer;
     private final int count;
     private final double duration;
+    public double k;
 
     public SpriteAnimation(
             HashMap<Integer, ArrayList<Sprite>> spriteMap,
@@ -72,6 +73,7 @@ public class SpriteAnimation extends Transition {
     }
 
     public void interpolate(double k) { // 0.0 - 1.0
+        this.k = k;
         int index = (int)calcSpriteIndex(k);
         if(sprites == null) {
             currentSprite = spriteMap.get(this.getDirection()).get(index);
