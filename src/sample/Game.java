@@ -329,7 +329,7 @@ public class Game {
             deathSprites.put(n, spritesDeath);
             spritesDeath = new ArrayList<>();
         }
-        SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 4);
+        SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 2);
         pacman.setDeathAnimation(deathAnimation);
         pacman.getDeathAnimation().setCycleCount(1);
     }
