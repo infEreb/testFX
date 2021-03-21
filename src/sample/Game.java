@@ -34,6 +34,7 @@ public class Game {
     HBox pacmanLives;
     ArrayList<MoveActions> pacmanAndGhostMovements;
     ArrayList<ImageView> listPacmanLives;
+    Button menuButton;
 
 
     public static Pane root;
@@ -73,8 +74,11 @@ public class Game {
         Graph<Point2D> graphMap = LevelData.createGraphMap(1);
         //System.out.println(graphMap.toString());
 
+        StackPane stackPane = new StackPane();
         BorderPane mainPane = this.createInfoBars();
-        Scene scene = new Scene(mainPane, 21*28, 29*28);
+        stackPane.setLayoutX(-28*2);
+        stackPane.getChildren().add(mainPane);
+        Scene scene = new Scene(stackPane, 21*28, 29*28);
 
         String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
         scene.getStylesheets().add(stylesheet);
@@ -138,6 +142,20 @@ public class Game {
 
             @Override
             public void handle(long presentNanoTime) {
+                menuButton.setOnMouseClicked(event ->{
+                    Button resume = new Button("Resume");
+                    Button quit = new Button("Quit");
+                    StackPane backgroundMenu = new StackPane();
+                    showMenu(stackPane, backgroundMenu, resume, quit);
+                    resume.setOnMouseClicked(mouseEvent -> {
+                        stackPane.getChildren().remove(backgroundMenu);
+                        start();
+                    });
+                    quit.setOnMouseClicked(mouseEvent -> {
+                        primaryStage.close();
+                    });
+                    stop();
+                });
                 if(currentCountLives > 0) {
                     if (!pacman.isDead) {
                         if (pacman.isKilled(ghosts)) {
@@ -187,7 +205,6 @@ public class Game {
                         pacmanLives.getChildren().remove(listPacmanLives.get(currentCountLives - 1));
                         listPacmanLives.remove(currentCountLives - 1);
                         currentCountLives--;
-
                         pacman.isDead = false;
                         todoMove = Constants.NONE;
 
@@ -201,6 +218,21 @@ public class Game {
         primaryStage.show();
     }
 
+    void showMenu(StackPane stackPane, StackPane backgroundMenu, Button resume, Button quit){
+        backgroundMenu.setPrefSize(24*28, 29*28);
+        VBox menu = new VBox();
+        Label pauseLabel = new Label("PAUSED");
+        menu.getChildren().addAll(pauseLabel, resume, quit);
+        resume.getStyleClass().add("menu-buttons");
+        quit.getStyleClass().add("menu-buttons");
+        VBox.setMargin(resume, new Insets(10, 0, 15, 0));
+        backgroundMenu.setPadding(new Insets(0, 0, 0, 55));
+        menu.setAlignment(Pos.CENTER);
+        backgroundMenu.setAlignment(Pos.CENTER);
+        backgroundMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
+        backgroundMenu.getChildren().add(menu);
+        stackPane.getChildren().add(backgroundMenu);
+    }
 
     void gameOver(Pacman pacman, ArrayList<Ghost> ghosts){
         root.getChildren().removeAll(pacman);
@@ -355,7 +387,8 @@ public class Game {
         //-----------------
 
         //Menu button-----
-        Button menuButton = new Button("MENU");
+        menuButton = new Button("MENU");
+
         //----------------
 
         //Upper main bar---------------
@@ -404,7 +437,7 @@ public class Game {
         BorderPane.setAlignment(bottomBox, Pos.CENTER);
         BorderPane.setMargin(scoreBar, new Insets(0, 0, 0, 50));
         BorderPane.setMargin(bottomBox, new Insets(0, 10, 5, 60));
-        mainPane.setLayoutX(-28*2);
+//        mainPane.setLayoutX(-28*2);
         mainPane.setBackground(new Background(new BackgroundFill(Color.BLACK,
                 CornerRadii.EMPTY,
                 Insets.EMPTY)));

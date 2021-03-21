@@ -68,8 +68,7 @@ public class Body2D {
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());
     }
     public void render(GraphicsContext gc, Image texture) {
-        sprite.setTexture(new ImageView(texture));
-        gc.drawImage(sprite.getTexture().getImage(), position.getX(), position.getY());
+        gc.drawImage(texture, position.getX(), position.getY());
     }
 
     public boolean intersects(Body2D anotherBody) {

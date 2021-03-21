@@ -26,11 +26,12 @@ public class SpriteAnimation extends Transition {
         this.count      = spriteMap.get(Constants.UP).size();
         this.duration   = duration;
         this.currentSpriteIndex = 0;
-        try {
+        /*try {
             currentSprite = spriteMap.get(Constants.UP).get(currentSpriteIndex).clone();
         }catch (Exception ex){
             currentSprite = null;
-        }
+        }*/
+        currentSprite = spriteMap.get(Constants.UP).get(currentSpriteIndex);
         timer = 0;
         sprites = null;
         setCycleDuration(Duration.seconds(this.duration));
@@ -44,12 +45,12 @@ public class SpriteAnimation extends Transition {
         this.count      = sprites.size();
         this.duration   = duration;
         this.currentSpriteIndex = 0;
-        try {
+       /* try {
             currentSprite = sprites.get(currentSpriteIndex).clone();
         }catch (Exception ex){
             currentSprite = null;
-        }
-
+        }*/
+        currentSprite = sprites.get(currentSpriteIndex);
         timer = 0;
         spriteMap = null;
         setCycleDuration(Duration.seconds(this.duration));
@@ -78,11 +79,12 @@ public class SpriteAnimation extends Transition {
         if(sprites == null) {
             currentSprite = spriteMap.get(this.getDirection()).get(index);
         }else{
-            try {
+           /* try {
                 currentSprite = sprites.get(index).clone();
             }catch (Exception ex){
                 currentSprite = null;
-            }
+            }*/
+            currentSprite = sprites.get(index);
         }
         this.currentSpriteIndex = index;
     }
