@@ -24,3 +24,12 @@
     -fx-font-family: 'PacmanFonts';
     src: url('/res/PacmanFonts.ttf');
 }
+.menu-buttons{
+    -fx-text-fill: lightslategrey;
+    -fx-background-color: black;
+    -fx-font-size: 17px;
+    -fx-font-family: 'Press Start 2P';
+    -fx-border-color: dimgray;
+    -fx-border-width: 3px;
+    -fx-border-radius: 8px;
+}
