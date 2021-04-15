@@ -9,6 +9,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 public class Pacman extends Character implements Movable2D, Animation {
@@ -19,7 +20,7 @@ public class Pacman extends Character implements Movable2D, Animation {
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
-        System.out.println(body.mapX + " " + body.mapY);
+        //System.out.println(body.mapX + " " + body.mapY);
     }
 
     public SpriteAnimation getDeathAnimation() {
@@ -76,7 +77,7 @@ public class Pacman extends Character implements Movable2D, Animation {
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
 
-    public boolean isKilled(ArrayList<Ghost> ghosts){
+    public boolean isKilled(Collection<Ghost> ghosts){
         for(Ghost ghost: ghosts){
             if(ghost.getBody().intersects(this.getBody())){
                 return true;
@@ -90,11 +91,13 @@ public class Pacman extends Character implements Movable2D, Animation {
         });
     }
     public void pacmanDeadAnimation(int activeMove){
-//        if(!animationDeathStarted)
-//        {
+        if(!animationDeathStarted)
+        {
 //            setProperAngelAnimation(activeMove);
-//            animationDeathStarted = true;
-//        }
+            animationDeathStarted = true;
+            Constants.soundDead.playSound();
+
+        }
         if(activeMove == Constants.NONE) activeMove = Constants.UP;
         this.deathAnimation.setDirection(activeMove);
         this.deathAnimation.play();

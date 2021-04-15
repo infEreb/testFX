@@ -12,35 +12,40 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.lang.Character;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Game {
     private Integer currentLevel;
     public static Integer currentScore;
     private Integer maxScore;
     private int maxLives;
-    private int currentCountLives;
+    public static int currentCountLives;
     private Integer countFruit;
-    ArrayList<Ghost> ghosts;
-    HBox pacmanLives;
-    ArrayList<MoveActions> pacmanAndGhostMovements;
-    ArrayList<ImageView> listPacmanLives;
-    Button menuButton;
+    Map<Integer, Ghost> ghosts;
+    public static HBox pacmanLives;
+    Map<Integer, MoveActions> pacmanAndGhostMovements;
+    public static ArrayList<ImageView> listPacmanLives;
+    public static Button menuButton;
 
 
     public static Pane root;
     public static GridMap gridMap;
     int activeMove;
-    int todoMove;
+    public static int todoMove;
 
     //Static labels
     public static Label currentLevelLabel;
@@ -53,9 +58,11 @@ public class Game {
         root = new Pane();
         activeMove = Constants.NONE;
         todoMove = Constants.NONE;
-        ghosts = new ArrayList<>();
-        pacmanAndGhostMovements = new ArrayList<>();
+        ghosts = new HashMap<>();
+        pacmanAndGhostMovements = new HashMap<>();
+
         listPacmanLives = new ArrayList<>();
+
     }
     private void loadInfoLabels(){
         currentLevel = 1;
@@ -78,6 +85,7 @@ public class Game {
         BorderPane mainPane = this.createInfoBars();
         stackPane.setLayoutX(-28*2);
         stackPane.getChildren().add(mainPane);
+        //28
         Scene scene = new Scene(stackPane, 21*28, 29*28);
 
         String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
@@ -108,27 +116,27 @@ public class Game {
 
         Pacman pacman = createPacman();
         MoveActions pacMove = new MoveActions();
-        pacmanAndGhostMovements.add(pacMove);
+        pacmanAndGhostMovements.put(Constants.PACMAN, pacMove);
 
-        Ghost redGhost = createGhost(Constants.Red);
+        Ghost redGhost = createGhost(Constants.RED_STR);
         MoveActions redMove = new MoveActions();
-        ghosts.add(redGhost);
-        pacmanAndGhostMovements.add(redMove);
+        ghosts.put(Constants.RED, redGhost);
+        pacmanAndGhostMovements.put(Constants.RED, redMove);
 
-        Ghost pinkGhost = createGhost(Constants.Pink);
+        Ghost pinkGhost = createGhost(Constants.PINK_STR);
         MoveActions pinkMove = new MoveActions();
-        ghosts.add(pinkGhost);
-        pacmanAndGhostMovements.add(pinkMove);
+        ghosts.put(Constants.PINK, pinkGhost);
+        pacmanAndGhostMovements.put(Constants.PINK, pinkMove);
 
-        Ghost yellowGhost = createGhost(Constants.Yellow);
+        Ghost yellowGhost = createGhost(Constants.YELLOW_STR);
         MoveActions yellowMove = new MoveActions();
-        ghosts.add(yellowGhost);
-        pacmanAndGhostMovements.add(yellowMove);
+        ghosts.put(Constants.YELLOW, yellowGhost);
+        pacmanAndGhostMovements.put(Constants.YELLOW, yellowMove);
 
-        Ghost blueGhost = createGhost(Constants.Blue);
+        Ghost blueGhost = createGhost(Constants.BLUE_STR);
         MoveActions blueMove = new MoveActions();
-        ghosts.add(blueGhost);
-        pacmanAndGhostMovements.add(blueMove);
+        ghosts.put(Constants.BLUE, blueGhost);
+        pacmanAndGhostMovements.put(Constants.BLUE, blueMove);
 
         root.getChildren().addAll(pacman, redGhost, pinkGhost, blueGhost, yellowGhost);
 
@@ -137,12 +145,15 @@ public class Game {
             pacmanAndGhostMovements.get(i).setTime(System.nanoTime());
         }
 
-        new AnimationTimer()
+        GameLoop gameHandle = new GameLoop(pacman, ghosts, pacmanAndGhostMovements, stackPane, primaryStage);
+        gameHandle.start();
+        /*new AnimationTimer()
         {
 
             @Override
             public void handle(long presentNanoTime) {
-                menuButton.setOnMouseClicked(event ->{
+
+                *//*menuButton.setOnMouseClicked(event ->{
                     Button resume = new Button("Resume");
                     Button quit = new Button("Quit");
                     StackPane backgroundMenu = new StackPane();
@@ -155,7 +166,8 @@ public class Game {
                         primaryStage.close();
                     });
                     stop();
-                });
+                });*//*
+
                 if(currentCountLives > 0) {
                     if (!pacman.isDead) {
                         if (pacman.isKilled(ghosts)) {
@@ -213,35 +225,11 @@ public class Game {
                     gameOver(pacman, ghosts);
                 }
             }
-        }.start();
+        }.start();*/
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
-    void showMenu(StackPane stackPane, StackPane backgroundMenu, Button resume, Button quit){
-        backgroundMenu.setPrefSize(24*28, 29*28);
-        VBox menu = new VBox();
-        Label pauseLabel = new Label("PAUSED");
-        menu.getChildren().addAll(pauseLabel, resume, quit);
-        resume.getStyleClass().add("menu-buttons");
-        quit.getStyleClass().add("menu-buttons");
-        VBox.setMargin(resume, new Insets(10, 0, 15, 0));
-        backgroundMenu.setPadding(new Insets(0, 0, 0, 55));
-        menu.setAlignment(Pos.CENTER);
-        backgroundMenu.setAlignment(Pos.CENTER);
-        backgroundMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-        backgroundMenu.getChildren().add(menu);
-        stackPane.getChildren().add(backgroundMenu);
-    }
-
-    void gameOver(Pacman pacman, ArrayList<Ghost> ghosts){
-        root.getChildren().removeAll(pacman);
-        root.getChildren().removeAll(ghosts);
-        ImageView gameOverText = new ImageView("/res/gameover.png");
-        gameOverText.setTranslateX(9*28+18);
-        gameOverText.setTranslateY(14*28+6);
-        root.getChildren().add(gameOverText);
-    }
     private Ghost createGhost(String color) {
 
         Sprite g_s = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
@@ -355,7 +343,7 @@ public class Game {
         HashMap<Integer, ArrayList<Sprite>> deathSprites = new HashMap<>();
         for(int n = 1; n <= 4; n++) {
             for (int i = 0; i < 11; i++) {
-                System.out.println("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png");
+                //System.out.println("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png");
                 spritesDeath.add(new Sprite(new ImageView("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png"), new Point2D(0, 0)));
             }
             deathSprites.put(n, spritesDeath);
