@@ -2,56 +2,31 @@ package sample;
 
 import Constructor.*;
 import Engine.Constants;
-import Engine.Graph;
 import Engine.RigidBody2D;
-import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.lang.Character;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class Game {
-    private Integer currentLevel;
-    public static Integer currentScore;
-    private Integer maxScore;
-    private int maxLives;
-    public static int currentCountLives;
-    private Integer countFruit;
+
     Map<Integer, Ghost> ghosts;
-    public static HBox pacmanLives;
+    Pacman pacman;
+
     Map<Integer, MoveActions> pacmanAndGhostMovements;
-    public static ArrayList<ImageView> listPacmanLives;
-    public static Button menuButton;
+
 
 
     public static Pane root;
     public static GridMap gridMap;
     int activeMove;
     public static int todoMove;
-
-    //Static labels
-    public static Label currentLevelLabel;
-    public static Label currentScoreLabel;
-    public static Label maxScoreLabel;
-    public static Label countFruitLabel;
 
     public Game(){
         gridMap = new GridMap();
@@ -61,37 +36,18 @@ public class Game {
         ghosts = new HashMap<>();
         pacmanAndGhostMovements = new HashMap<>();
 
-        listPacmanLives = new ArrayList<>();
 
     }
-    private void loadInfoLabels(){
-        currentLevel = 1;
-        currentScore = 0;
-        maxScore = GridMap.listOfPillows.size() * Constants.SCORE_FOR_PILLOW;
-        maxLives = 4;
-        countFruit = 1;
-        currentCountLives = maxLives;
-    }
+
     public void startGame(Stage primaryStage){
 
         gridMap.loadBlocks(root);
         gridMap.loadPillows(root);
 
-        loadInfoLabels();
-        Graph<Point2D> graphMap = LevelData.createGraphMap(1);
-        //System.out.println(graphMap.toString());
+        InfoBar infoBar = new InfoBar(primaryStage);
+        infoBar.doSettingForInfoBars();
 
-        StackPane stackPane = new StackPane();
-        BorderPane mainPane = this.createInfoBars();
-        stackPane.setLayoutX(-28*2);
-        stackPane.getChildren().add(mainPane);
-        //28
-        Scene scene = new Scene(stackPane, 21*28, 29*28);
-
-        String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
-        scene.getStylesheets().add(stylesheet);
-        scene.setFill(Color.BLACK);
-
+        Scene scene = infoBar.getScene();
         primaryStage.setScene(scene);
         scene.setOnKeyPressed(
                 keyEvent -> {
@@ -114,7 +70,25 @@ public class Game {
 
         );
 
-        Pacman pacman = createPacman();
+        createCharactersAndMoveActions();
+
+        root.getChildren().add(pacman);
+        root.getChildren().addAll(ghosts.values());
+
+        //setting nanoTime for each moveActions
+        for(int i = 0; i < pacmanAndGhostMovements.size(); i++){
+            pacmanAndGhostMovements.get(i).setTime(System.nanoTime());
+        }
+
+        GameLoop gameHandle = new GameLoop(pacman, ghosts, pacmanAndGhostMovements, infoBar);
+        gameHandle.start();
+
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
+    void createCharactersAndMoveActions(){
+        pacman = createPacman();
         MoveActions pacMove = new MoveActions();
         pacmanAndGhostMovements.put(Constants.PACMAN, pacMove);
 
@@ -137,99 +111,7 @@ public class Game {
         MoveActions blueMove = new MoveActions();
         ghosts.put(Constants.BLUE, blueGhost);
         pacmanAndGhostMovements.put(Constants.BLUE, blueMove);
-
-        root.getChildren().addAll(pacman, redGhost, pinkGhost, blueGhost, yellowGhost);
-
-        //setting nanoTime for each moveActions
-        for(int i = 0; i < pacmanAndGhostMovements.size(); i++){
-            pacmanAndGhostMovements.get(i).setTime(System.nanoTime());
-        }
-
-        GameLoop gameHandle = new GameLoop(pacman, ghosts, pacmanAndGhostMovements, stackPane, primaryStage);
-        gameHandle.start();
-        /*new AnimationTimer()
-        {
-
-            @Override
-            public void handle(long presentNanoTime) {
-
-                *//*menuButton.setOnMouseClicked(event ->{
-                    Button resume = new Button("Resume");
-                    Button quit = new Button("Quit");
-                    StackPane backgroundMenu = new StackPane();
-                    showMenu(stackPane, backgroundMenu, resume, quit);
-                    resume.setOnMouseClicked(mouseEvent -> {
-                        stackPane.getChildren().remove(backgroundMenu);
-                        start();
-                    });
-                    quit.setOnMouseClicked(mouseEvent -> {
-                        primaryStage.close();
-                    });
-                    stop();
-                });*//*
-
-                if(currentCountLives > 0) {
-                    if (!pacman.isDead) {
-                        if (pacman.isKilled(ghosts)) {
-                            pacman.pacmanDeadAnimation(pacMove.getActiveMove());
-                            return;
-                        }
-                        pacman.activeMoving(pacMove.move(pacman, todoMove));
-
-                        Point2D redPos = redGhost.getBody().getLogicalPosFromPixelPos();
-                        Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
-
-                        System.out.println(redPos);
-                        System.out.println(pacPos);
-
-                        ArrayList<Point2D> points = null;
-                        points = graphMap.nodeListToValueList(
-                                graphMap.breadthFirstSearching(
-                                        graphMap.getNode(redPos),
-                                        graphMap.getNode(pacPos)
-                                )
-                        );
-                        Point2D vecPoint = points.get(0).subtract(redPos);
-                        int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
-
-                        System.out.println("Direct: " + Constants.stringDirection(direction));
-
-
-                        redGhost.activeMoving(redMove.aiMove(redGhost, direction));
-
-
-                        pinkGhost.activeMoving(pinkMove.randomMove(pinkGhost, presentNanoTime));
-                        yellowGhost.activeMoving(yellowMove.randomMove(yellowGhost, presentNanoTime));
-                        blueGhost.activeMoving(blueMove.randomMove(blueGhost, presentNanoTime));
-
-                    } else {
-                        createPacmanDeathAnimation(pacman);
-                        for (int i = 0; i < pacmanAndGhostMovements.size(); i++) {
-                            pacmanAndGhostMovements.get(i).startedMovementCondition();
-                        }
-                        pacman.setAnimationDeathStarted(false);
-                        pacman.setStartedPositionAfterPacmanDeath(12 * 28, 14 * 28);
-                        redGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                        pinkGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                        yellowGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                        blueGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-
-                        pacmanLives.getChildren().remove(listPacmanLives.get(currentCountLives - 1));
-                        listPacmanLives.remove(currentCountLives - 1);
-                        currentCountLives--;
-                        pacman.isDead = false;
-                        todoMove = Constants.NONE;
-
-                    }
-                }else{
-                    gameOver(pacman, ghosts);
-                }
-            }
-        }.start();*/
-        primaryStage.setResizable(false);
-        primaryStage.show();
     }
-
     private Ghost createGhost(String color) {
 
         Sprite g_s = new Sprite(new ImageView("/res/Ghosts/"+color+"/"+color.toLowerCase(Locale.ROOT).charAt(0)+"-0.png"),
@@ -352,84 +234,6 @@ public class Game {
         SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 2);
         pacman.setDeathAnimation(deathAnimation);
         pacman.getDeathAnimation().setCycleCount(1);
-    }
-    public BorderPane createInfoBars(){
-
-        //Score and level-----
-        currentLevelLabel = new Label(this.currentLevel + " LEVEL");
-
-        currentScoreLabel = new Label(currentScore.toString());
-
-        VBox currentScoreAndLevel = new VBox(currentLevelLabel, currentScoreLabel);
-        currentScoreAndLevel.setAlignment(Pos.BASELINE_RIGHT);
-        ///-------------
-
-        //High score--------
-        Label maxScoreText = new Label("HIGH SCORE");
-
-        maxScoreLabel = new Label(maxScore.toString());
-
-        VBox maxScoreTextAndDigit = new VBox(maxScoreText, maxScoreLabel);
-        maxScoreTextAndDigit.setAlignment(Pos.BASELINE_CENTER);
-
-        //-----------------
-
-        //Menu button-----
-        menuButton = new Button("MENU");
-
-        //----------------
-
-        //Upper main bar---------------
-        HBox scoreBar = new HBox(currentScoreAndLevel, maxScoreTextAndDigit, menuButton);
-        scoreBar.setMaxWidth(19*28);
-
-        HBox.setMargin(currentScoreAndLevel, new Insets(20, 0, 20, 0));
-        HBox.setMargin(maxScoreTextAndDigit, new Insets(20, 0, 20, 20));
-        HBox.setMargin(menuButton, new Insets(20, 0, 20, 20));
-
-        scoreBar.setAlignment(Pos.TOP_CENTER);
-        //------------------------------
-
-        //Part bottom bar
-        //Pacman lives ------------
-
-        pacmanLives = new HBox();
-        pacmanLives.setAlignment(Pos.BASELINE_LEFT);
-
-        for(int i = 0; i < maxLives; i++){
-            listPacmanLives.add(new ImageView("/res/life.png"));
-        }
-        pacmanLives.getChildren().addAll(listPacmanLives);
-        //--------------------------
-        //Fruit count----------
-        countFruitLabel = new Label(countFruit.toString());
-
-        HBox fruitsCount = new HBox(new ImageView("/res/Fruit/cherry.png"), countFruitLabel);
-        fruitsCount.setAlignment(Pos.BASELINE_RIGHT);
-        //---------------------
-
-        //Bottom bar---------
-
-        HBox bottomBox = new HBox();
-        Region r = new Region();
-        HBox.setHgrow(r, Priority.ALWAYS);
-        bottomBox.getChildren().addAll(pacmanLives, r, fruitsCount);
-        bottomBox.setMaxWidth(17*28);
-        bottomBox.setAlignment(Pos.BOTTOM_CENTER);
-        //--------------------
-        BorderPane mainPane = new BorderPane();
-        mainPane.setTop(scoreBar);
-        mainPane.setCenter(root);
-        mainPane.setBottom(bottomBox);
-        BorderPane.setAlignment(scoreBar, Pos.CENTER);
-        BorderPane.setAlignment(bottomBox, Pos.CENTER);
-        BorderPane.setMargin(scoreBar, new Insets(0, 0, 0, 50));
-        BorderPane.setMargin(bottomBox, new Insets(0, 10, 5, 60));
-//        mainPane.setLayoutX(-28*2);
-        mainPane.setBackground(new Background(new BackgroundFill(Color.BLACK,
-                CornerRadii.EMPTY,
-                Insets.EMPTY)));
-        return mainPane;
     }
 
 }

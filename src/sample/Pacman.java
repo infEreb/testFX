@@ -16,10 +16,12 @@ public class Pacman extends Character implements Movable2D, Animation {
     private boolean animationDeathStarted = false;
     public boolean isDead = false;
     private SpriteAnimation deathAnimation;
+    private Integer currentScore;
 
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
+        currentScore = 0;
         //System.out.println(body.mapX + " " + body.mapY);
     }
 
@@ -46,8 +48,6 @@ public class Pacman extends Character implements Movable2D, Animation {
     }
 
     public void renderDeath(){
-//        body.getSprite().setTexture(deathAnimation.getCurrentSprite().getTexture());
-
         getChildren().clear();
         getChildren().addAll(deathAnimation.getCurrentSprite().getTexture());
 
@@ -57,8 +57,8 @@ public class Pacman extends Character implements Movable2D, Animation {
         for (Fruit pillow: GridMap.listOfPillows) {
             if(this.getBody().intersects(pillow.getBody())){
                 removedPillow = pillow;
-                Game.currentScore += Constants.SCORE_FOR_PILLOW;
-                Game.currentScoreLabel.setText(Game.currentScore.toString());
+                currentScore += Constants.SCORE_FOR_PILLOW;
+                InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
             }
         }
         GridMap.listOfPillows.remove(removedPillow);

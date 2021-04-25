@@ -4,15 +4,11 @@ import Constructor.*;
 import Engine.Constants;
 import Engine.Graph;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -33,42 +29,30 @@ public class GameLoop extends AnimationTimer {
     int stepFruit;
     ArrayList<Integer> fruitSteps;
     Fruit fruit;
+    InfoBar infoBar;
 
 
     public GameLoop(Pacman pacman, Map<Integer, Ghost> ghosts, Map<Integer, MoveActions> moveActions,
-                    StackPane stackPane, Stage primaryStage){
+                    InfoBar infoBar){
         this.pacman = pacman;
         this.ghosts = ghosts;
         this.moveActions = moveActions;
-        this.stackPane = stackPane;
-        this.primaryStage = primaryStage;
+        this.stackPane = infoBar.getStackPane();
+        this.primaryStage = infoBar.getPrimaryStage();
         fruitMoved = false;
         fruitCanMove = false;
         stepFruit = 0;
         fruit = new Fruit(24, 11, new Image("/res/Fruit/cherry.png"), 0);
         fruitSteps = new ArrayList<>();
+        this.infoBar = infoBar;
         createFruitSteps(fruitSteps);
     }
 
     @Override
     public void handle(long presentNanoTime) {
         useMouseMenuButton(stackPane, primaryStage);
-                /*menuButton.setOnMouseClicked(event ->{
-                    Button resume = new Button("Resume");
-                    Button quit = new Button("Quit");
-                    StackPane backgroundMenu = new StackPane();
-                    showMenu(stackPane, backgroundMenu, resume, quit);
-                    resume.setOnMouseClicked(mouseEvent -> {
-                        stackPane.getChildren().remove(backgroundMenu);
-                        start();
-                    });
-                    quit.setOnMouseClicked(mouseEvent -> {
-                        primaryStage.close();
-                    });
-                    stop();
-                });*/
 
-        if(Game.currentCountLives > 0) {
+        if(infoBar.getCurrentCountLives() > 0) {
             if (!pacman.isDead) {
                 if (pacman.isKilled(ghosts.values())) {
                     pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
@@ -122,9 +106,7 @@ public class GameLoop extends AnimationTimer {
 
             } else {
                 createPacmanDeathAnimation(pacman);
-                /*for (int i = 0; i < pacmanAndGhostMovements.size(); i++) {
-                    pacmanAndGhostMovements.get(i).startedMovementCondition();
-                }*/
+
                 moveActions.forEach((number, moveAction)->{
                     moveAction.startedMovementCondition();
                 });
@@ -133,14 +115,10 @@ public class GameLoop extends AnimationTimer {
                 ghosts.forEach((number, ghost) ->{
                     ghost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
                 });
-                /*.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                pinkGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                yellowGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                blueGhost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);*/
 
-                Game.pacmanLives.getChildren().remove(Game.listPacmanLives.get(Game.currentCountLives - 1));
-                Game.listPacmanLives.remove(Game.currentCountLives - 1);
-                Game.currentCountLives--;
+
+                infoBar.removeLiveInLabel();
+                infoBar.countLiveReduce();
                 pacman.isDead = false;
                 Game.todoMove = Constants.NONE;
 
@@ -184,11 +162,12 @@ public class GameLoop extends AnimationTimer {
         Game.root.getChildren().add(gameOverText);
     }
     void useMouseMenuButton(StackPane stackPane, Stage primaryStage){
-        Game.menuButton.setOnMouseClicked(event ->{
+        infoBar.getMenuButton().setOnMouseClicked(event ->{
             Button resume = new Button("Resume");
             Button quit = new Button("Quit");
             StackPane backgroundMenu = new StackPane();
-            showMenu(stackPane, backgroundMenu, resume, quit);
+            Menu menu = new Menu(stackPane, backgroundMenu);
+            menu.showMenu(resume, quit);
             resume.setOnMouseClicked(mouseEvent -> {
                 stackPane.getChildren().remove(backgroundMenu);
                 start();
@@ -198,21 +177,6 @@ public class GameLoop extends AnimationTimer {
             });
             stop();
         });
-    }
-    void showMenu(StackPane stackPane, StackPane backgroundMenu, Button resume, Button quit){
-        backgroundMenu.setPrefSize(24*28, 29*28);
-        VBox menu = new VBox();
-        Label pauseLabel = new Label("PAUSED");
-        menu.getChildren().addAll(pauseLabel, resume, quit);
-        resume.getStyleClass().add("menu-buttons");
-        quit.getStyleClass().add("menu-buttons");
-        VBox.setMargin(resume, new Insets(10, 0, 15, 0));
-        backgroundMenu.setPadding(new Insets(0, 0, 0, 55));
-        menu.setAlignment(Pos.CENTER);
-        backgroundMenu.setAlignment(Pos.CENTER);
-        backgroundMenu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-        backgroundMenu.getChildren().add(menu);
-        stackPane.getChildren().add(backgroundMenu);
     }
 
     public void createPacmanDeathAnimation(Pacman pacman) {
