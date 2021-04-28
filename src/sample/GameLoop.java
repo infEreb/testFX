@@ -39,6 +39,7 @@ public class GameLoop extends AnimationTimer {
     boolean isReady;
     boolean isReadyStarted;
     ImageView gameReadyLabel;
+    int pacmanActiveMove;
 
     public GameLoop(Pacman pacman, Map<Integer, Ghost> ghosts, Map<Integer, MoveActions> moveActions,
                     InfoBar infoBar){
@@ -55,7 +56,7 @@ public class GameLoop extends AnimationTimer {
         this.infoBar = infoBar;
         isReady = false;
         isReadyStarted = false;
-        createFruitSteps(fruitSteps);
+        pacmanActiveMove = Constants.NONE;
     }
 
 
@@ -70,56 +71,32 @@ public class GameLoop extends AnimationTimer {
 
         if(isReady || infoBar.getCurrentCountLives() == 0) {
             if (infoBar.getCurrentCountLives() > 0) {
-                if (!pacman.isDead) {
+                if (!pacman.getIsDead()) {
                     if (pacman.isKilled(ghosts.values())) {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
 
-                    pacman.activeMoving(moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove));
+                    pacmanActiveMove = moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove);
+                    pacman.activeMoving(pacmanActiveMove);
 
-                    //System.out.println((int)elapsedSeconds);
-
-                    elapsedNanoSeconds = presentNanoTime - lastUpdate;
-
-                    // 1 second = 1,000,000,000 (1 billion) nanoseconds
-                    secondsForFruitStart = (int) (elapsedNanoSeconds / 1_000_000_000);
-
-                    if (secondsForFruitStart % 5 == 0 && secondsForFruitStart > 0 && !fruitCanMove && !fruitMoved) {
-                        fruitCanMove = true;
-                        Game.root.getChildren().add(fruit);
+                    if(!fruitMoved){
+                        checkFruitCanGo(presentNanoTime);
                     }
 
-                    if (fruitCanMove) {
-                        functionForFruit();
+                    int directionForRedGhost = redGhostPursuitPacman();
+
+                    if(!fruit.getIsEaten() && (fruitCanMove || fruitMoved)){
+                        pacman.checkIsEatenByPacman(fruit, pacmanActiveMove);
                     }
-                    Point2D redPos = ghosts.get(Constants.RED).getBody().getLogicalPosFromPixelPos();
-                    Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
-
-                    //System.out.println(redPos);
-                    //System.out.println(pacPos);
-
-                    ArrayList<Point2D> points = null;
-                    points = graphMap.nodeListToValueList(
-                            graphMap.breadthFirstSearching(
-                                    graphMap.getNode(redPos),
-                                    graphMap.getNode(pacPos)
-                            )
-                    );
-                    Point2D vecPoint = points.get(0).subtract(redPos);
-                    int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
-
-                    //System.out.println("Direct: " + Constants.stringDirection(direction));
-
 
                     ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
-                            .aiMove(ghosts.get(Constants.RED), direction));
+                            .aiMove(ghosts.get(Constants.RED), directionForRedGhost));
 
 
                     ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime));
                     ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime));
                     ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime));
-
 
                 } else {
                     pacman.createPacmanDeathAnimation();
@@ -136,7 +113,7 @@ public class GameLoop extends AnimationTimer {
 
                     infoBar.removeLiveInLabel();
                     infoBar.countLiveReduce();
-                    pacman.isDead = false;
+                    pacman.setIsDead(false);
                     Game.todoMove = Constants.NONE;
                     isReady = false;
                     isReadyStarted = false;
@@ -144,6 +121,22 @@ public class GameLoop extends AnimationTimer {
             } else {
                 gameOver(pacman, ghosts);
             }
+        }
+    }
+
+    void checkFruitCanGo(long presentNanoTime){
+        elapsedNanoSeconds = presentNanoTime - lastUpdate;
+
+        // 1 second = 1,000,000,000 (1 billion) nanoseconds
+        secondsForFruitStart = (int) (elapsedNanoSeconds / 1_000_000_000);
+
+        if (secondsForFruitStart % 15 == 0 && secondsForFruitStart > 0 && !fruitCanMove) {
+            fruitCanMove = true;
+            Game.root.getChildren().add(fruit);
+        }
+
+        if (fruitCanMove) {
+            fruitMovesFromEdgeOfMap();
         }
     }
 
@@ -185,41 +178,57 @@ public class GameLoop extends AnimationTimer {
     void removeReadyLabel(){
         Game.root.getChildren().remove(gameReadyLabel);
     }
-    void functionForFruit(){
-        System.out.println("FruitCanMove");
-        DoStepsFruit(fruit, fruitSteps);
-        if(stepFruit == 16){
+
+    int redGhostPursuitPacman(){
+        Point2D redPos = ghosts.get(Constants.RED).getBody().getLogicalPosFromPixelPos();
+        Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
+
+        //System.out.println(redPos);
+        //System.out.println(pacPos);
+
+        ArrayList<Point2D> points = null;
+        points = graphMap.nodeListToValueList(
+                graphMap.breadthFirstSearching(
+                        graphMap.getNode(redPos),
+                        graphMap.getNode(pacPos)
+                )
+        );
+        Point2D vecPoint = points.get(0).subtract(redPos);
+
+        //System.out.println("Direct: " + Constants.stringDirection(direction));
+        return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
+
+    }
+
+    void fruitMovesFromEdgeOfMap(){
+
+
+        Point2D fruitPos = fruit.getBody().getLogicalPosFromPixelPos();
+        Point2D endPoint = new Point2D(11, 14);
+
+        if(fruitPos.getX() == endPoint.getX() &&
+                fruitPos.getY() == endPoint.getY()){
             fruitMoved = true;
             fruitCanMove = false;
+            return;
         }
-    }
-    void createFruitSteps(ArrayList<Integer> fruitSteps){
-        int stepsLeftFirst = 9, stepsDown = 3, stepsLeftSecond = 4;
-        for(int step = 0; step < 16; step++){
-            if(stepsLeftFirst > 0) {
-                fruitSteps.add(Constants.LEFT);
-                stepsLeftFirst--;
-            }else if(stepsDown > 0){
-                fruitSteps.add(Constants.DOWN);
-                stepsDown--;
-            }else if(stepsLeftSecond > 0){
-                fruitSteps.add(Constants.LEFT);
-                stepsLeftSecond--;
-            }
-        }
-        /*r = () -> {
-            functionForFruit();
-        };
-        fruitThread = new Thread(r, "Fruit");*/
-    }
-    void DoStepsFruit(Fruit fruit, ArrayList<Integer> fruitSteps){
-        if(stepFruit < 16) {
-            System.out.println("Step fruit " + stepFruit + " MOVE " + fruitSteps.get(stepFruit));
-            fruit.chooseMoveFruit(fruitSteps.get(stepFruit));
-            if(fruit.getIsStuck()) {
-                stepFruit++;
-            }
-        }
+
+        //System.out.println(redPos);
+        //System.out.println(pacPos);
+
+        ArrayList<Point2D> points = null;
+        points = graphMap.nodeListToValueList(
+                graphMap.breadthFirstSearching(
+                        graphMap.getNode(fruitPos),
+                        graphMap.getNode(endPoint)
+                )
+        );
+
+        Point2D vecPoint = points.get(0).subtract(fruitPos);
+        int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
+
+        fruit.chooseMoveFruit(direction);
+
     }
 
     void gameOver(Pacman pacman, Map<Integer, Ghost> ghosts){

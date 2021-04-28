@@ -6,26 +6,38 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import sample.Game;
+import sample.InfoBar;
+import sample.Pacman;
 
 import static Engine.Constants.SPEED;
 
 public class Fruit extends Block {
 
-    private int activeMove = Constants.NONE;
-    private boolean isStuck = false;
-
+    private int activeMove;
+    private boolean isStuck;
+    private boolean isEaten;
 
     public Fruit(float x, float y, Image imageBlock, int shift){
         super(x, y, imageBlock);
         body.getSprite().getTexture().setTranslateX(BLOCK_SIZE*x+shift);
         body.getSprite().getTexture().setTranslateY(BLOCK_SIZE*y+shift);
-
+        activeMove = Constants.NONE;
+        isStuck = false;
+        isEaten = false;
 
         /*getChildren().remove(body.getSprite().getTexture());
         getChildren().add(body.getSprite().getTexture());*/
     }
     public boolean getIsStuck(){
         return isStuck;
+    }
+
+    public boolean getIsEaten(){
+        return isEaten;
+    }
+    public void setIsEaten(boolean value){
+        isEaten = value;
     }
     public void chooseMoveFruit(int todoMove){
         if((this.getBody().getPosition().getX() % 28 == 0) && (this.getBody().getPosition().getY() % 28 == 0)){
@@ -73,7 +85,6 @@ public class Fruit extends Block {
                 if((body.getPosition().getX() <= 0)){
                     return;
                 }
-                System.out.println("Fruit go left");
                 this.move(new Point2D(-1, 0), SPEED);
                 break;
             case Constants.UP:
@@ -86,7 +97,6 @@ public class Fruit extends Block {
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
-                System.out.println("Fruit go down");
                 this.move(new Point2D(0, 1), SPEED);
                 break;
         }
