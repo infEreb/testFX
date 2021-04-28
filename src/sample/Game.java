@@ -215,25 +215,10 @@ public class Game {
                         14*28, p_up0.getWidth(), p_up0.getHeight()));
 
         Pacman pacman = new Pacman(pacmanBody2d, new SpriteAnimation(pacmanSprites,0.15));
-        createPacmanDeathAnimation(pacman);
+        pacman.createPacmanDeathAnimation();
 
         pacman.setStartedPosition(12*28, 14*28);
         return pacman;
-    }
-    public void createPacmanDeathAnimation(Pacman pacman) {
-        ArrayList<Sprite> spritesDeath = new ArrayList<>();
-        HashMap<Integer, ArrayList<Sprite>> deathSprites = new HashMap<>();
-        for(int n = 1; n <= 4; n++) {
-            for (int i = 0; i < 11; i++) {
-                //System.out.println("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png");
-                spritesDeath.add(new Sprite(new ImageView("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png"), new Point2D(0, 0)));
-            }
-            deathSprites.put(n, spritesDeath);
-            spritesDeath = new ArrayList<>();
-        }
-        SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 2);
-        pacman.setDeathAnimation(deathAnimation);
-        pacman.getDeathAnimation().setCycleCount(1);
     }
 
 }

@@ -4,6 +4,7 @@ import Constructor.*;
 import Engine.Constants;
 import Engine.Graph;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -14,6 +15,9 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Exchanger;
+
+import static java.lang.Thread.sleep;
 
 public class GameLoop extends AnimationTimer {
 
@@ -30,7 +34,11 @@ public class GameLoop extends AnimationTimer {
     ArrayList<Integer> fruitSteps;
     Fruit fruit;
     InfoBar infoBar;
-
+    long elapsedNanoSeconds;
+    int secondsForFruitStart;
+    boolean isReady;
+    boolean isReadyStarted;
+    ImageView gameReadyLabel;
 
     public GameLoop(Pacman pacman, Map<Integer, Ghost> ghosts, Map<Integer, MoveActions> moveActions,
                     InfoBar infoBar){
@@ -45,89 +53,146 @@ public class GameLoop extends AnimationTimer {
         fruit = new Fruit(24, 11, new Image("/res/Fruit/cherry.png"), 0);
         fruitSteps = new ArrayList<>();
         this.infoBar = infoBar;
+        isReady = false;
+        isReadyStarted = false;
         createFruitSteps(fruitSteps);
     }
+
 
     @Override
     public void handle(long presentNanoTime) {
         useMouseMenuButton(stackPane, primaryStage);
 
         if(infoBar.getCurrentCountLives() > 0) {
-            if (!pacman.isDead) {
-                if (pacman.isKilled(ghosts.values())) {
-                    pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
-                    return;
-                }
-                long elapsedNanoSeconds = presentNanoTime - lastUpdate;
+            getReadyToPlay();
+        }
 
-                // 1 second = 1,000,000,000 (1 billion) nanoseconds
-                double elapsedSeconds = elapsedNanoSeconds / 1_000_000_000.0;
-                pacman.activeMoving(moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove));
 
-                System.out.println((int)elapsedSeconds);
-                if((int)(elapsedSeconds) % 5 == 0 && (int)(elapsedSeconds) > 0 && !fruitCanMove && !fruitMoved){
-                    fruitCanMove = true;
-                    Game.root.getChildren().add(fruit);
-                }
-                if (fruitCanMove){
-                    System.out.println("FruitCanMove");
-                    DoStepsFruit(fruit, fruitSteps);
-                    if(stepFruit == 16){
-                        fruitMoved = true;
-                        fruitCanMove = false;
+        if(isReady || infoBar.getCurrentCountLives() == 0) {
+            if (infoBar.getCurrentCountLives() > 0) {
+                if (!pacman.isDead) {
+                    if (pacman.isKilled(ghosts.values())) {
+                        pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
+                        return;
                     }
+
+                    pacman.activeMoving(moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove));
+
+                    //System.out.println((int)elapsedSeconds);
+
+                    elapsedNanoSeconds = presentNanoTime - lastUpdate;
+
+                    // 1 second = 1,000,000,000 (1 billion) nanoseconds
+                    secondsForFruitStart = (int) (elapsedNanoSeconds / 1_000_000_000);
+
+                    if (secondsForFruitStart % 5 == 0 && secondsForFruitStart > 0 && !fruitCanMove && !fruitMoved) {
+                        fruitCanMove = true;
+                        Game.root.getChildren().add(fruit);
+                    }
+
+                    if (fruitCanMove) {
+                        functionForFruit();
+                    }
+                    Point2D redPos = ghosts.get(Constants.RED).getBody().getLogicalPosFromPixelPos();
+                    Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
+
+                    //System.out.println(redPos);
+                    //System.out.println(pacPos);
+
+                    ArrayList<Point2D> points = null;
+                    points = graphMap.nodeListToValueList(
+                            graphMap.breadthFirstSearching(
+                                    graphMap.getNode(redPos),
+                                    graphMap.getNode(pacPos)
+                            )
+                    );
+                    Point2D vecPoint = points.get(0).subtract(redPos);
+                    int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
+
+                    //System.out.println("Direct: " + Constants.stringDirection(direction));
+
+
+                    ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
+                            .aiMove(ghosts.get(Constants.RED), direction));
+
+
+                    ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime));
+                    ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime));
+                    ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime));
+
+
+                } else {
+                    pacman.createPacmanDeathAnimation();
+
+                    moveActions.forEach((number, moveAction) -> {
+                        moveAction.startedMovementCondition();
+                    });
+                    pacman.setAnimationDeathStarted(false);
+                    pacman.setStartedPositionAfterPacmanDeath(12 * 28, 14 * 28);
+                    ghosts.forEach((number, ghost) -> {
+                        ghost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
+                    });
+
+
+                    infoBar.removeLiveInLabel();
+                    infoBar.countLiveReduce();
+                    pacman.isDead = false;
+                    Game.todoMove = Constants.NONE;
+                    isReady = false;
+                    isReadyStarted = false;
                 }
-                Point2D redPos = ghosts.get(Constants.RED).getBody().getLogicalPosFromPixelPos();
-                Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
-
-                //System.out.println(redPos);
-                //System.out.println(pacPos);
-
-                ArrayList<Point2D> points = null;
-                points = graphMap.nodeListToValueList(
-                        graphMap.breadthFirstSearching(
-                                graphMap.getNode(redPos),
-                                graphMap.getNode(pacPos)
-                        )
-                );
-                Point2D vecPoint = points.get(0).subtract(redPos);
-                int direction = MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
-
-                //System.out.println("Direct: " + Constants.stringDirection(direction));
-
-
-                ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
-                        .aiMove(ghosts.get(Constants.RED), direction));
-
-
-                ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime));
-                ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime));
-                ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime));
-
             } else {
-                createPacmanDeathAnimation(pacman);
-
-                moveActions.forEach((number, moveAction)->{
-                    moveAction.startedMovementCondition();
-                });
-                pacman.setAnimationDeathStarted(false);
-                pacman.setStartedPositionAfterPacmanDeath(12 * 28, 14 * 28);
-                ghosts.forEach((number, ghost) ->{
-                    ghost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                });
-
-
-                infoBar.removeLiveInLabel();
-                infoBar.countLiveReduce();
-                pacman.isDead = false;
-                Game.todoMove = Constants.NONE;
-
+                gameOver(pacman, ghosts);
             }
-        }else{
-            gameOver(pacman, ghosts);
         }
     }
 
+    void getReadyToPlay() {
+        Runnable r = ()->{
+            try {
+                isReadyStarted = true;
+                Sound soundReady = new Sound("/src/res/audio/start-music.mp3");
+                soundReady.playSound();
+                //stop();
+                sleep(4000);
+                //start();
+                isReady = true;
+                //in javaFX only the FX thread can modify the ui elements
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run() {
+                        removeReadyLabel();
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+
+        if(!isReady && !isReadyStarted) {
+            addReadyLabel();
+            Thread readyThread = new Thread(r, "ReadyThread");
+            readyThread.start();
+        }
+    }
+
+    void addReadyLabel(){
+        gameReadyLabel = new ImageView("/res/ready.png");
+        gameReadyLabel.setTranslateX(9*28+53);
+        gameReadyLabel.setTranslateY(14*28);
+        Game.root.getChildren().add(gameReadyLabel);
+    }
+    void removeReadyLabel(){
+        Game.root.getChildren().remove(gameReadyLabel);
+    }
+    void functionForFruit(){
+        System.out.println("FruitCanMove");
+        DoStepsFruit(fruit, fruitSteps);
+        if(stepFruit == 16){
+            fruitMoved = true;
+            fruitCanMove = false;
+        }
+    }
     void createFruitSteps(ArrayList<Integer> fruitSteps){
         int stepsLeftFirst = 9, stepsDown = 3, stepsLeftSecond = 4;
         for(int step = 0; step < 16; step++){
@@ -142,6 +207,10 @@ public class GameLoop extends AnimationTimer {
                 stepsLeftSecond--;
             }
         }
+        /*r = () -> {
+            functionForFruit();
+        };
+        fruitThread = new Thread(r, "Fruit");*/
     }
     void DoStepsFruit(Fruit fruit, ArrayList<Integer> fruitSteps){
         if(stepFruit < 16) {
@@ -179,20 +248,5 @@ public class GameLoop extends AnimationTimer {
         });
     }
 
-    public void createPacmanDeathAnimation(Pacman pacman) {
-        ArrayList<Sprite> spritesDeath = new ArrayList<>();
-        HashMap<Integer, ArrayList<Sprite>> deathSprites = new HashMap<>();
-        for(int n = 1; n <= 4; n++) {
-            for (int i = 0; i < 11; i++) {
-                //System.out.println("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png");
-                spritesDeath.add(new Sprite(new ImageView("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png"), new Point2D(0, 0)));
-            }
-            deathSprites.put(n, spritesDeath);
-            spritesDeath = new ArrayList<>();
-        }
-        SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 1.5);
-        pacman.setDeathAnimation(deathAnimation);
-        pacman.getDeathAnimation().setCycleCount(1);
-    }
     }
 

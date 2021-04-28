@@ -5,11 +5,13 @@ import Constructor.Character;
 import Engine.Constants;
 import javafx.animation.RotateTransition;
 import javafx.geometry.Point2D;
+import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 
 public class Pacman extends Character implements Movable2D, Animation {
@@ -70,6 +72,8 @@ public class Pacman extends Character implements Movable2D, Animation {
         for (Fruit pillow: GridMap.listOfBigPillows) {
             if(this.getBody().intersects(pillow.getBody())){
                 removedPillow = pillow;
+                currentScore += Constants.SCORE_FOR_POWER_PELLET;
+                InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
             }
         }
         GridMap.listOfBigPillows.remove(removedPillow);
@@ -91,13 +95,7 @@ public class Pacman extends Character implements Movable2D, Animation {
         });
     }
     public void pacmanDeadAnimation(int activeMove){
-        if(!animationDeathStarted)
-        {
-//            setProperAngelAnimation(activeMove);
-            animationDeathStarted = true;
-            Constants.soundDead.playSound();
-
-        }
+        pacmanDeathMusicStart();
         if(activeMove == Constants.NONE) activeMove = Constants.UP;
         this.deathAnimation.setDirection(activeMove);
         this.deathAnimation.play();
@@ -107,6 +105,36 @@ public class Pacman extends Character implements Movable2D, Animation {
             this.isDead = true;
         }
 
+    }
+    void pacmanDeathMusicStart(){
+        Runnable r = ()->{
+//            setProperAngelAnimation(activeMove);
+                Sound soundDead = new Sound("/src/res/audio/miss.mp3");
+                soundDead.playSound();
+
+        };
+        if(!animationDeathStarted) {
+            animationDeathStarted = true;
+            Thread readyThread = new Thread(r, "DeathThread");
+            readyThread.start();
+        }
+
+    }
+
+    public void createPacmanDeathAnimation() {
+        ArrayList<Sprite> spritesDeath = new ArrayList<>();
+        HashMap<Integer, ArrayList<Sprite>> deathSprites = new HashMap<>();
+        for(int n = 1; n <= 4; n++) {
+            for (int i = 0; i < 11; i++) {
+                //System.out.println("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png");
+                spritesDeath.add(new Sprite(new ImageView("/res/Pacman/Death/" + Constants.stringDirection(n) + "/d-" + i + ".png"), new Point2D(0, 0)));
+            }
+            deathSprites.put(n, spritesDeath);
+            spritesDeath = new ArrayList<>();
+        }
+        SpriteAnimation deathAnimation = new SpriteAnimation(deathSprites, 1.5);
+        this.setDeathAnimation(deathAnimation);
+        this.getDeathAnimation().setCycleCount(1);
     }
 
 

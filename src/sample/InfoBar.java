@@ -32,7 +32,7 @@ public class InfoBar {
     Stage primaryStage;
 
     public InfoBar(Stage primaryStage){
-        maxScore = GridMap.listOfPillows.size() * Constants.SCORE_FOR_PILLOW;
+        countMaxScore();
         maxLives = 4;
         countFruit = 1;
         currentCountLives = maxLives;
@@ -51,7 +51,20 @@ public class InfoBar {
         scene.getStylesheets().add(stylesheet);
         scene.setFill(Color.BLACK);
     }
+    /*
+    * Vulnerable Ghosts:
+        #1 in succession - 200 points.
+        #2 in succession - 400 points.
+        #3 in succession - 800 points.
+        #4 in succession - 1600 points.
+    */
 
+    void countMaxScore(){
+        maxScore = GridMap.listOfPillows.size() * Constants.SCORE_FOR_PILLOW;
+        maxScore += GridMap.listOfBigPillows.size() * Constants.SCORE_FOR_POWER_PELLET;
+        maxScore += Constants.SCORE_FOR_CHERRY;
+        maxScore += Constants.SCORE_FOR_GHOST * 30;
+    }
 
     public int getCurrentCountLives() {
         return currentCountLives;

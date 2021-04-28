@@ -22,9 +22,12 @@ public class Constants {
     public static final String PINK_STR = "Pink";
 
     public static final double SPEED = 0.5;
-    public static final Sound soundDead = new Sound("/src/res/audio/miss.mp3");
+    /*public static final Sound soundDead = new Sound("/src/res/audio/miss.mp3");*/
 
-    public static final int SCORE_FOR_PILLOW = 20;
+    public static final int SCORE_FOR_PILLOW = 10;
+    public static final int SCORE_FOR_POWER_PELLET = 50;
+    public static final int SCORE_FOR_CHERRY = 100;
+    public static final int SCORE_FOR_GHOST = 200;
 
     public static String stringDirection(int direct) {
         switch (direct) {
