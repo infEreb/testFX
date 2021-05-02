@@ -2,12 +2,13 @@ package sample;
 
 import Constructor.*;
 import Constructor.Character;
+import Engine.Body2D;
 import Engine.Constants;
+import Engine.Sprite;
+import Engine.SpriteAnimation;
 import javafx.animation.PauseTransition;
-import javafx.animation.RotateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -134,8 +135,7 @@ public class Pacman extends Character implements Movable2D, Animation {
     }
     void pacmanEatFruitMusic(){
         Runnable r = ()->{
-            Sound soundDead = new Sound("/src/res/audio/eating-fruit.mp3");
-            soundDead.playSound();
+            Sound.playSound("/src/res/audio/eating-fruit.mp3");
 
         };
 
@@ -172,9 +172,7 @@ public class Pacman extends Character implements Movable2D, Animation {
     }
     void pacmanDeathMusicStart(){
         Runnable r = ()->{
-//            setProperAngelAnimation(activeMove);
-                Sound soundDead = new Sound("/src/res/audio/miss.mp3");
-                soundDead.playSound();
+            Sound.playSound("/src/res/audio/miss.mp3");
 
         };
         if(!animationDeathStarted) {

@@ -144,8 +144,7 @@ public class GameLoop extends AnimationTimer {
         Runnable r = ()->{
             try {
                 isReadyStarted = true;
-                Sound soundReady = new Sound("/src/res/audio/start-music.mp3");
-                soundReady.playSound();
+                Sound.playSound("/src/res/audio/start-music.mp3");
                 //stop();
                 sleep(4000);
                 //start();

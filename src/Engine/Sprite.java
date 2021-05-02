@@ -1,9 +1,7 @@
-package Constructor;
+package Engine;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
 
 public class Sprite extends Parent implements Cloneable{

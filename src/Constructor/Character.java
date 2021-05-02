@@ -1,7 +1,6 @@
 package Constructor;
 
-import Engine.Constants;
-import Engine.RigidBody2D;
+import Engine.*;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 

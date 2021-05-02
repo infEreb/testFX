@@ -8,16 +8,13 @@ import java.net.URI;
 
 public class Sound {
 
-    private MediaPlayer mediaPlayer;
-    public Sound(String name){
-
-        Media media = new Media(new File(System.getProperty("user.dir") + name).toURI().toString());
-
+    private static MediaPlayer mediaPlayer;
+    private static Media media;
+    public static void playSound(String name){
+        media = new Media(new File(System.getProperty("user.dir") + name).toURI().toString());
         //Instantiating MediaPlayer class
         mediaPlayer = new MediaPlayer(media);
 
-    }
-    public void playSound(){
         mediaPlayer.play();
     }
 }

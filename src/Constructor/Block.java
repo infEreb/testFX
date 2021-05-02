@@ -1,6 +1,8 @@
 package Constructor;
 
+import Engine.Body2D;
 import Engine.RigidBody2D;
+import Engine.Sprite;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

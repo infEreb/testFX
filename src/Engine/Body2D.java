@@ -1,10 +1,8 @@
-package Constructor;
+package Engine;
 
-import Engine.RigidBody2D;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class Body2D {
     private Sprite sprite;

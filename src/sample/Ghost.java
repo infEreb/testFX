@@ -2,7 +2,9 @@ package sample;
 
 import Constructor.*;
 import Constructor.Character;
+import Engine.Body2D;
 import Engine.Constants;
+import Engine.SpriteAnimation;
 
 public class Ghost extends Character implements Animation, Movable2D {
 
