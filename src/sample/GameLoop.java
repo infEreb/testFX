@@ -40,7 +40,9 @@ public class GameLoop extends AnimationTimer {
     boolean isReady;
     boolean isReadyStarted;
     ImageView gameReadyLabel;
+    ImageView victoryLabel;
     int pacmanActiveMove;
+    boolean labelIsInstalled;
 
     public GameLoop(Pacman pacman, Map<Integer, Ghost> ghosts, Map<Integer, MoveActions> moveActions,
                     InfoBar infoBar){
@@ -58,6 +60,7 @@ public class GameLoop extends AnimationTimer {
         isReady = false;
         isReadyStarted = false;
         pacmanActiveMove = Constants.NONE;
+        labelIsInstalled = false;
     }
 
 
@@ -65,12 +68,16 @@ public class GameLoop extends AnimationTimer {
     public void handle(long presentNanoTime) {
         useMouseMenuButton(stackPane, primaryStage);
 
+
+
         if(infoBar.getCurrentCountLives() > 0) {
             getReadyToPlay();
         }
 
-
-        if(isReady || infoBar.getCurrentCountLives() == 0) {
+        if(pacman.isPacmanWin() && !labelIsInstalled){
+            pacmanWin();
+        }
+        else if((isReady || infoBar.getCurrentCountLives() == 0) && !labelIsInstalled) {
             if (infoBar.getCurrentCountLives() > 0) {
                 if (!pacman.getIsDead()) {
                     if (pacman.isKilled(ghosts.values()) && !pacman.getBigPillowHasEaten()) {
@@ -141,6 +148,15 @@ public class GameLoop extends AnimationTimer {
         }
     }
 
+    void pacmanWin(){
+            victoryLabel = new ImageView("/res/victoryPacman.png");
+            victoryLabel.setTranslateX(8*28+1);
+            victoryLabel.setTranslateY(10*28);
+            System.out.println("WIN");
+            Game.root.getChildren().add(victoryLabel);
+            labelIsInstalled = true;
+
+    }
     void checkFruitCanGo(long presentNanoTime){
         elapsedNanoSeconds = presentNanoTime - lastUpdate;
 
@@ -191,6 +207,7 @@ public class GameLoop extends AnimationTimer {
         gameReadyLabel.setTranslateY(14*28);
         Game.root.getChildren().add(gameReadyLabel);
     }
+
     void removeReadyLabel(){
         Game.root.getChildren().remove(gameReadyLabel);
     }
@@ -308,19 +325,20 @@ public class GameLoop extends AnimationTimer {
         Game.root.getChildren().removeAll(pacman);
         Game.root.getChildren().removeAll(ghosts.values());
         ImageView gameOverText = new ImageView("/res/gameover.png");
+        System.out.println("LOSE");
         gameOverText.setTranslateX(9*28+18);
         gameOverText.setTranslateY(14*28+6);
         Game.root.getChildren().add(gameOverText);
+        labelIsInstalled = true;
     }
     void useMouseMenuButton(StackPane stackPane, Stage primaryStage){
         infoBar.getMenuButton().setOnMouseClicked(event ->{
             Button resume = new Button("Resume");
             Button quit = new Button("Quit");
-            StackPane backgroundMenu = new StackPane();
-            Menu menu = new Menu(stackPane, backgroundMenu);
+            Menu menu = new Menu(stackPane);
             menu.showMenu(resume, quit);
             resume.setOnMouseClicked(mouseEvent -> {
-                stackPane.getChildren().remove(backgroundMenu);
+                menu.hideMenu();
                 start();
             });
             quit.setOnMouseClicked(mouseEvent -> {
