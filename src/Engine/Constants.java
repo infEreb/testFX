@@ -8,6 +8,10 @@ public class Constants {
     public static final int RIGHT = 2;
     public static final int DOWN = 3;
     public static final int LEFT = 4;
+    public static final int UP_LEFT = 5;
+    public static final int UP_RIGHT = 6;
+    public static final int DOWN_LEFT = 7;
+    public static final int DOWN_RIGHT = 8;
     public static final double ANIM_DELTA = 0.0005;
 
     public static final Integer PACMAN = 0;
@@ -21,7 +25,7 @@ public class Constants {
     public static final String BLUE_STR = "Blue";
     public static final String PINK_STR = "Pink";
 
-    public static final double SPEED = 0.5;
+    public static final double SPEED = 2;
     /*public static final Sound soundDead = new Sound("/src/res/audio/miss.mp3");*/
 
     public static final int SCORE_FOR_PILLOW = 10;
@@ -41,6 +45,14 @@ public class Constants {
                 return "Down";
             case 4:
                 return "Left";
+            case 5:
+                return "Up_Left";
+            case 6:
+                return "Up_Right";
+            case 7:
+                return "Down_Left";
+            case 8:
+                return "Down_Right";
             default:
                 return null;
         }

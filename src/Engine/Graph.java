@@ -138,9 +138,79 @@ public class Graph<T> {
         }
         return true;
     }
+    public boolean setNodesAntiPriority(T startNodeValue) { // false if has error
+        ArrayDeque<Node<T>> frontier = new ArrayDeque<>();
+
+        Node<T> startNode = getNode(startNodeValue);
+        if(startNode == null)
+            return false;
+
+        int priority = 0;
+
+        frontier.add(startNode);
+        ArrayList<Node<T>> hasPriority = new ArrayList<>();
+        startNode.setPriority(priority);
+        priority--;
+        hasPriority.add(startNode);
+
+
+        while(!frontier.isEmpty()) {
+            Node<T> current = frontier.poll();
+
+            for (Node<T> next: graph.get(current)) {
+                if(!hasPriority.contains(next)) {
+                    frontier.add(next);
+                    next.setPriority(priority);
+                    hasPriority.add(next);
+                }
+            }
+            priority--;
+        }
+        return true;
+    }
 
     //ALGORITHMS
     public ArrayList<Node<T>> breadthFirstSearching(Node<T> start, Node<T> destination) { //return path for destination
+        ArrayDeque<Node<T>> frontier = new ArrayDeque<>();
+        frontier.add(start);
+        HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
+        came_from.put(start, null);
+
+
+        while(!frontier.isEmpty()) {
+            Node<T> current = frontier.poll();
+
+            if(current == destination) { //early exit
+                break;
+            }
+
+            graph.get(current).forEach(next -> {
+                if(!came_from.containsKey(next)) {
+                    frontier.add(next);
+                    came_from.put(next, current);
+                }
+            });
+        }
+
+        Node<T> current = destination;
+        ArrayList<Node<T>> reverse_path = new ArrayList<>();
+
+        while (current != start) {
+            if(current == null)
+                break;
+            //System.out.println("Current: " + current.toString() + "CameFrom " + came_from.get(current).toString());
+            reverse_path.add(current);
+            current = came_from.get(current);
+        }
+
+        ArrayList<Node<T>> path = new ArrayList<>();
+        for(int i = reverse_path.size()-1; i >= 0; i--) {
+            path.add(reverse_path.get(i));
+        }
+        //System.out.println(pathToString(path));
+        return path;
+    }
+    public ArrayList<Node<T>> longBreadthFirstSearching(Node<T> start, Node<T> destination) { //return path for destination
         ArrayDeque<Node<T>> frontier = new ArrayDeque<>();
         frontier.add(start);
         HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
@@ -224,6 +294,53 @@ public class Graph<T> {
         }
         return path;
     }
+    public ArrayList<Node<T>> longDijkstraSearching(Node<T> start, Node<T> destination) {
+        if(!setNodesPriority(start.getValue())) // optional in this func
+            return null;
+
+        PriorityQueue<Node<T>> frontier = new PriorityQueue<>(priorityComparator);
+        //start.setPriority(0);
+        frontier.add(start);
+        HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
+        HashMap<Node<T>, Integer> cost_so_far = new HashMap<>();
+        came_from.put(start, null);
+        cost_so_far.put(start, 0);
+
+        while(!frontier.isEmpty()) {
+            Node<T> current = frontier.poll();
+
+//            if(current == destination) {
+//                break;
+//            }
+
+            graph.get(current).forEach(next -> {
+                int new_cost = cost_so_far.get(current) + cost(current, next);
+                System.out.println("New cost: " + new_cost);
+                if(!cost_so_far.containsKey(next) || new_cost < cost_so_far.get(next)) {
+                    cost_so_far.put(next, new_cost);
+                    next.setPriority(new_cost);
+                    System.out.println("Next priority: " + next.getPriority());
+                    frontier.add(next);
+                    came_from.put(next, current);
+                }
+            });
+        }
+
+        Node<T> current = destination;
+        System.out.println(current.toString());
+        ArrayList<Node<T>> reverse_path = new ArrayList<>();
+
+        while (current != start) {
+            reverse_path.add(current);
+            current = came_from.get(current);
+        }
+
+        ArrayList<Node<T>> path = new ArrayList<>();
+        for(int i = reverse_path.size()-1; i >= 0; i--) {
+            path.add(reverse_path.get(i));
+        }
+        return path;
+    }
     public ArrayList<Node<T>> heuristicSearching(Node<T> start, Node<T> destination) { //for the points
         PriorityQueue<Node<T>> frontier = new PriorityQueue<>(priorityComparator);
         frontier.add(start);
@@ -251,6 +368,45 @@ public class Graph<T> {
         ArrayList<Node<T>> reverse_path = new ArrayList<>();
 
         while (current != start) {
+            reverse_path.add(current);
+            current = came_from.get(current);
+        }
+
+        ArrayList<Node<T>> path = new ArrayList<>();
+        for(int i = reverse_path.size()-1; i >= 0; i--) {
+            path.add(reverse_path.get(i));
+        }
+        return path;
+    }
+    public ArrayList<Node<T>> longHeuristicSearching(Node<T> start, Node<T> destination) { //for the points
+        PriorityQueue<Node<T>> frontier = new PriorityQueue<>(priorityComparator);
+        frontier.add(start);
+        HashMap<Node<T>, Node<T>> came_from = new HashMap<>();
+        came_from.put(start, null);
+
+        while(!frontier.isEmpty()) {
+            Node<T> current = frontier.poll();
+
+            if(current == destination) {
+                break;
+            }
+
+            graph.get(current).forEach(next -> {
+                if(!came_from.containsKey(next)) {
+                    int priority = heuristic((Point2D)destination.getValue(), (Point2D)next.getValue()) * -1;
+                    next.setPriority(priority);
+                    frontier.add(next);
+                    came_from.put(next, current);
+                }
+            });
+        }
+
+        Node<T> current = destination;
+        ArrayList<Node<T>> reverse_path = new ArrayList<>();
+
+        while (current != start) {
+            System.out.println("Current: " + current.toString());
+            System.out.println("Start: " + start.toString());
             reverse_path.add(current);
             current = came_from.get(current);
         }

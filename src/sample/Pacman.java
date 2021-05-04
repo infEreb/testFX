@@ -18,7 +18,9 @@ import java.util.HashMap;
 
 public class Pacman extends Character implements Movable2D, Animation {
     private boolean animationDeathStarted = false;
+    private int eatenPillowPos;
     private boolean isDead = false;
+    private boolean bigPillowHasEaten = false;
     private SpriteAnimation deathAnimation;
     private Integer currentScore;
 
@@ -34,6 +36,9 @@ public class Pacman extends Character implements Movable2D, Animation {
     public void setIsDead(boolean value){
         isDead = value;
     }
+    public void setBigPillowHasEaten(boolean state) { bigPillowHasEaten = state; }
+    public boolean getBigPillowHasEaten() { return bigPillowHasEaten; }
+    public int getEatenPillowPos() { return eatenPillowPos; }
     public SpriteAnimation getDeathAnimation() {
         return deathAnimation;
     }
@@ -75,9 +80,12 @@ public class Pacman extends Character implements Movable2D, Animation {
         mapLevelData[mapPositionY][mapPositionX] = 0;
     }
     private void eatBigPillow(){
+        int eatenPillow = 0;
         Fruit removedPillow = null;
         for (Fruit pillow: GridMap.listOfBigPillows) {
             if(this.getBody().intersects(pillow.getBody())){
+                eatenPillow = calcEscapePathByEatenPillow(pillow);
+                System.out.println("----eatBigPillow - " + Constants.stringDirection(eatenPillow));
                 removedPillow = pillow;
                 currentScore += Constants.SCORE_FOR_POWER_PELLET;
                 InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
@@ -86,6 +94,26 @@ public class Pacman extends Character implements Movable2D, Animation {
         GridMap.listOfBigPillows.remove(removedPillow);
         Game.root.getChildren().remove(removedPillow);
         mapLevelData[mapPositionY][mapPositionX] = 0;
+        setBigPillowHasEaten(true);
+        eatenPillowPos = eatenPillow;
+    }
+
+    private int calcEscapePathByEatenPillow(Fruit pillow) { // diagonally opposite position
+        Point2D pos = pillow.getBody().getLogicalPosFromPixelPos();
+        System.out.println(pos);
+        if(pos.getX() == 20) {
+            if (pos.getY() == 17)
+                return Constants.DOWN_RIGHT;
+            else
+                return Constants.UP_RIGHT;
+        }
+        else {
+            if (pos.getY() == 2)
+                return Constants.UP_LEFT;
+            else
+                return Constants.DOWN_LEFT;
+        }
+
     }
 
     public void checkIsEatenByPacman(Fruit fruit, int activeMove){

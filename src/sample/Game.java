@@ -160,6 +160,55 @@ public class Game {
 
         return ghost;
     }
+    private Ghost createDeadGhost() {
+
+        Sprite g_s = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+
+        //============ SPRITE LIST ANIMATION ============
+        ArrayList<Sprite> ghost_anim_up = new ArrayList<>();
+        ghost_anim_up.add(g_0u);
+        ghost_anim_up.add(g_1u);
+        ArrayList<Sprite> ghost_anim_down = new ArrayList<>();
+        ghost_anim_down.add(g_0d);
+        ghost_anim_down.add(g_1d);
+        ArrayList<Sprite> ghost_anim_left = new ArrayList<>();
+        ghost_anim_left.add(g_0l);
+        ghost_anim_left.add(g_1l);
+        ArrayList<Sprite> ghost_anim_right = new ArrayList<>();
+        ghost_anim_right.add(g_0r);
+        ghost_anim_right.add(g_1r);
+
+        ///============ SPRITE DIRECTION HASHMAP ANIMATION ============
+        HashMap<Integer, ArrayList<Sprite>> ghostSprites = new HashMap<>();
+        ghostSprites.put(Constants.UP, ghost_anim_up);
+        ghostSprites.put(Constants.DOWN, ghost_anim_down);
+        ghostSprites.put(Constants.LEFT, ghost_anim_left);
+        ghostSprites.put(Constants.RIGHT, ghost_anim_right);
+        Body2D ghostBody = new Body2D(g_s,
+                new RigidBody2D(12 * 28, 11 * 28, g_s.getWidth(), g_s.getHeight()));
+        Ghost ghost = new Ghost(ghostBody, new SpriteAnimation(ghostSprites, 0.15));
+
+        ghost.setStartedPosition(12*28, 11*28);
+
+        return ghost;
+    }
     private Pacman createPacman() {
         Sprite p_up0 = new Sprite(new ImageView("/res/Pacman/2.png"),
                 new Point2D(0,0), new Point2D(0,0));

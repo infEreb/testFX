@@ -31,6 +31,7 @@ public class MoveActions {
         this.activeMove = Constants.NONE;
         this.isStuck = false;
     }
+    //pacman moving
     public int move(Character character, int todoMove) {
         if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
             if(!isStuck) {
@@ -52,17 +53,16 @@ public class MoveActions {
             }
             isStuck = true;
 
-            //System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
             if(todoMove != Constants.NONE && character.logicalIsPossibleToMove(todoMove)) {
                 activeMove = todoMove;
-                //System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
-                todoMove = Constants.NONE;
+                //todoMove = Constants.NONE;
             }
         }else{
             isStuck = false;
         }
         return activeMove;
     }
+    //random moving
     public int randomMove(Character character, long presentNanoTime) {
         if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
             if(!isStuck) {
@@ -101,6 +101,7 @@ public class MoveActions {
         }
         return activeMove;
     }
+    //moving by "smart algorithm"
     public int aiMove(Character character, int todoMove) {
         //logical positions
 
@@ -148,8 +149,36 @@ public class MoveActions {
             return Constants.UP;
         else if(x == 0 && y == 1)
             return Constants.DOWN;
+        else if(x == 1 && y == 1)
+            return Constants.DOWN_RIGHT;
+        else if(x == -1 && y == 1)
+            return Constants.DOWN_LEFT;
+        else if(x == 1 && y == -1)
+            return Constants.UP_RIGHT;
+        else if(x == -1 && y == -1)
+            return Constants.UP_LEFT;
         else
             return null;
+    }
+    public static Point2D normalizeVec(Point2D vec)
+    {
+        int x,y;
+        if(vec.getX() < 0)
+            x = -1;
+        else if(vec.getX() > 0)
+            x = 1;
+        else
+            x = 0;
+
+        if(vec.getY() < 0)
+            y = -1;
+        else if(vec.getY() > 0)
+            y = 1;
+        else
+            y = 0;
+        System.out.println("Into vec: " + vec.toString());
+        System.out.println("Into norm: (" + x + "; " + y + ")");
+        return new Point2D(x, y);
     }
     public static Point2D directionToVec(int direction) {
         switch (direction) {

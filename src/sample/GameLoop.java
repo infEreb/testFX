@@ -28,6 +28,7 @@ public class GameLoop extends AnimationTimer {
     StackPane stackPane;
     Stage primaryStage;
     long lastUpdate = System.nanoTime();
+    long ghostsTimer = -5000000000L;
     boolean fruitMoved;
     boolean fruitCanMove;
     int stepFruit;
@@ -72,7 +73,7 @@ public class GameLoop extends AnimationTimer {
         if(isReady || infoBar.getCurrentCountLives() == 0) {
             if (infoBar.getCurrentCountLives() > 0) {
                 if (!pacman.getIsDead()) {
-                    if (pacman.isKilled(ghosts.values())) {
+                    if (pacman.isKilled(ghosts.values()) && !pacman.getBigPillowHasEaten()) {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
@@ -80,14 +81,28 @@ public class GameLoop extends AnimationTimer {
                     pacmanActiveMove = moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove);
                     pacman.activeMoving(pacmanActiveMove);
 
-                    if(!fruitMoved){
+                    // fruit's handler
+                    if (!fruitMoved) {
                         checkFruitCanGo(presentNanoTime);
                     }
-
-                    int directionForRedGhost = redGhostPursuitPacman();
-
-                    if(!fruit.getIsEaten() && (fruitCanMove || fruitMoved)){
+                    if (!fruit.getIsEaten() && (fruitCanMove || fruitMoved)) {
                         pacman.checkIsEatenByPacman(fruit, pacmanActiveMove);
+                    }
+
+                    // change ghost's states by eaten big_pillow
+                    int directionForRedGhost;
+                    if(pacman.getBigPillowHasEaten() && ghostsTimer == -5000000000L) { // save (ghostsTimer is now)
+                        ghostsTimer = presentNanoTime;
+                    }
+                    if (presentNanoTime - ghostsTimer <= 5000000000L) { // counting 5 seconds
+                        directionForRedGhost = ghostEscapePacman(Constants.RED);
+                    }
+                    else { // ghost's moving with normal states
+                        directionForRedGhost = ghostPursuitPacman(Constants.RED);
+                        if(pacman.getBigPillowHasEaten()) {
+                            pacman.setBigPillowHasEaten(false);
+                            ghostsTimer = -5000000000L;
+                        }
                     }
 
                     ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
@@ -97,6 +112,8 @@ public class GameLoop extends AnimationTimer {
                     ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime));
                     ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime));
                     ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime));
+
+
 
                 } else {
                     pacman.createPacmanDeathAnimation();
@@ -178,8 +195,8 @@ public class GameLoop extends AnimationTimer {
         Game.root.getChildren().remove(gameReadyLabel);
     }
 
-    int redGhostPursuitPacman(){
-        Point2D redPos = ghosts.get(Constants.RED).getBody().getLogicalPosFromPixelPos();
+    int ghostPursuitPacman(int ghost_color){
+        Point2D ghostPos = ghosts.get(ghost_color).getBody().getLogicalPosFromPixelPos();
         Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
 
         //System.out.println(redPos);
@@ -188,11 +205,68 @@ public class GameLoop extends AnimationTimer {
         ArrayList<Point2D> points = null;
         points = graphMap.nodeListToValueList(
                 graphMap.breadthFirstSearching(
-                        graphMap.getNode(redPos),
+                        graphMap.getNode(ghostPos),
                         graphMap.getNode(pacPos)
                 )
         );
-        Point2D vecPoint = points.get(0).subtract(redPos);
+        Point2D vecPoint = points.get(0).subtract(ghostPos);
+
+        //System.out.println("Direct: " + Constants.stringDirection(direction));
+        return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
+
+    }
+    int ghostEscapePacman(int ghost_color){
+        Point2D ghostPos = ghosts.get(ghost_color).getBody().getLogicalPosFromPixelPos();
+        Point2D pacPos = pacman.getBody().getLogicalPosFromPixelPos();
+
+        //System.out.println(redPos);
+        //System.out.println(pacPos);
+
+        ArrayList<Point2D> points = null;
+
+        int eatenPillowPos = pacman.getEatenPillowPos();
+        //System.out.println("-----DIRECT - " + Constants.stringDirection(eatenPillowPos));
+        switch(eatenPillowPos)
+        {
+            case Constants.UP_LEFT: {
+                points = graphMap.nodeListToValueList(
+                        graphMap.breadthFirstSearching(
+                                graphMap.getNode(ghostPos),
+                                graphMap.getNode(new Point2D(20, 22))
+                        )
+                );
+                break;
+            }
+            case Constants.UP_RIGHT: {
+                points = graphMap.nodeListToValueList(
+                        graphMap.breadthFirstSearching(
+                                graphMap.getNode(ghostPos),
+                                graphMap.getNode(new Point2D(4, 22))
+                        )
+                );
+                break;
+            }
+            case Constants.DOWN_LEFT: {
+                points = graphMap.nodeListToValueList(
+                        graphMap.breadthFirstSearching(
+                                graphMap.getNode(ghostPos),
+                                graphMap.getNode(new Point2D(20, 1))
+                        )
+                );
+                break;
+            }
+            case Constants.DOWN_RIGHT: {
+                points = graphMap.nodeListToValueList(
+                        graphMap.breadthFirstSearching(
+                                graphMap.getNode(ghostPos),
+                                graphMap.getNode(new Point2D(4, 1))
+                        )
+                );
+                break;
+            }
+
+        }
+        Point2D vecPoint = points.get(0).subtract(ghostPos);
 
         //System.out.println("Direct: " + Constants.stringDirection(direction));
         return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;

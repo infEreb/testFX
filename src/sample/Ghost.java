@@ -5,16 +5,24 @@ import Constructor.Character;
 import Engine.Body2D;
 import Engine.Constants;
 import Engine.SpriteAnimation;
+import javafx.geometry.Point2D;
 
 public class Ghost extends Character implements Animation, Movable2D {
 
     private boolean playerIsVisible;
     private boolean isDead;
+    private SpriteAnimation eatableAnimation;
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
         this.moveAnimation.setDirection(Constants.UP);
         isDead = false;
+    }
+
+    public int calculateDirEscape(Pacman pac) { // calculates direction to ghost's escape from pacman
+        Point2D normVec = MoveActions.normalizeVec(this.getBody().getLogicalPosFromPixelPos().subtract(pac.getBody().getLogicalPosFromPixelPos()));
+        //System.out.println(normVec.toString());
+        return MoveActions.vectorToDirection(normVec);
     }
 
     public boolean playerIsVisible() {
