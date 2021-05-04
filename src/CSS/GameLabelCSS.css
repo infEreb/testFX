@@ -21,8 +21,8 @@
     -fx-text-fill: aliceblue;
 }
 .font-face {
-    -fx-font-family: 'PacmanFonts';
-    src: url('/res/PacmanFonts.ttf');
+    -fx-font-family: 'Press Start 2P';
+    src: url('/res/PressStart2Play.ttf');
 }
 .menu-buttons{
     -fx-text-fill: lightslategrey;

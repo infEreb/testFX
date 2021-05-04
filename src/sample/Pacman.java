@@ -21,12 +21,21 @@ public class Pacman extends Character implements Movable2D, Animation {
     private boolean isDead = false;
     private SpriteAnimation deathAnimation;
     private Integer currentScore;
+    private int countAllPillows;
 
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
         currentScore = 0;
+        countAllPillows = GridMap.listOfPillows.size() + GridMap.listOfBigPillows.size();
         //System.out.println(body.mapX + " " + body.mapY);
+    }
+    public boolean isPacmanWin(){
+        if(countAllPillows == 0){
+            return true;
+        }else{
+            return false;
+        }
     }
     public boolean getIsDead(){
         return isDead;
@@ -46,9 +55,11 @@ public class Pacman extends Character implements Movable2D, Animation {
         super.activeMoving(activeMove);
         if(mapLevelData[mapPositionY][mapPositionX] == -1){
             this.eatSmallPillow();
+            countAllPillows--;
         }
         if(mapLevelData[mapPositionY][mapPositionX] == -2){
             this.eatBigPillow();
+            countAllPillows--;
         }
     }
 

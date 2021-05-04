@@ -47,6 +47,7 @@ public class InfoBar {
         //28
         scene = new Scene(stackPane, 21*28, 29*28);
 
+
         String stylesheet = getClass().getResource("/CSS/GameLabelCSS.css").toExternalForm();
         scene.getStylesheets().add(stylesheet);
         scene.setFill(Color.BLACK);
