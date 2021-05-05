@@ -10,8 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 public class InfoBar {
@@ -40,7 +43,7 @@ public class InfoBar {
         listPacmanLives = new ArrayList<>();
         this.primaryStage = primaryStage;
     }
-    void doSettingForInfoBars(){
+    void doSettingForInfoBars() {
         mainPane = this.createInfoBars();
         stackPane.setLayoutX(-28*2);
         stackPane.getChildren().add(mainPane);

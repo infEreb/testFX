@@ -25,9 +25,10 @@ public class Constants {
     public static final String BLUE_STR = "Blue";
     public static final String PINK_STR = "Pink";
 
-    public static final double SPEED = 2;
-    public static final double RED_GHOST_SPEED = 2;
-    public static final double ESCAPE_SPEED = 1;
+    public static final double SPEED = 0.5;
+    public static final double RED_GHOST_SPEED = 0.5;
+    public static final double ESCAPE_SPEED = 0.5;
+    public static final long GHOST_TIMER_CONSTANT = 8000000000L;
     /*public static final Sound soundDead = new Sound("/src/res/audio/miss.mp3");*/
 
     public static final int SCORE_FOR_PILLOW = 10;

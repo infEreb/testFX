@@ -1,5 +1,9 @@
+@font-face {
+    src: url('/res/PressStart2Play.ttf');
+}
+
 .label{
-    -fx-font-family: 'Press Start 2P';
+    -fx-font-family: "Press Start 2P";
     -fx-font-size: 20px;
     -fx-text-fill: aliceblue;
     -fx-padding: 0px 0px 5px 0px;
@@ -8,7 +12,7 @@
     -fx-text-fill: lightslategrey;
     -fx-background-color: black;
     -fx-font-size: 17px;
-    -fx-font-family: 'Press Start 2P';
+    -fx-font-family: "Press Start 2P";
     -fx-border-color: dimgray;
     -fx-border-width: 3px;
     -fx-label-padding: 8px 8px 6px 8px;
@@ -20,15 +24,12 @@
     -fx-border-color: aliceblue;
     -fx-text-fill: aliceblue;
 }
-.font-face {
-    -fx-font-family: 'Press Start 2P';
-    src: url('/res/PressStart2Play.ttf');
-}
+
 .menu-buttons{
     -fx-text-fill: lightslategrey;
     -fx-background-color: black;
     -fx-font-size: 17px;
-    -fx-font-family: 'Press Start 2P';
+    -fx-font-family: "Press Start 2P";
     -fx-border-color: dimgray;
     -fx-border-width: 3px;
     -fx-border-radius: 8px;
