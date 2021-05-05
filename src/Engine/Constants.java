@@ -14,11 +14,11 @@ public class Constants {
     public static final int DOWN_RIGHT = 8;
     public static final double ANIM_DELTA = 0.0005;
 
-    public static final Integer PACMAN = 0;
-    public static final Integer RED = 1;
-    public static final Integer YELLOW = 2;
-    public static final Integer BLUE = 3;
-    public static final Integer PINK = 4;
+    public static final int PACMAN = 0;
+    public static final int RED = 1;
+    public static final int YELLOW = 2;
+    public static final int BLUE = 3;
+    public static final int PINK = 4;
 
     public static final String RED_STR = "Red";
     public static final String YELLOW_STR = "Yellow";
@@ -26,6 +26,8 @@ public class Constants {
     public static final String PINK_STR = "Pink";
 
     public static final double SPEED = 2;
+    public static final double RED_GHOST_SPEED = 2;
+    public static final double ESCAPE_SPEED = 1;
     /*public static final Sound soundDead = new Sound("/src/res/audio/miss.mp3");*/
 
     public static final int SCORE_FOR_PILLOW = 10;

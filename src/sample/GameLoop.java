@@ -28,7 +28,7 @@ public class GameLoop extends AnimationTimer {
     StackPane stackPane;
     Stage primaryStage;
     long lastUpdate = System.nanoTime();
-    long ghostsTimer = -5000000000L;
+    long ghostsTimer = -8000000000L;
     boolean fruitMoved;
     boolean fruitCanMove;
     int stepFruit;
@@ -84,9 +84,12 @@ public class GameLoop extends AnimationTimer {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
+//                    } else if(pacman.isKilled(ghosts.values()) && pacman.getBigPillowHasEaten()) {
+//
+//                    }
 
                     pacmanActiveMove = moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove);
-                    pacman.activeMoving(pacmanActiveMove);
+                    pacman.activeMoving(pacmanActiveMove, Constants.SPEED);
 
                     // fruit's handler
                     if (!fruitMoved) {
@@ -97,28 +100,70 @@ public class GameLoop extends AnimationTimer {
                     }
 
                     // change ghost's states by eaten big_pillow
-                    int directionForRedGhost;
-                    if(pacman.getBigPillowHasEaten() && ghostsTimer == -5000000000L) { // save (ghostsTimer is now)
+                    int directionDiagonallyOposite;
+                    double ghostsSpeed = Constants.SPEED;
+                    double redGhostsSpeed = Constants.RED_GHOST_SPEED;
+                    if(pacman.getBigPillowHasEaten() && ghostsTimer == -8000000000L) { // save (ghostsTimer is now)
                         ghostsTimer = presentNanoTime;
                     }
-                    if (presentNanoTime - ghostsTimer <= 5000000000L) { // counting 5 seconds
-                        directionForRedGhost = ghostEscapePacman(Constants.RED);
+                    if ((presentNanoTime - ghostsTimer <= 8000000000L)) { // counting 8 seconds
+                        System.out.println((presentNanoTime - ghostsTimer) / 1000000000);
+                        directionDiagonallyOposite = ghostEscapePacman(Constants.RED);
+                        // changes ghosts speed
+                        ghostsSpeed = Constants.ESCAPE_SPEED;
+                        redGhostsSpeed = Constants.ESCAPE_SPEED;
+
+                        // animation changing
+                        int i = 0;
+                        for (Ghost ghost: ghosts.values()) {
+                            ghost.setAnimation(Game.getGhostsEscapeAnimation(i));
+                            i++;
+                        }
                     }
                     else { // ghost's moving with normal states
-                        directionForRedGhost = ghostPursuitPacman(Constants.RED);
+
+                        //return normal animation
+                        for (Integer ghost: ghosts.keySet()) {
+                            switch (ghost) {
+                                case Constants.BLUE: {
+                                    ghosts.get(ghost).setAnimation(Game.getGhostsAnimation(Constants.BLUE_STR));
+                                    break;
+                                }
+                                case Constants.RED: {
+                                    ghosts.get(ghost).setAnimation(Game.getGhostsAnimation(Constants.RED_STR));
+                                    break;
+                                }
+                                case Constants.PINK: {
+                                    ghosts.get(ghost).setAnimation(Game.getGhostsAnimation(Constants.PINK_STR));
+                                    break;
+                                }
+                                case Constants.YELLOW: {
+                                    ghosts.get(ghost).setAnimation(Game.getGhostsAnimation(Constants.YELLOW_STR));
+                                    break;
+                                }
+                            }
+                        }
+
+                        directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
                         if(pacman.getBigPillowHasEaten()) {
                             pacman.setBigPillowHasEaten(false);
-                            ghostsTimer = -5000000000L;
+                            ghostsTimer = -8000000000L;
+
+                            // return normal speed
+                            ghostsSpeed = Constants.SPEED;
+                            redGhostsSpeed = Constants.RED_GHOST_SPEED;
+
+
                         }
                     }
 
                     ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
-                            .aiMove(ghosts.get(Constants.RED), directionForRedGhost));
+                            .aiMove(ghosts.get(Constants.RED), directionDiagonallyOposite), redGhostsSpeed);
 
 
-                    ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime));
-                    ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime));
-                    ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime));
+                    ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime), ghostsSpeed);
+                    ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime), ghostsSpeed);
+                    ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime), ghostsSpeed);
 
 
 
@@ -220,6 +265,9 @@ public class GameLoop extends AnimationTimer {
         //System.out.println(pacPos);
 
         ArrayList<Point2D> points = null;
+        System.out.println("GHOST POS - " + ghostPos);
+        //System.out.println("=============\n" + graphMap.toString() + "\n=============");
+        System.out.println("from_______ghostPursuitPacman");
         points = graphMap.nodeListToValueList(
                 graphMap.breadthFirstSearching(
                         graphMap.getNode(ghostPos),
@@ -243,9 +291,11 @@ public class GameLoop extends AnimationTimer {
 
         int eatenPillowPos = pacman.getEatenPillowPos();
         //System.out.println("-----DIRECT - " + Constants.stringDirection(eatenPillowPos));
+        System.out.println("from_______ghostEscapePacman");
         switch(eatenPillowPos)
         {
             case Constants.UP_LEFT: {
+                System.out.println("UP_LEFT");
                 points = graphMap.nodeListToValueList(
                         graphMap.breadthFirstSearching(
                                 graphMap.getNode(ghostPos),
@@ -255,6 +305,7 @@ public class GameLoop extends AnimationTimer {
                 break;
             }
             case Constants.UP_RIGHT: {
+                System.out.println("UP_RIGHT");
                 points = graphMap.nodeListToValueList(
                         graphMap.breadthFirstSearching(
                                 graphMap.getNode(ghostPos),
@@ -264,6 +315,7 @@ public class GameLoop extends AnimationTimer {
                 break;
             }
             case Constants.DOWN_LEFT: {
+                System.out.println("DOWN_LEFT");
                 points = graphMap.nodeListToValueList(
                         graphMap.breadthFirstSearching(
                                 graphMap.getNode(ghostPos),
@@ -273,6 +325,7 @@ public class GameLoop extends AnimationTimer {
                 break;
             }
             case Constants.DOWN_RIGHT: {
+                System.out.println("DOWN_RIGHT");
                 points = graphMap.nodeListToValueList(
                         graphMap.breadthFirstSearching(
                                 graphMap.getNode(ghostPos),

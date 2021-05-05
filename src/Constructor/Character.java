@@ -8,7 +8,7 @@ import static Engine.Constants.SPEED;
 
 public class Character extends Pane {
     protected final Body2D body;
-    protected final SpriteAnimation moveAnimation;
+    protected SpriteAnimation moveAnimation;
     protected int [][] mapLevelData;
     public int mapPositionX;
     public int mapPositionY;
@@ -33,6 +33,9 @@ public class Character extends Pane {
     }
     public SpriteAnimation getAnimation() {
         return moveAnimation;
+    }
+    public void setAnimation(SpriteAnimation animation) {
+        moveAnimation = animation;
     }
     public void move(Point2D velocity, double speed, int direction) {
         this.getAnimation().setDirection(direction);
@@ -88,32 +91,7 @@ public class Character extends Pane {
         }
         return false;
     }
-    /*public boolean pixelIsPossibleToMove(int move) {
-        Point2D playerPos = pixelPosToLogicalPos(body.getPosition());
-        Point2D vec = MoveActions.directionToVec(move);
-        Block block = null;
-        Point2D blockPos = playerPos.add(vec);
-        System.out.println("Dir- " +Constants.stringDirection(move)+ " plrPos- " +playerPos+ " vecPos- " +vec+ " blockPos- " +blockPos);
-        if(vec != null) {
-            System.out.println("vecPos != null");
-            block = GridMap.getBlockByPoint(blockPos);
-            if(block == null)
-                block = GridMap.getPillowByPoint(blockPos);
-            if(block == null)
-                block = GridMap.getBigPillowByPoint(blockPos);
-        }
-        if(block != null) {
-            System.out.println("\nBlockLogicalPos: "+block.getLogicalPosition()+ " BlockPixPos: " + block.getBody().getPosition() +"\n");
-            if (!body.intersects(block.getBody()))
-                return true;
-        }
-        else{
-            if(body.getPosition().getX() % 28 == 0 && body.getPosition().getY() % 28 == 0 && logicalIsPossibleToMove(move))
-                return true;
-        }
-        return false;
-    }*/
-    public void activeMoving(int activeMove){
+    public void activeMoving(int activeMove, double speed){
 
         if(!logicalIsPossibleToMove(activeMove)) return;
 
@@ -122,25 +100,25 @@ public class Character extends Pane {
                 if((body.getPosition().getX() >= (LevelData.mapXMax-1) * 28)){
                     return;
                 }
-                this.move(new Point2D(1, 0), SPEED, Constants.RIGHT);
+                this.move(new Point2D(1, 0), speed, Constants.RIGHT);
                 break;
             case Constants.LEFT:
                 if((body.getPosition().getX() <= 0)){
                     return;
                 }
-                this.move(new Point2D(-1, 0), SPEED, Constants.LEFT);
+                this.move(new Point2D(-1, 0), speed, Constants.LEFT);
                 break;
             case Constants.UP:
                 if((body.getPosition().getY() <= 0)){
                     return;
                 }
-                this.move(new Point2D(0, -1), SPEED, Constants.UP);
+                this.move(new Point2D(0, -1), speed, Constants.UP);
                 break;
             case Constants.DOWN:
                 if((body.getPosition().getY() >= (LevelData.mapYMax-1) * 28)){
                     return;
                 }
-                this.move(new Point2D(0, 1), SPEED, Constants.DOWN);
+                this.move(new Point2D(0, 1), speed, Constants.DOWN);
                 break;
         }
         if(mapPositionX == 1){

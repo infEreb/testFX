@@ -56,8 +56,8 @@ public class Pacman extends Character implements Movable2D, Animation {
     }
 
     @Override
-    public void activeMoving(int activeMove){
-        super.activeMoving(activeMove);
+    public void activeMoving(int activeMove, double speed){
+        super.activeMoving(activeMove, Constants.SPEED);
         if(mapLevelData[mapPositionY][mapPositionX] == -1){
             this.eatSmallPillow();
             countAllPillows--;

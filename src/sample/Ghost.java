@@ -2,21 +2,28 @@ package sample;
 
 import Constructor.*;
 import Constructor.Character;
-import Engine.Body2D;
-import Engine.Constants;
-import Engine.SpriteAnimation;
+import Engine.*;
 import javafx.geometry.Point2D;
+import javafx.scene.image.ImageView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Ghost extends Character implements Animation, Movable2D {
 
     private boolean playerIsVisible;
     private boolean isDead;
-    private SpriteAnimation eatableAnimation;
+    private SpriteAnimation escapeAnimation = null;
 
     public Ghost(Body2D body, SpriteAnimation animation) {
         super(body, animation);
         this.moveAnimation.setDirection(Constants.UP);
+        createGhostEscapeAnimation();
         isDead = false;
+    }
+
+    public SpriteAnimation getEscapeAnimation() {
+        return escapeAnimation;
     }
 
     public int calculateDirEscape(Pacman pac) { // calculates direction to ghost's escape from pacman
@@ -38,6 +45,64 @@ public class Ghost extends Character implements Animation, Movable2D {
 //    public void setIsDead(boolean isDead) {
 //        this.isDead = isDead;
 //    }
+
+    public void ghostEscapeAnimation(int activeMove){
+        if(activeMove == Constants.NONE) activeMove = Constants.UP;
+        this.escapeAnimation.setDirection(activeMove);
+        this.escapeAnimation.play();
+        this.renderEscape();
+        System.out.println(this.escapeAnimation.getCurrentSprite().getTexture().getImage().getUrl());
+
+    }
+    public void renderEscape(){
+        getChildren().clear();
+        getChildren().addAll(escapeAnimation.getCurrentSprite().getTexture());
+
+    }
+
+    public void createGhostEscapeAnimation() {
+        Sprite g_s = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/Death/f-0.png"),
+                new Point2D(0, 0));
+        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/Death/f-1.png"),
+                new Point2D(0, 0));
+
+        //============ SPRITE LIST ANIMATION ============
+        ArrayList<Sprite> ghost_anim_up = new ArrayList<>();
+        ghost_anim_up.add(g_0u);
+        ghost_anim_up.add(g_1u);
+        ArrayList<Sprite> ghost_anim_down = new ArrayList<>();
+        ghost_anim_down.add(g_0d);
+        ghost_anim_down.add(g_1d);
+        ArrayList<Sprite> ghost_anim_left = new ArrayList<>();
+        ghost_anim_left.add(g_0l);
+        ghost_anim_left.add(g_1l);
+        ArrayList<Sprite> ghost_anim_right = new ArrayList<>();
+        ghost_anim_right.add(g_0r);
+        ghost_anim_right.add(g_1r);
+
+        ///============ SPRITE DIRECTION HASHMAP ANIMATION ============
+        HashMap<Integer, ArrayList<Sprite>> ghostSprites = new HashMap<>();
+        ghostSprites.put(Constants.UP, ghost_anim_up);
+        ghostSprites.put(Constants.DOWN, ghost_anim_down);
+        ghostSprites.put(Constants.LEFT, ghost_anim_left);
+        ghostSprites.put(Constants.RIGHT, ghost_anim_right);
+
+        escapeAnimation = new SpriteAnimation(ghostSprites, 0.15);
+    }
 
     @Override
     public boolean logicalIsPossibleToMove(int move){
