@@ -207,7 +207,7 @@ public class Graph<T> {
         for(int i = reverse_path.size()-1; i >= 0; i--) {
             path.add(reverse_path.get(i));
         }
-        System.out.println(pathToString(path));
+        //System.out.println(pathToString(path));
         return path;
     }
     public ArrayList<Node<T>> longBreadthFirstSearching(Node<T> start, Node<T> destination) { //return path for destination
