@@ -46,7 +46,7 @@ public class GameLoop extends AnimationTimer {
     boolean labelIsInstalled;
     double ghostsSpeed;
     double redGhostsSpeed;
-    int directionDiagonallyOposite;
+    //int directionDiagonallyOposite;
     boolean blinkingInstalled;
 
     public GameLoop(Pacman pacman, Map<Integer, Ghost> ghosts, Map<Integer, MoveActions> moveActions,
@@ -69,8 +69,9 @@ public class GameLoop extends AnimationTimer {
         blinkingInstalled = false;
         ghostsSpeed = Constants.SPEED;
         redGhostsSpeed = Constants.RED_GHOST_SPEED;
-    }
 
+        System.out.println(graphMap.toString());
+    }
 
     @Override
     public void handle(long presentNanoTime) {
@@ -92,9 +93,26 @@ public class GameLoop extends AnimationTimer {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
-//                    } else if(pacman.isKilled(ghosts.values()) && pacman.getBigPillowHasEaten()) {
-//
-//                    }
+                    // handler
+                    else if(pacman.getBigPillowHasEaten()) { // if big pillow has eaten
+                        for(Integer ghostColor: ghosts.keySet()) { // for each of ghosts
+                            Ghost ghost = ghosts.get(ghostColor);
+                            if(pacman.isKilledByOne(ghost)) { // if pacman intersects ghost
+                                if(!ghost.isDead()) { // and if ghost isn't dead
+                                    ghost.setIsDead(true); // set up isDead
+                                }
+                                else { // if ghost already dead
+                                    if(!ghost.getBody().getLogicalPosFromPixelPos().equals(new Point2D(12, 11))) { // and if he's not on resp_point
+                                        ghost.setAnimation(Game.getGhostsDeathAnimation(ghostColor - 1)); // set up death animation
+                                        ghost.setDirectionToMove(ghostDeathPath(ghostColor)); // and calc ghost's path by spawn point
+                                    }
+                                    else { // if he is set up isDead like false
+                                        ghost.setIsDead(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     pacmanActiveMove = moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove);
                     pacman.activeMoving(pacmanActiveMove, Constants.SPEED);
@@ -123,7 +141,7 @@ public class GameLoop extends AnimationTimer {
                     }
                     if (presentNanoTime - ghostsTimer <= Constants.GHOST_ESCAPE_TIME) { // counting 8 seconds
                         //System.out.println((presentNanoTime - ghostsTimer) / 1000000000);
-                        directionDiagonallyOposite = ghostEscapePacman(Constants.RED);
+                        ghosts.get(Constants.RED).setDirectionToMove(ghostEscapePacman(Constants.RED));
                         // changes ghosts speed
                         ghostsSpeed = Constants.ESCAPE_SPEED;
                         redGhostsSpeed = Constants.ESCAPE_SPEED;
@@ -137,10 +155,17 @@ public class GameLoop extends AnimationTimer {
                             blinkingInstalled = true;
                         }
 
+                        // check ghosts death
+                        for (Integer ghost_color: ghosts.keySet()) {
+                            if(ghosts.get(ghost_color).isDead())
+                                ghosts.get(ghost_color).setDirectionToMove(ghostDeathPath(ghost_color));
+                        }
+
                     }
                     else { // ghost's moving with normal states
 
-                        directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
+                        //directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
+                        ghosts.get(Constants.RED).setDirectionToMove(ghostPursuitPacman(Constants.RED));
 
                         if(pacman.getBigPillowHasEaten()) {
                             pacman.setBigPillowHasEaten(false);
@@ -177,7 +202,7 @@ public class GameLoop extends AnimationTimer {
                     }
                     //System.out.println("DIRECTION  directionDiagonallyOposite- " + Constants.stringDirection(directionDiagonallyOposite));
                     ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
-                            .aiMove(ghosts.get(Constants.RED), directionDiagonallyOposite), redGhostsSpeed);
+                            .aiMove(ghosts.get(Constants.RED), ghosts.get(Constants.RED).getDirectionToMove()), redGhostsSpeed);
 
 
                     ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime), ghostsSpeed);
@@ -351,6 +376,24 @@ public class GameLoop extends AnimationTimer {
         //System.out.println("Direct: " + Constants.stringDirection(direction));
         return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
 
+    }
+    int ghostDeathPath(int ghost_color) {
+        Point2D ghostPos = ghosts.get(ghost_color).getBody().getLogicalPosFromPixelPos();
+        Point2D spawn_point = new Point2D(12, 11);
+        ArrayList<Point2D> points = null;
+        //System.out.println("=============\n" + graphMap.toString() + "\n=============");
+        //System.out.println("from_______ghostPursuitPacman");
+        points = graphMap.nodeListToValueList(
+                graphMap.breadthFirstSearching(
+                        graphMap.getNode(ghostPos),
+                        graphMap.getNode(spawn_point)
+                )
+        );
+        //System.out.println("GHOST POS - " + ghostPos);
+        Point2D vecPoint = points.get(0).subtract(ghostPos);
+
+        //System.out.println("Direct: " + Constants.stringDirection(direction));
+        return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;
     }
 
     void fruitMovesFromEdgeOfMap(){

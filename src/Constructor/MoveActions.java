@@ -160,8 +160,7 @@ public class MoveActions {
         else
             return null;
     }
-    public static Point2D normalizeVec(Point2D vec)
-    {
+    public static Point2D normalizeVec(Point2D vec) {
         int x,y;
         if(vec.getX() < 0)
             x = -1;

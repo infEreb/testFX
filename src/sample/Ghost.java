@@ -13,6 +13,7 @@ public class Ghost extends Character implements Animation, Movable2D {
 
     private boolean playerIsVisible;
     private boolean isDead;
+    private int directionToMove;
     private SpriteAnimation escapeAnimation = null;
 
     public Ghost(Body2D body, SpriteAnimation animation) {
@@ -42,9 +43,16 @@ public class Ghost extends Character implements Animation, Movable2D {
     public boolean isDead() {
         return isDead;
     }
-//    public void setIsDead(boolean isDead) {
-//        this.isDead = isDead;
-//    }
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
+    }
+
+    public int getDirectionToMove() {
+        return directionToMove;
+    }
+    public void setDirectionToMove(int direction) {
+        directionToMove = direction;
+    }
 
     public void ghostEscapeAnimation(int activeMove){
         if(activeMove == Constants.NONE) activeMove = Constants.UP;

@@ -192,6 +192,12 @@ public class Pacman extends Character implements Movable2D, Animation {
         }
         return false;
     }
+    public boolean isKilledByOne(Ghost ghost){
+        if(ghost.getBody().intersects(this.getBody())){
+            return true;
+        }
+        return false;
+    }
     private void setProperAngelAnimation(int activeMove){
         deathAnimation.getSprites().forEach(sprite -> {
             sprite.getTexture().setRotate(90*(activeMove-1));

@@ -84,9 +84,9 @@ public class Character extends Pane {
                 case Constants.LEFT:
                     return !(mapLevelData[mapPositionY][mapPositionX - 1] > 0);
                 case Constants.UP:
-                    return !(mapLevelData[mapPositionY - 1][mapPositionX] > 0);
+                    return !(mapLevelData[mapPositionY - 1][mapPositionX] > 0 && mapLevelData[mapPositionY - 1][mapPositionX] != 26);
                 case Constants.DOWN:
-                    return !(mapLevelData[mapPositionY + 1][mapPositionX] > 0);
+                    return !(mapLevelData[mapPositionY + 1][mapPositionX] > 0 && mapLevelData[mapPositionY + 1][mapPositionX] != 26);
             }
         }
         return false;

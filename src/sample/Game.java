@@ -43,11 +43,13 @@ public class Game {
         ghostsAnimations = new HashMap<>();
         ghostsEscapeAnimation = new ArrayList<>();
         ghostsBlinkingAnimation = new ArrayList<>();
+        ghostsDeathAnimation = new ArrayList<>();
 
         // creates animations
         for(int i = 0; i < 4; i++) {
             ghostsEscapeAnimation.add(createGhostsEscapeAnimation());
             ghostsBlinkingAnimation.add(createGhostsBlinkingAnimation());
+            ghostsDeathAnimation.add(createGhostsDeathAnimation());
         }
 
 
@@ -311,6 +313,50 @@ public class Game {
         ghostBlinkingSprites.put(Constants.RIGHT, ghost_anim_right);
 
         return new SpriteAnimation(ghostBlinkingSprites, 0.15);
+    }
+    private SpriteAnimation createGhostsDeathAnimation() {
+
+        Sprite g_s = new Sprite(new ImageView("/res/Ghosts/Eyes/d.png"),
+                new Point2D(0, 0));
+        Sprite g_0u = new Sprite(new ImageView("/res/Ghosts/Eyes/u.png"),
+                new Point2D(0, 0));
+        Sprite g_1u = new Sprite(new ImageView("/res/Ghosts/Eyes/u.png"),
+                new Point2D(0, 0));
+        Sprite g_0d = new Sprite(new ImageView("/res/Ghosts/Eyes/d.png"),
+                new Point2D(0, 0));
+        Sprite g_1d = new Sprite(new ImageView("/res/Ghosts/Eyes/d.png"),
+                new Point2D(0, 0));
+        Sprite g_0l = new Sprite(new ImageView("/res/Ghosts/Eyes/l.png"),
+                new Point2D(0, 0));
+        Sprite g_1l = new Sprite(new ImageView("/res/Ghosts/Eyes/l.png"),
+                new Point2D(0, 0));
+        Sprite g_0r = new Sprite(new ImageView("/res/Ghosts/Eyes/r.png"),
+                new Point2D(0, 0));
+        Sprite g_1r = new Sprite(new ImageView("/res/Ghosts/Eyes/r.png"),
+                new Point2D(0, 0));
+
+        //============ SPRITE LIST ANIMATION ============
+        ArrayList<Sprite> ghost_anim_up = new ArrayList<>();
+        ghost_anim_up.add(g_0u);
+        ghost_anim_up.add(g_1u);
+        ArrayList<Sprite> ghost_anim_down = new ArrayList<>();
+        ghost_anim_down.add(g_0d);
+        ghost_anim_down.add(g_1d);
+        ArrayList<Sprite> ghost_anim_left = new ArrayList<>();
+        ghost_anim_left.add(g_0l);
+        ghost_anim_left.add(g_1l);
+        ArrayList<Sprite> ghost_anim_right = new ArrayList<>();
+        ghost_anim_right.add(g_0r);
+        ghost_anim_right.add(g_1r);
+
+        ///============ SPRITE DIRECTION HASHMAP ANIMATION ============
+        HashMap<Integer, ArrayList<Sprite>> ghostsEscapeSprites = new HashMap<>();
+        ghostsEscapeSprites.put(Constants.UP, ghost_anim_up);
+        ghostsEscapeSprites.put(Constants.DOWN, ghost_anim_down);
+        ghostsEscapeSprites.put(Constants.LEFT, ghost_anim_left);
+        ghostsEscapeSprites.put(Constants.RIGHT, ghost_anim_right);
+
+        return new SpriteAnimation(ghostsEscapeSprites, 0.15);
     }
     private Pacman createPacman() {
         Sprite p_up0 = new Sprite(new ImageView("/res/Pacman/2.png"),

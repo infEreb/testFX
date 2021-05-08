@@ -41,25 +41,25 @@ public class LevelData {
     };
 
     public static Graph createGraphMap(int levelNum) {
-        if(levelNum <= 0 || levelNum > levels.length)
+        if(levelNum <= 0 || levelNum > levels.length) // if number of level out of area return null
             return null;
 
         Graph graph = new Graph();
-        int[][] map = levels[levelNum-1];
-        for(int y = 0; y < mapYMax; y++) {
-            for(int x = 0; x < mapXMax; x++) {
-                if(map[y][x] <= 0 || map[y][x] == 26) {
-                    graph.addNode(new Point2D(x, y));
-                    if (x != mapXMax - 1) {
-                        if(map[y][x+1] <= 0 || map[y][x+1] == 26)
-                            graph.addEdge(new Point2D(x, y), new Point2D(x + 1, y));
-                        if (y != mapYMax - 1)
-                            if(map[y+1][x] <= 0 || map[y+1][x] == 26)
-                                graph.addEdge(new Point2D(x, y), new Point2D(x, y + 1));
-                    } else {
-                        if (y != mapYMax - 1)
-                            if(map[y+1][x] <= 0 || map[y+1][x] == 26)
-                                graph.addEdge(new Point2D(x, y), new Point2D(x, y + 1));
+        int[][] map = levels[levelNum-1]; // map of current lvl from levels array by levelNum
+        for(int y = 0; y < mapYMax; y++) { // row running (Y)
+            for(int x = 0; x < mapXMax; x++) { // column running (X)
+                if(map[y][x] <= 0 || map[y][x] == 26) { // if block on this point != wall or == door
+                    graph.addNode(new Point2D(x, y)); // we can move by this block and add it like node
+                    if (x != mapXMax - 1) { // if x is not point of last block by X
+                        if(map[y][x+1] <= 0 || map[y][x+1] == 26) // if next(right) by X block != wall or == door
+                            graph.addEdge(new Point2D(x, y), new Point2D(x + 1, y)); // add connect between this and next(right)
+                        if (y != mapYMax - 1) // if y is not point of last block by Y
+                            if(map[y+1][x] <= 0 || map[y+1][x] == 26) // if next(bottom) by Y block != wall or == door
+                                graph.addEdge(new Point2D(x, y), new Point2D(x, y + 1)); // add connect between this and next(bottom)
+                    } else { // if x is point of last block by X
+                        if (y != mapYMax - 1) // if y is point of last block by Y
+                            if(map[y+1][x] <= 0 || map[y+1][x] == 26) // if next(bottom) by Y block != wall or == door
+                                graph.addEdge(new Point2D(x, y), new Point2D(x, y + 1)); // add this
                     }
                 }
             }
