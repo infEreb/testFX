@@ -123,7 +123,7 @@ public class Ghost extends Character implements Animation, Movable2D {
                 case Constants.UP:
                     return (!(mapLevelData[mapPositionY - 1][mapPositionX] > 0) || mapLevelData[mapPositionY - 1][mapPositionX] == 26);
                 case Constants.DOWN:
-                    return !(mapLevelData[mapPositionY + 1][mapPositionX] > 0);
+                    return !(mapLevelData[mapPositionY + 1][mapPositionX] > 0 && mapLevelData[mapPositionY + 1][mapPositionX] != 26);
             }
         }
         return false;

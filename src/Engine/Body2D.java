@@ -61,6 +61,7 @@ public class Body2D {
     }
 
     public void update(double speed) {
+
         position = position.add(velocity.getX()*speed, velocity.getY()*speed);
         sprite.setPosition(position);
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());

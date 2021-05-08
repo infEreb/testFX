@@ -67,8 +67,8 @@ public class GameLoop extends AnimationTimer {
         pacmanActiveMove = Constants.NONE;
         labelIsInstalled = false;
         blinkingInstalled = false;
-        ghostsSpeed = Constants.SPEED;
-        redGhostsSpeed = Constants.RED_GHOST_SPEED;
+        ghostsSpeed = Constants.GHOST_SPEED;
+        redGhostsSpeed = Constants.GHOST_SPEED;
 
         System.out.println(graphMap.toString());
     }
@@ -149,7 +149,9 @@ public class GameLoop extends AnimationTimer {
                         if(presentNanoTime - ghostsTimer >= Constants.GHOST_BLINKING_TIME && !blinkingInstalled){
                             int i = 0;
                             for (Ghost ghost: ghosts.values()) {
-                                ghost.setAnimation(Game.getGhostsBlinkingAnimation(i));
+                                if(!ghost.isDead()) {
+                                    ghost.setAnimation(Game.getGhostsBlinkingAnimation(i));
+                                }
                                 i++;
                             }
                             blinkingInstalled = true;
@@ -173,8 +175,8 @@ public class GameLoop extends AnimationTimer {
                             ghostsTimer = -Constants.GHOST_ESCAPE_TIME;
 
                             // return normal speed
-                            ghostsSpeed = Constants.SPEED;
-                            redGhostsSpeed = Constants.RED_GHOST_SPEED;
+                            ghostsSpeed = Constants.GHOST_SPEED;
+                            redGhostsSpeed = Constants.GHOST_SPEED;
 
                             //return normal animation
                             for (Integer ghost: ghosts.keySet()) {
@@ -196,6 +198,7 @@ public class GameLoop extends AnimationTimer {
                                         break;
                                     }
                                 }
+                                ghosts.get(ghost).setIsDead(false);
                             }
 
                         }
