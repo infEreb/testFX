@@ -23,7 +23,7 @@ public class MoveActions {
     public void setTime(long time) {
         this.time = time;
     }
-
+    public boolean getIsStuck(){ return isStuck;}
     public int getActiveMove() {
         return this.activeMove;
     }

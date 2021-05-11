@@ -61,9 +61,10 @@ public class Body2D {
     }
 
     public void update(double speed) {
-
+        //System.out.println("X: " + velocity.getX()*speed  + " Y: " + velocity.getY()*speed);
         position = position.add(velocity.getX()*speed, velocity.getY()*speed);
         sprite.setPosition(position);
+        //System.out.println("X: " + sprite.getPosition().getX()  + " Y: " + sprite.getPosition().getY());
         rigidBody = new RigidBody2D(position.getX(), position.getY(), rigidBody.getWidth(), rigidBody.getHeight());
     }
     public void render(GraphicsContext gc, Image texture) {

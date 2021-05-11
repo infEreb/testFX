@@ -89,17 +89,18 @@ public class GameLoop extends AnimationTimer {
         else if((isReady || infoBar.getCurrentCountLives() == 0) && !labelIsInstalled) {
             if (infoBar.getCurrentCountLives() > 0) {
                 if (!pacman.getIsDead()) {
-                    if (pacman.isKilled(ghosts.values()) && !pacman.getBigPillowHasEaten()) {
+                    if (pacman.isKilled(ghosts.values()) && !pacman.getCanKillGhosts()) {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
                     // handler
-                    else if(pacman.getBigPillowHasEaten()) { // if big pillow has eaten
+                    else if(pacman.getCanKillGhosts()) { // if pacman can kill ghosts
                         for(Integer ghostColor: ghosts.keySet()) { // for each of ghosts
                             Ghost ghost = ghosts.get(ghostColor);
                             if(pacman.isKilledByOne(ghost)) { // if pacman intersects ghost
                                 if(!ghost.isDead()) { // and if ghost isn't dead
                                     ghost.setIsDead(true); // set up isDead
+                                    pacman.countKilledGhostAndAddLabel(pacmanActiveMove);
                                 }
                                 else { // if ghost already dead
                                     if(!ghost.getBody().getLogicalPosFromPixelPos().equals(new Point2D(12, 11))) { // and if he's not on resp_point
@@ -122,23 +123,30 @@ public class GameLoop extends AnimationTimer {
                         checkFruitCanGo(presentNanoTime);
                     }*/
                     if (!fruit.getIsEaten() && (fruitCanMove || fruitMoved)) {
-                        pacman.checkIsEatenByPacman(fruit, pacmanActiveMove);
+                        pacman.checkIsEatenFruit(fruit, pacmanActiveMove);
                     }
 
                     // change ghost's states by eaten big_pillow
 
-                    if(pacman.getBigPillowHasEaten() && ghostsTimer == -Constants.GHOST_ESCAPE_TIME) { // save (ghostsTimer is now)
+                    //eat big pillow
+                    if(pacman.getBigPillowHasEaten()){
+                        if(ghostsTimer == -Constants.GHOST_ESCAPE_TIME){
+                            // animation changing
+                            int i = 0;
+                            for (Ghost ghost: ghosts.values()) {
+                                ghost.setAnimation(Game.getGhostsEscapeAnimation(i));
+                                i++;
+                            }
+
+                        }
                         ghostsTimer = presentNanoTime;
 
                         Sound.playSound("/src/res/audio/ghost-turn-to-blue.mp3");
+                        pacman.setBigPillowHasEaten(false);
+                        pacman.setCanKillGhosts(true);
 
-                        // animation changing
-                        int i = 0;
-                        for (Ghost ghost: ghosts.values()) {
-                            ghost.setAnimation(Game.getGhostsEscapeAnimation(i));
-                            i++;
-                        }
                     }
+
                     if (presentNanoTime - ghostsTimer <= Constants.GHOST_ESCAPE_TIME) { // counting 8 seconds
                         //System.out.println((presentNanoTime - ghostsTimer) / 1000000000);
                         ghosts.get(Constants.RED).setDirectionToMove(ghostEscapePacman(Constants.RED));
@@ -169,9 +177,10 @@ public class GameLoop extends AnimationTimer {
                         //directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
                         ghosts.get(Constants.RED).setDirectionToMove(ghostPursuitPacman(Constants.RED));
 
-                        if(pacman.getBigPillowHasEaten()) {
-                            pacman.setBigPillowHasEaten(false);
+                        if(ghostsTimer != -Constants.GHOST_ESCAPE_TIME) {
                             blinkingInstalled = false;
+                            pacman.setCanKillGhosts(false);
+                            pacman.setCountEatenGhosts(0);
                             ghostsTimer = -Constants.GHOST_ESCAPE_TIME;
 
                             // return normal speed
@@ -204,15 +213,21 @@ public class GameLoop extends AnimationTimer {
                         }
                     }
                     //System.out.println("DIRECTION  directionDiagonallyOposite- " + Constants.stringDirection(directionDiagonallyOposite));
-                    ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
+                    /*ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
                             .aiMove(ghosts.get(Constants.RED), ghosts.get(Constants.RED).getDirectionToMove()), redGhostsSpeed);
-
-
+*/
+/*
                     ghosts.get(Constants.PINK).activeMoving(moveActions.get(Constants.PINK).randomMove(ghosts.get(Constants.PINK), presentNanoTime), ghostsSpeed);
                     ghosts.get(Constants.YELLOW).activeMoving(moveActions.get(Constants.YELLOW).randomMove(ghosts.get(Constants.YELLOW), presentNanoTime), ghostsSpeed);
                     ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime), ghostsSpeed);
-
-
+ */                 for(int i = 2; i <= 4; i++) { // 2 = yellow, 3 = blue, 4 = pink
+                        Ghost ghost = ghosts.get(i);
+                        if (ghost.isDead() && moveActions.get(i).getIsStuck()) {
+                            ghost.activeMoving(moveActions.get(i).aiMove(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
+                        } else {
+                            ghost.activeMoving(moveActions.get(i).randomMove(ghost, presentNanoTime), ghostsSpeed);
+                        }
+                    }
 
                 } else {
                     pacman.createPacmanDeathAnimation();

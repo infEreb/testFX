@@ -24,7 +24,8 @@ public class Pacman extends Character implements Movable2D, Animation {
     private SpriteAnimation deathAnimation;
     private Integer currentScore;
     private int countAllPillows;
-
+    private boolean canKillGhosts = false;
+    private int countEatenGhosts = 0;
 
     public Pacman(Body2D body, SpriteAnimation animation) {
         super(body, animation);
@@ -54,6 +55,9 @@ public class Pacman extends Character implements Movable2D, Animation {
     public void setDeathAnimation(SpriteAnimation deathAnimation) {
         this.deathAnimation = deathAnimation;
     }
+    public boolean getCanKillGhosts(){ return canKillGhosts; }
+    public void setCanKillGhosts(boolean value){ canKillGhosts = value; }
+    public void setCountEatenGhosts(int value){ countEatenGhosts = value; }
 
     @Override
     public void activeMoving(int activeMove, double speed){
@@ -127,19 +131,52 @@ public class Pacman extends Character implements Movable2D, Animation {
 
     }
 
-    public void checkIsEatenByPacman(Fruit fruit, int activeMove){
+
+    public void checkIsEatenFruit(Fruit fruit, int activeMove){
         if(this.body.intersects(fruit.getBody())){
             fruit.setIsEaten(true);
             currentScore += Constants.SCORE_FOR_CHERRY;
             InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
             Game.root.getChildren().remove(fruit);
-            addLabelAfterPacman(activeMove);
+            addLabelAfterPacman(activeMove, new ImageView("/res/100.png"));
+            Sound.playSound("/src/res/audio/eating-fruit.mp3");
             System.out.println("Pacman ate a fruit");
         }
     }
 
-    void addLabelAfterPacman(int activeMove){
-        ImageView imgScoreForFruit = new ImageView("/res/100.png");
+    public void countKilledGhostAndAddLabel(int activeMove){
+        ImageView label;
+        switch(countEatenGhosts){
+            case 0:
+                label = new ImageView("/res/200.png");
+                currentScore += 200;
+                countEatenGhosts++;
+                break;
+            case 1:
+                label = new ImageView("/res/400.png");
+                currentScore += 400;
+                countEatenGhosts++;
+                break;
+            case 2:
+                label = new ImageView("/res/800.png");
+                currentScore += 800;
+                countEatenGhosts++;
+                break;
+            case 3:
+                label = new ImageView("/res/1600.png");
+                currentScore += 1600;
+                countEatenGhosts++;
+                break;
+            default:
+                label = null;
+        }
+        InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
+        if(label != null){
+            addLabelAfterPacman(activeMove, label);
+        }
+    }
+
+    void addLabelAfterPacman(int activeMove, ImageView label){
         double x = this.getBody().getPosition().getX();
         double y = this.getBody().getPosition().getY();
         int shift = -3;
@@ -162,17 +199,18 @@ public class Pacman extends Character implements Movable2D, Animation {
                 break;
             default: return;
         }
-        imgScoreForFruit.setTranslateX(x);
-        imgScoreForFruit.setTranslateY(y);
-        pacmanEatFruitMusic();
-        Game.root.getChildren().add(imgScoreForFruit);
+        label.setTranslateX(x);
+        label.setTranslateY(y);
+        //pacmanEatFruitMusic();
+        //Sound.playSound("/src/res/audio/eating-fruit.mp3");
+        Game.root.getChildren().add(label);
         PauseTransition pause = new PauseTransition(Duration.seconds(1));
         pause.setOnFinished(e -> {
-            Game.root.getChildren().remove(imgScoreForFruit);
+            Game.root.getChildren().remove(label);
         });
         pause.play();
     }
-    void pacmanEatFruitMusic(){
+    /*void pacmanEatFruitMusic(){
         Runnable r = ()->{
             Sound.playSound("/src/res/audio/eating-fruit.mp3");
 
@@ -180,7 +218,7 @@ public class Pacman extends Character implements Movable2D, Animation {
 
         Thread readyThread = new Thread(r, "FruitThread");
         readyThread.start();
-    }
+    }*/
 
 
 
@@ -198,11 +236,7 @@ public class Pacman extends Character implements Movable2D, Animation {
         }
         return false;
     }
-    private void setProperAngelAnimation(int activeMove){
-        deathAnimation.getSprites().forEach(sprite -> {
-            sprite.getTexture().setRotate(90*(activeMove-1));
-        });
-    }
+
     public void pacmanDeadAnimation(int activeMove){
         pacmanDeathMusicStart();
         if(activeMove == Constants.NONE) activeMove = Constants.UP;
