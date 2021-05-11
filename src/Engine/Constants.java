@@ -62,5 +62,19 @@ public class Constants {
                 return null;
         }
     }
+    public static String intGhostToString(int ghost) {
+        switch(ghost) {
+            case RED:
+                return "Red";
+            case YELLOW:
+                return "Yellow";
+            case BLUE:
+                return "Blue";
+            case PINK:
+                return "Pink";
+            default:
+                return null;
+        }
+    }
 
 }

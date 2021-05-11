@@ -109,6 +109,7 @@ public class GameLoop extends AnimationTimer {
                                         ghost.setDirectionToMove(ghostDeathPath(ghostColor)); // and calc ghost's path by spawn point
                                     }
                                     else { // if he is set up isDead like false
+                                        ghost.setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(ghostColor)));
                                         ghost.setIsDead(false);
                                     }
                                 }
@@ -210,7 +211,6 @@ public class GameLoop extends AnimationTimer {
                                 }
                                 ghosts.get(ghost).setIsDead(false);
                             }
-
                         }
                     }
                     //System.out.println("DIRECTION  directionDiagonallyOposite- " + Constants.stringDirection(directionDiagonallyOposite));
