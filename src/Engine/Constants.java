@@ -25,9 +25,9 @@ public class Constants {
     public static final String BLUE_STR = "Blue";
     public static final String PINK_STR = "Pink";
 
-    public static final double SPEED = 2;
-    public static final double GHOST_SPEED = 2;
-    public static final double ESCAPE_SPEED = 2;
+    public static final double SPEED = 1;
+    public static final double GHOST_SPEED = 0.5;
+    public static final double ESCAPE_SPEED = 0.5;
     public static final long GHOST_ESCAPE_TIME = 9000000000L;
     public static final long GHOST_BLINKING_TIME = 5000000000L;
 

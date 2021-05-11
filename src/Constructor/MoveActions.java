@@ -211,8 +211,8 @@ public class MoveActions {
             y = 1;
         else
             y = 0;
-        System.out.println("Into vec: " + vec.toString());
-        System.out.println("Into norm: (" + x + "; " + y + ")");
+        //System.out.println("Into vec: " + vec.toString());
+        //System.out.println("Into norm: (" + x + "; " + y + ")");
         return new Point2D(x, y);
     }
     public static Point2D directionToVec(int direction) {

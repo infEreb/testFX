@@ -115,7 +115,7 @@ public class Pacman extends Character implements Movable2D, Animation {
 
     private int calcEscapePathByEatenPillow(Fruit pillow) { // diagonally opposite position
         Point2D pos = pillow.getBody().getLogicalPosFromPixelPos();
-        System.out.println(pos);
+        //System.out.println(pos);
         if(pos.getX() == 20) {
             if (pos.getY() == 17)
                 return Constants.DOWN_RIGHT;

@@ -315,11 +315,11 @@ public class Graph<T> {
 
             graph.get(current).forEach(next -> {
                 int new_cost = cost_so_far.get(current) + cost(current, next);
-                System.out.println("New cost: " + new_cost);
+                //System.out.println("New cost: " + new_cost);
                 if(!cost_so_far.containsKey(next) || new_cost < cost_so_far.get(next)) {
                     cost_so_far.put(next, new_cost);
                     next.setPriority(new_cost);
-                    System.out.println("Next priority: " + next.getPriority());
+                    //System.out.println("Next priority: " + next.getPriority());
                     frontier.add(next);
                     came_from.put(next, current);
                 }
@@ -327,7 +327,7 @@ public class Graph<T> {
         }
 
         Node<T> current = destination;
-        System.out.println(current.toString());
+        //System.out.println(current.toString());
         ArrayList<Node<T>> reverse_path = new ArrayList<>();
 
         while (current != start) {
