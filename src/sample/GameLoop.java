@@ -3,6 +3,7 @@ package sample;
 import Constructor.*;
 import Engine.Constants;
 import Engine.Graph;
+import Engine.Node;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
@@ -222,8 +223,11 @@ public class GameLoop extends AnimationTimer {
                     ghosts.get(Constants.BLUE).activeMoving(moveActions.get(Constants.BLUE).randomMove(ghosts.get(Constants.BLUE), presentNanoTime), ghostsSpeed);
  */                 for(int i = 2; i <= 4; i++) { // 2 = yellow, 3 = blue, 4 = pink
                         Ghost ghost = ghosts.get(i);
-                        if (ghost.isDead() && moveActions.get(i).getIsStuck()) {
-                            ghost.activeMoving(moveActions.get(i).aiMove(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
+                        if (ghost.isDead() /*&& moveActions.get(i).getIsStuck()*/) {
+                            System.out.println("stucked");
+                            if(moveActions.get(i).getIsStuck())
+                                ghost.setDirectionToMove(ghostDeathPath(i));
+                            ghost.activeMoving(moveActions.get(i).aiMoveFromRndm(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
                         } else {
                             ghost.activeMoving(moveActions.get(i).randomMove(ghost, presentNanoTime), ghostsSpeed);
                         }
@@ -401,14 +405,13 @@ public class GameLoop extends AnimationTimer {
         ArrayList<Point2D> points = null;
         //System.out.println("=============\n" + graphMap.toString() + "\n=============");
         //System.out.println("from_______ghostPursuitPacman");
-        points = graphMap.nodeListToValueList(
-                graphMap.breadthFirstSearching(
-                        graphMap.getNode(ghostPos),
-                        graphMap.getNode(spawn_point)
-                )
-        );
-        //System.out.println("GHOST POS - " + ghostPos);
+        ArrayList<Node<Point2D>> path = graphMap.breadthFirstSearching(graphMap.getNode(ghostPos), graphMap.getNode(spawn_point));
+        points = graphMap.nodeListToValueList(path);
+        System.out.println(graphMap.pathToString(path));
+        System.out.println("GHOST POS - " + ghostPos);
         Point2D vecPoint = points.get(0).subtract(ghostPos);
+
+        //System.out.println(Constants.stringDirection(MoveActions.vectorToDirection(vecPoint)));
 
         //System.out.println("Direct: " + Constants.stringDirection(direction));
         return MoveActions.vectorToDirection(vecPoint) != null ? MoveActions.vectorToDirection(vecPoint) : Constants.NONE;

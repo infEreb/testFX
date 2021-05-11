@@ -138,6 +138,42 @@ public class MoveActions {
         }
         return activeMove;
     }
+    public int aiMoveFromRndm(Character character, int todoMove) {
+        //logical positions
+
+        if((character.getBody().getPosition().getX() % 28 == 0) && (character.getBody().getPosition().getY() % 28 == 0)){
+            if(!isStuck) {
+                switch (activeMove) {
+                    case Constants.RIGHT:
+                        character.mapPositionX++;
+                        break;
+                    case Constants.LEFT:
+                        character.mapPositionX--;
+                        break;
+                    case Constants.UP:
+                        character.mapPositionY--;
+                        break;
+                    case Constants.DOWN:
+                        character.mapPositionY++;
+                        break;
+                }
+
+            }
+            //firstIter = false;
+            isStuck = true;
+
+            //System.out.println("INTO ----------------------------------" + Constants.stringDirection(todoMove));
+            if(todoMove != Constants.NONE && character.logicalIsPossibleToMove(todoMove)) {
+                activeMove = todoMove;
+                //System.out.println("TISKA------------------------------" + Constants.stringDirection(todoMove));
+                todoMove = Constants.NONE;
+            }
+        }else{
+            isStuck = false;
+
+        }
+        return activeMove;
+    }
 
     public static Integer vectorToDirection(Point2D vec) {
         int x = (int)vec.getX(), y = (int)vec.getY();
