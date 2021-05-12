@@ -139,7 +139,7 @@ public class Pacman extends Character implements Movable2D, Animation {
             InfoBar.getCurrentScoreLabel().setText(currentScore.toString());
             Game.root.getChildren().remove(fruit);
             addLabelAfterPacman(activeMove, new ImageView("/res/100.png"));
-            Sound.playSound("/src/res/audio/eating-fruit.mp3");
+            pacmanEatFruitMusic();
             System.out.println("Pacman ate a fruit");
         }
     }
@@ -201,8 +201,6 @@ public class Pacman extends Character implements Movable2D, Animation {
         }
         label.setTranslateX(x);
         label.setTranslateY(y);
-        //pacmanEatFruitMusic();
-        //Sound.playSound("/src/res/audio/eating-fruit.mp3");
         Game.root.getChildren().add(label);
         PauseTransition pause = new PauseTransition(Duration.seconds(1));
         pause.setOnFinished(e -> {
@@ -210,7 +208,7 @@ public class Pacman extends Character implements Movable2D, Animation {
         });
         pause.play();
     }
-    /*void pacmanEatFruitMusic(){
+    void pacmanEatFruitMusic(){
         Runnable r = ()->{
             Sound.playSound("/src/res/audio/eating-fruit.mp3");
 
@@ -218,13 +216,13 @@ public class Pacman extends Character implements Movable2D, Animation {
 
         Thread readyThread = new Thread(r, "FruitThread");
         readyThread.start();
-    }*/
+    }
 
 
 
     public boolean isKilled(Collection<Ghost> ghosts){
         for(Ghost ghost: ghosts){
-            if(ghost.getBody().intersects(this.getBody())){
+            if(ghost.getBody().intersects(this.getBody()) && !ghost.isMovingHome()){
                 return true;
             }
         }

@@ -67,7 +67,7 @@ public class InfoBar {
         maxScore = GridMap.listOfPillows.size() * Constants.SCORE_FOR_PILLOW;
         maxScore += GridMap.listOfBigPillows.size() * Constants.SCORE_FOR_POWER_PELLET;
         maxScore += Constants.SCORE_FOR_CHERRY;
-        maxScore += Constants.SCORE_FOR_GHOST * 30;
+        maxScore += GridMap.listOfBigPillows.size() * (200 + 400 + 800 + 1600);
     }
 
     public int getCurrentCountLives() {

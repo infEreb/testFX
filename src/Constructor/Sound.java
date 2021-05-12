@@ -15,6 +15,6 @@ public class Sound {
         //Instantiating MediaPlayer class
         mediaPlayer = new MediaPlayer(media);
 
-        mediaPlayer.play();
+        mediaPlayer.setAutoPlay(true);
     }
 }

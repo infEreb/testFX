@@ -88,38 +88,51 @@ public class GameLoop extends AnimationTimer {
             pacmanWin();
         }
         else if((isReady || infoBar.getCurrentCountLives() == 0) && !labelIsInstalled) {
+
             if (infoBar.getCurrentCountLives() > 0) {
+
                 if (!pacman.getIsDead()) {
-                    if (pacman.isKilled(ghosts.values()) && !pacman.getCanKillGhosts()) {
+
+                    if(pacman.getCanKillGhosts()) { // if pacman can kill ghosts
+                        ghosts.forEach((ghostColor, ghost) -> {
+                                if (pacman.isKilledByOne(ghost)) { // if pacman intersects ghost
+                                    if (!ghost.isDead()) { // and if ghost isn't dead
+                                        ghost.setIsDead(true); // set up isDead
+                                        ghost.setIsMovingHome(true);
+                                        pacman.countKilledGhostAndAddLabel(pacmanActiveMove);
+                                        ghost.setAnimation(Game.getGhostsDeathAnimation(ghostColor - 1)); // set up death animation
+                                    }
+                                }
+                                if (ghost.isMovingHome()) {
+                                    if (ghost.getBody().getLogicalPosFromPixelPos().equals(new Point2D(12, 11))) {
+                                        ghost.setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(ghostColor)));
+                                        ghost.setIsMovingHome(false);
+                                    }
+                                }
+                        });
+                    }
+                    else if (pacman.isKilled(ghosts.values())) {
                         pacman.pacmanDeadAnimation(moveActions.get(Constants.PACMAN).getActiveMove());
                         return;
                     }
-                    // handler
-                    else if(pacman.getCanKillGhosts()) { // if pacman can kill ghosts
-                        for(Integer ghostColor: ghosts.keySet()) { // for each of ghosts
-                            Ghost ghost = ghosts.get(ghostColor);
-                            if(pacman.isKilledByOne(ghost)) { // if pacman intersects ghost
-                                if (!ghost.isDead()) { // and if ghost isn't dead
-                                    ghost.setIsDead(true); // set up isDead
-                                    pacman.countKilledGhostAndAddLabel(pacmanActiveMove);
-                                    ghost.setAnimation(Game.getGhostsDeathAnimation(ghostColor - 1)); // set up death animation
-                                }
-                            }
-                            if(ghost.isDead()) {
+                    else{
+                        ghosts.forEach( (color, ghost) ->{
+                            if(ghost.isMovingHome()){
                                 if (ghost.getBody().getLogicalPosFromPixelPos().equals(new Point2D(12, 11))) {
-                                    ghost.setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(ghostColor)));
+                                    ghost.setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(color)));
+                                    ghost.setIsMovingHome(false);
                                 }
                             }
-                        }
+                        });
                     }
 
                     pacmanActiveMove = moveActions.get(Constants.PACMAN).move(pacman, Game.todoMove);
                     pacman.activeMoving(pacmanActiveMove, Constants.SPEED);
 
                     // fruit's handler
-                    /*if (!fruitMoved) {
+                    if (!fruitMoved) {
                         checkFruitCanGo(presentNanoTime);
-                    }*/
+                    }
                     if (!fruit.getIsEaten() && (fruitCanMove || fruitMoved)) {
                         pacman.checkIsEatenFruit(fruit, pacmanActiveMove);
                     }
@@ -145,6 +158,7 @@ public class GameLoop extends AnimationTimer {
 
                     }
 
+                    // ghosts escaping pacman
                     if (presentNanoTime - ghostsTimer <= Constants.GHOST_ESCAPE_TIME) { // counting 8 seconds
                         //System.out.println((presentNanoTime - ghostsTimer) / 1000000000);
                         if(ghosts.get(Constants.RED).isDead()) {
@@ -154,10 +168,7 @@ public class GameLoop extends AnimationTimer {
                             ghosts.get(Constants.RED).setDirectionToMove(ghostEscapePacman(Constants.RED));
                         }
 
-                            // changes ghosts speed
-                        ghostsSpeed = Constants.ESCAPE_SPEED;
-                        redGhostsSpeed = Constants.ESCAPE_SPEED;
-
+                        //set blinking time
                         if(presentNanoTime - ghostsTimer >= Constants.GHOST_BLINKING_TIME && !blinkingInstalled){
                             int i = 0;
                             for (Ghost ghost: ghosts.values()) {
@@ -174,7 +185,11 @@ public class GameLoop extends AnimationTimer {
                     else { // ghost's moving with normal states
 
                         //directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
-                        ghosts.get(Constants.RED).setDirectionToMove(ghostPursuitPacman(Constants.RED));
+
+                        if(ghosts.get(Constants.RED).isMovingHome())
+                            ghosts.get(Constants.RED).setDirectionToMove(ghostDeathPath(Constants.RED));
+                        else
+                            ghosts.get(Constants.RED).setDirectionToMove(ghostPursuitPacman(Constants.RED));
 
                         if(ghostsTimer != -Constants.GHOST_ESCAPE_TIME) {
                             blinkingInstalled = false;
@@ -182,52 +197,20 @@ public class GameLoop extends AnimationTimer {
                             pacman.setCountEatenGhosts(0);
                             ghostsTimer = -Constants.GHOST_ESCAPE_TIME;
 
-                            // return normal speed
-                            ghostsSpeed = Constants.GHOST_SPEED;
-                            redGhostsSpeed = Constants.GHOST_SPEED;
-
                             //return normal animation
-                            for (Integer ghost: ghosts.keySet()) {
-                                ghosts.get(ghost).setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(ghost)));
-                                ghosts.get(ghost).setIsDead(false);
-                            }
+                            ghosts.forEach((ghostColor, ghost) ->{
+                                if(!ghost.isMovingHome())
+                                    ghost.setAnimation(Game.getGhostsAnimation(Constants.intGhostToString(ghostColor)));
+                                ghost.setIsDead(false);
+
+                            });
                         }
                     }
 
-                    ghosts.get(Constants.RED).activeMoving(moveActions.get(Constants.RED)
-                            .aiMove(ghosts.get(Constants.RED), ghosts.get(Constants.RED).getDirectionToMove()), redGhostsSpeed);
-
-
-                    for(int i = 2; i <= 4; i++) { // 2 = yellow, 3 = blue, 4 = pink
-                        Ghost ghost = ghosts.get(i);
-                        if (ghost.isDead() /*&& moveActions.get(i).getIsStuck()*/) {
-                            if(moveActions.get(i).getIsStuck())
-                                ghost.setDirectionToMove(ghostDeathPath(i));
-                            ghost.activeMoving(moveActions.get(i).aiMoveFromRndm(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
-                        } else {
-                            ghost.activeMoving(moveActions.get(i).randomMove(ghost, presentNanoTime), ghostsSpeed);
-                        }
-                    }
+                    moveGhostWithDirection(presentNanoTime);
 
                 } else {
-                    pacman.createPacmanDeathAnimation();
-
-                    moveActions.forEach((number, moveAction) -> {
-                        moveAction.startedMovementCondition();
-                    });
-                    pacman.setAnimationDeathStarted(false);
-                    pacman.setStartedPositionAfterPacmanDeath(12 * 28, 14 * 28);
-                    ghosts.forEach((number, ghost) -> {
-                        ghost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
-                    });
-
-
-                    infoBar.removeLiveInLabel();
-                    infoBar.countLiveReduce();
-                    pacman.setIsDead(false);
-                    Game.todoMove = Constants.NONE;
-                    isReady = false;
-                    isReadyStarted = false;
+                    losingLife();
                 }
             } else {
                 gameOver(pacman, ghosts);
@@ -244,6 +227,46 @@ public class GameLoop extends AnimationTimer {
             labelIsInstalled = true;
 
     }
+
+    void losingLife(){
+        pacman.createPacmanDeathAnimation();
+
+        moveActions.forEach((number, moveAction) -> {
+            moveAction.startedMovementCondition();
+        });
+        pacman.setAnimationDeathStarted(false);
+        pacman.setStartedPositionAfterPacmanDeath(12 * 28, 14 * 28);
+        ghosts.forEach((number, ghost) -> {
+            ghost.setStartedPositionAfterPacmanDeath(12 * 28, 11 * 28);
+        });
+
+
+        infoBar.removeLiveInLabel();
+        infoBar.countLiveReduce();
+        pacman.setIsDead(false);
+        Game.todoMove = Constants.NONE;
+        isReady = false;
+        isReadyStarted = false;
+    }
+
+    void moveGhostWithDirection(long presentNanoTime){
+        ghosts.forEach((ghostColor, ghost) ->{
+
+            if(ghostColor == Constants.RED){
+                ghost.activeMoving(moveActions.get(ghostColor).aiMove(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
+
+            }else{
+                if (ghost.isDead() || ghost.isMovingHome()) {
+                    if(moveActions.get(ghostColor).getIsStuck())
+                        ghost.setDirectionToMove(ghostDeathPath(ghostColor));
+                    ghost.activeMoving(moveActions.get(ghostColor).aiMoveFromRndm(ghost, ghost.getDirectionToMove()), Constants.GHOST_SPEED);
+                } else {
+                    ghost.activeMoving(moveActions.get(ghostColor).randomMove(ghost, presentNanoTime), Constants.GHOST_SPEED);
+                }
+            }
+        });
+    }
+
     void checkFruitCanGo(long presentNanoTime){
         elapsedNanoSeconds = presentNanoTime - lastUpdate;
 

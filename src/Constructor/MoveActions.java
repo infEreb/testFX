@@ -90,6 +90,12 @@ public class MoveActions {
                     activeMove = todoMove;
                 time = presentNanoTime;
             }
+            for(int coordinate = 0; coordinate < 3; coordinate++){
+                if(character.mapPositionX == 12 && character.mapPositionY == 11-coordinate){
+                    todoMove = Constants.UP;
+                    activeMove = todoMove;
+                }
+            }
 
             while(!character.logicalIsPossibleToMove(todoMove)) {
                 todoMove = random.nextInt(4) + 1;

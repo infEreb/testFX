@@ -27,7 +27,6 @@ public class Constants {
 
     public static final double SPEED = 1;
     public static final double GHOST_SPEED = 0.5;
-    public static final double ESCAPE_SPEED = 0.5;
     public static final long GHOST_ESCAPE_TIME = 9000000000L;
     public static final long GHOST_BLINKING_TIME = 5000000000L;
 
@@ -36,7 +35,6 @@ public class Constants {
     public static final int SCORE_FOR_PILLOW = 10;
     public static final int SCORE_FOR_POWER_PELLET = 50;
     public static final int SCORE_FOR_CHERRY = 100;
-    public static final int SCORE_FOR_GHOST = 200;
 
     public static String stringDirection(int direct) {
         switch (direct) {
