@@ -141,14 +141,12 @@ public class GameLoop extends AnimationTimer {
 
                     //eat big pillow
                     if(pacman.getBigPillowHasEaten()){
-                        if(ghostsTimer == -Constants.GHOST_ESCAPE_TIME){
                             // animation changing
-                            int i = 0;
-                            for (Ghost ghost: ghosts.values()) {
+                        int i = 0;
+                        for (Ghost ghost: ghosts.values()) {
+                            if(!ghost.isDead())
                                 ghost.setAnimation(Game.getGhostsEscapeAnimation(i));
-                                i++;
-                            }
-
+                            i++;
                         }
                         ghostsTimer = presentNanoTime;
 
@@ -183,8 +181,6 @@ public class GameLoop extends AnimationTimer {
 
                     }
                     else { // ghost's moving with normal states
-
-                        //directionDiagonallyOposite = ghostPursuitPacman(Constants.RED);
 
                         if(ghosts.get(Constants.RED).isMovingHome())
                             ghosts.get(Constants.RED).setDirectionToMove(ghostDeathPath(Constants.RED));
